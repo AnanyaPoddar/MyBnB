@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
 import java.util.Scanner;
+import io.github.cdimascio.dotenv.Dotenv;
 
 public class DAO {
 
@@ -12,37 +13,66 @@ public class DAO {
   private static final String CONNECTION = "jdbc:mysql://127.0.0.1/mydb";
 
   public static void addUser(Connection conn, Scanner myObj) {
+
+    // TODO Prevent errors from database and instead check user input before
+    // trying to insert
+
     System.out.println("Provide your SIN");
     int sin = Integer.parseInt(myObj.nextLine()); // Read user input
-
-    // TODO Only want <= 100 chars
-    // TODO Prevent duplicate errors (try catch?)
-
+    System.out.println("Provide a password");
+    String password = myObj.nextLine();
     System.out.println("Provide your name");
     String name = myObj.nextLine();
     System.out.println("Provide your address");
     String addr = myObj.nextLine();
     System.out.println("Provide your occupation");
     String occupation = myObj.nextLine();
-
     System.out.println("Provide your date of birth in YYYY-MM-DD format");
     String dob = myObj.nextLine();
 
+    System.out.println(
+        "Are you a renter or a host? R = Renter, any other key = Host");
+    String rOrH = myObj.nextLine();
+
+    String rentOrHostInsert;
+    if (rOrH.equals("r") || rOrH.equals("R")) {
+      // " cardType VARCHAR(12) NOT NULL, " + " cardNum INT NOT NULL, "
+      // TODO Should this be open choice or C = Credit, D = Debit
+      System.out.println("Provide a payment method (Credit or Debit)");
+      String cardType = myObj.nextLine();
+      System.out.println("Provide your card Number");
+      int cardNum = Integer.parseInt(myObj.nextLine()); // Read user input
+      rentOrHostInsert = String.format(
+          "INSERT INTO Renter VALUES (%d, '%s', %d);", sin, cardType, cardNum);
+    } else {
+      rentOrHostInsert = String.format("INSERT INTO Host VALUES (%d);", sin);
+    }
+
+    System.out.println(rentOrHostInsert);
+
+
     try {
+      // TODO Either both are inserted or neither is?
       Statement insert = conn.createStatement();
-      String sqlInsert =
-          String.format("INSERT INTO USER VALUES (%d, %s, %s, %s, '%s');", sin,
-              name, addr, occupation, dob);
-      insert.executeUpdate(sqlInsert);
+      String userInsert = String.format(
+          "INSERT INTO USER VALUES (%d, '%s', '%s', '%s', '%s', '%s');", sin,
+          password, name, addr, occupation, dob);
+
+      System.out.println(userInsert);
+      insert.executeUpdate(userInsert);
+      insert.executeUpdate(rentOrHostInsert);
     } catch (SQLException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
   }
 
-  public static void viewOneUser(Connection conn, Scanner myObj) {
-    System.out.println("Provide the SIN of the user");
+  public static void login(Connection conn, Scanner myObj) {
+    System.out.println("Provide your SIN");
     int SIN = Integer.parseInt(myObj.nextLine());
+    System.out.println("Provide you password");
+    String password = myObj.nextLine();
+
 
     try {
       Statement stmt = conn.createStatement();
@@ -151,7 +181,8 @@ public class DAO {
     Class.forName(dbClassName);
     // Database credentials
     final String USER = "root";
-    final String PASS = ""; // !TODO Don't commit!
+    Dotenv dotenv = Dotenv.configure().load();
+    final String PASS = dotenv.get("PASS");
     System.out.println("Connecting to database...");
 
     // TODO Case sensitivity for the queries?
@@ -168,18 +199,40 @@ public class DAO {
       System.out.println("Preparing a statement...");
       Statement stmt = conn.createStatement();
 
+
       // Create a table User if it doesn't already exist
       String userTable =
           "CREATE TABLE IF NOT EXISTS USER " + "(SIN INT NOT NULL PRIMARY KEY, "
+              + " upassword VARCHAR(12) NOT NULL, "
               + " uname VARCHAR(100) NOT NULL, " + " uaddress VARCHAR(100), "
               + " uoccupation VARCHAR(20), " + " uDOB DATE)";
-      // TODO maybe use DATEDIFF so that today's date - uDOB >= 18 years? CHECK
-      // (Age>=18)
-      // TODO password for a user so that they can log in
+      // TODO CHECK (DATEDIFF ...) , CHECK (DATEDIFF("
+      // + [current date somehow] + ", uDOB) >= "18)
+      // SELECT DATEDIFF(u.uDOB, s.uDOB) FROM User u, User s;
 
       stmt.executeUpdate(userTable);
       System.out.println("Created User table in given database...");
 
+      // Create a table Host if it doesn't already exist
+      String hostTable = "CREATE TABLE IF NOT EXISTS HOST "
+          + "(HostSIN INT NOT NULL PRIMARY KEY,"
+          + "INDEX par_ind (HostSIN), FOREIGN KEY (HostSIN) REFERENCES USER(SIN) ON DELETE CASCADE)";
+      // i don't get the index thing
+      // On Delete Cascade: if you delete from Host, nothing happens to User. If
+      // you delete from user, the row is gone from Host
+
+      stmt.executeUpdate(hostTable);
+      System.out.println("Created Host table in given database...");
+
+      // Create a table Renter if it doesn't already exist
+
+      String renterTable = "CREATE TABLE IF NOT EXISTS RENTER "
+          + "(RenterSIN INT NOT NULL PRIMARY KEY,"
+          + " cardType VARCHAR(12) NOT NULL, " + " cardNum INT NOT NULL, "
+          + "INDEX par_ind (RenterSIN), FOREIGN KEY (RenterSIN) REFERENCES USER(SIN) ON DELETE CASCADE)";
+
+      stmt.executeUpdate(renterTable);
+      System.out.println("Created Renter table in given database...");
 
       // Create a table Listing if it doesn't already exist
 
@@ -200,7 +253,7 @@ public class DAO {
         // Choices for user
         System.out.println("Enter 0 to exit");
         System.out.println("Enter 1 to add a new User");
-        System.out.println("Enter 2 to get a user based on SIN");
+        System.out.println("Enter 2 to log in based on SIN/password");
         System.out.println("Enter 3 to view all users");
         System.out.println("Enter 4 to add a listing");
         System.out.println("Enter 5 to view all listings");
@@ -211,7 +264,7 @@ public class DAO {
           addUser(conn, myObj);
         }
         if (exit.equals("2")) {
-          viewOneUser(conn, myObj);
+          login(conn, myObj);
         }
         if (exit.equals("3")) {
           viewAllUsers(conn, myObj);
