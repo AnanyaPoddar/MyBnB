@@ -11,11 +11,13 @@ public class DAO {
 
   private static final String dbClassName = "com.mysql.cj.jdbc.Driver";
   private static final String CONNECTION = "jdbc:mysql://127.0.0.1/mydb";
+  static int loggedIn = -1; // initial + do we need private/static/etc?
 
   public static void addUser(Connection conn, Scanner myObj) {
 
     // TODO Prevent errors from database and instead check user input before
     // trying to insert
+    // OR is it supposed to be like allll constraints on the
 
     System.out.println("Provide your SIN");
     int sin = Integer.parseInt(myObj.nextLine()); // Read user input
@@ -68,32 +70,32 @@ public class DAO {
   }
 
   public static void login(Connection conn, Scanner myObj) {
+
+    if (loggedIn != -1) {
+      System.out.println("You're already logged in as: " + loggedIn);
+      return;
+    }
     System.out.println("Provide your SIN");
     int SIN = Integer.parseInt(myObj.nextLine());
     System.out.println("Provide you password");
     String password = myObj.nextLine();
-
 
     try {
       Statement stmt = conn.createStatement();
       String sql = "SELECT * FROM User WHERE SIN = " + SIN + ";";
       ResultSet rs = stmt.executeQuery(sql);
 
-      // Extract results
-      while (rs.next()) {
-        // Retrieve by column name
-        int sid = rs.getInt("SIN");
-        String uname = rs.getString("uname");
-        String uaddress = rs.getString("uaddress");
-        String uoccupation = rs.getString("uoccupation");
-        String udob = rs.getString("uDOB");
+      if (rs.next()) {
+        if (password.equals(rs.getString("upassword"))) {
+          loggedIn = SIN;
+          System.out.println("Succesfully logged in as: " + loggedIn);
 
-        // Display values
-        System.out.print("ID: " + sid);
-        System.out.print(", Name: " + uname);
-        System.out.print(", Address: " + uaddress);
-        System.out.print(", Occupation: " + uoccupation);
-        System.out.println(", Date of Birth: " + udob);
+        } else {
+          System.out.println("Wrong password.");
+
+        }
+      } else {
+        System.out.println("No user of that SIN exists.");
       }
       rs.close();
     } catch (SQLException e) {
@@ -132,6 +134,47 @@ public class DAO {
       e.printStackTrace();
     }
 
+  }
+
+  public static void deleteUser(Connection conn, Scanner myObj) {
+    // TODO ! What other tables/relationships should be affected if a Host
+    // deletes? If a Renter deletes?s
+
+    if (loggedIn == -1) {
+      System.out.println("You must be logged in to delete your account");
+      return;
+    }
+
+    System.out.println("Press 1 to indicate you want to delete your account");
+    int confirm = Integer.parseInt(myObj.nextLine());
+    if (confirm != 1) {
+      System.out.println("Not deleting.");
+      return;
+    }
+    System.out.println("Deleting Account of" + loggedIn);
+
+    try {
+
+      Statement stmt = conn.createStatement();
+      String sql = "DELETE FROM user WHERE SIN = " + loggedIn + ";";
+      stmt.executeUpdate(sql);
+
+      loggedIn = -1;
+      System.out.println("Account deleted and logged out." + loggedIn);
+    } catch (SQLException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+  }
+
+  public static void logout() {
+    if (loggedIn == -1) {
+      System.out.println("You're already logged out.");
+      return;
+    }
+
+    loggedIn = -1;
+    System.out.println("You've been logged out");
   }
 
   public static void addListing(Connection conn, Scanner myObj) {
@@ -257,7 +300,8 @@ public class DAO {
         System.out.println("Enter 3 to view all users");
         System.out.println("Enter 4 to add a listing");
         System.out.println("Enter 5 to view all listings");
-
+        System.out.println("Enter 6 to delete your account");
+        System.out.println("Enter 7 to log out");
         exit = myObj.nextLine(); // Read user choice
 
         if (exit.equals("1")) {
@@ -275,6 +319,13 @@ public class DAO {
         if (exit.equals("5")) {
           viewAllListings(conn, myObj);
         }
+        if (exit.equals("6")) {
+          deleteUser(conn, myObj);
+        }
+        if (exit.equals("7")) {
+          logout();
+        }
+
 
       }
 
