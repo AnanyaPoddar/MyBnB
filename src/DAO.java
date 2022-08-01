@@ -1,11 +1,10 @@
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
 import java.util.Scanner;
-//import io.github.cdimascio.dotenv.Dotenv;
+import io.github.cdimascio.dotenv.Dotenv;
 
 public class DAO {
 
@@ -13,210 +12,7 @@ public class DAO {
   private static final String CONNECTION = "jdbc:mysql://127.0.0.1/mydb";
   static int loggedInUser = -1; // initial + do we need private/static/etc?
 
-  public static void addUser(Connection conn, Scanner myObj) {
-
-    // TODO Prevent errors from database and instead check user input before
-    // trying to insert
-    // OR is it supposed to be like allll constraints on the
-
-    System.out.println("Provide your SIN");
-    int sin = Integer.parseInt(myObj.nextLine()); // Read user input
-    System.out.println("Provide a password");
-    String password = myObj.nextLine();
-    System.out.println("Provide your name");
-    String name = myObj.nextLine();
-    System.out.println("Provide your address");
-    String addr = myObj.nextLine();
-    System.out.println("Provide your occupation");
-    String occupation = myObj.nextLine();
-    System.out.println("Provide your date of birth in YYYY-MM-DD format");
-    String dob = myObj.nextLine();
-
-    System.out.println(
-        "Are you a renter or a host? R = Renter, any other key = Host");
-    String rOrH = myObj.nextLine();
-
-    String rentOrHostInsert;
-    if (rOrH.equals("r") || rOrH.equals("R")) {
-      // " cardType VARCHAR(12) NOT NULL, " + " cardNum INT NOT NULL, "
-      // TODO Should this be open choice or C = Credit, D = Debit
-      System.out.println("Provide a payment method (Credit or Debit)");
-      String cardType = myObj.nextLine();
-      System.out.println("Provide your card Number");
-      int cardNum = Integer.parseInt(myObj.nextLine()); // Read user input
-      rentOrHostInsert = String.format(
-          "INSERT INTO Renter VALUES (%d, '%s', %d);", sin, cardType, cardNum);
-    } else {
-      rentOrHostInsert = String.format("INSERT INTO Host VALUES (%d);", sin);
-    }
-
-    System.out.println(rentOrHostInsert);
-
-
-    try {
-      // TODO Either both are inserted or neither is?
-      Statement insert = conn.createStatement();
-      String userInsert = String.format(
-          "INSERT INTO USER VALUES (%d, '%s', '%s', '%s', '%s', '%s');", sin,
-          password, name, addr, occupation, dob);
-
-      System.out.println(userInsert);
-      insert.executeUpdate(userInsert);
-      insert.executeUpdate(rentOrHostInsert);
-    } catch (SQLException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
-  }
-
-  public static void login(Connection conn, Scanner myObj) {
-
-    if (loggedInUser != -1) {
-      System.out.println("You're already logged in as: " + loggedInUser);
-      return;
-    }
-    System.out.println("Provide your SIN");
-    int SIN = Integer.parseInt(myObj.nextLine());
-    System.out.println("Provide you password");
-    String password = myObj.nextLine();
-
-    try {
-      Statement stmt = conn.createStatement();
-      String sql = "SELECT * FROM User WHERE SIN = " + SIN + ";";
-      ResultSet rs = stmt.executeQuery(sql);
-
-      if (rs.next()) {
-        if (password.equals(rs.getString("upassword"))) {
-          loggedInUser = SIN;
-          System.out.println("Succesfully logged in as: " + loggedInUser);
-
-        } else {
-          System.out.println("Wrong password.");
-
-        }
-      } else {
-        System.out.println("No user of that SIN exists.");
-      }
-      rs.close();
-    } catch (SQLException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
-
-  }
-
-  public static void viewAllUsers(Connection conn, Scanner myObj) {
-
-    try {
-      Statement stmt = conn.createStatement();
-      String sql = "SELECT * FROM User;";
-      ResultSet rs = stmt.executeQuery(sql);
-
-      // Extract results
-      while (rs.next()) {
-        // Retrieve by column name
-        int sid = rs.getInt("SIN");
-        String uname = rs.getString("uname");
-        String uaddress = rs.getString("uaddress");
-        String uoccupation = rs.getString("uoccupation");
-        String udob = rs.getString("uDOB");
-
-        // Display values
-        System.out.print("ID: " + sid);
-        System.out.print(", Name: " + uname);
-        System.out.print(", Address: " + uaddress);
-        System.out.print(", Occupation: " + uoccupation);
-        System.out.println(", Date of Birth: " + udob);
-      }
-      rs.close();
-    } catch (SQLException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
-
-  }
-
-  public static void deleteUser(Connection conn, Scanner myObj) {
-    // TODO ! What other tables/relationships should be affected if a Host
-    // deletes? If a Renter deletes?s
-
-    if (loggedInUser == -1) {
-      System.out.println("You must be logged in to delete your account");
-      return;
-    }
-
-    System.out.println("Press 1 to indicate you want to delete your account");
-    int confirm = Integer.parseInt(myObj.nextLine());
-    if (confirm != 1) {
-      System.out.println("Not deleting.");
-      return;
-    }
-    System.out.println("Deleting Account of" + loggedInUser);
-
-    try {
-
-      Statement stmt = conn.createStatement();
-      String sql = "DELETE FROM user WHERE SIN = " + loggedInUser + ";";
-      stmt.executeUpdate(sql);
-
-      loggedInUser = -1;
-      System.out.println("Account deleted and logged out." + loggedInUser);
-    } catch (SQLException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
-  }
-
-  public static void logout() {
-    if (loggedInUser == -1) {
-      System.out.println("You're already logged out.");
-      return;
-    }
-
-    loggedInUser = -1;
-    System.out.println("You've been logged out");
-  }
-
-  public static void addListing(Connection conn, Scanner myObj) {
-    System.out.println("Are you renting out the entire place? 0 = No, 1 = Yes");
-    // int entire = Integer.parseInt(myObj.nextLine());
-    String entire = myObj.nextLine();
-
-    try {
-      Statement insert = conn.createStatement();
-      String sqlInsert =
-          "INSERT INTO Listing (entire) VALUES ( " + entire + ");";
-      insert.executeUpdate(sqlInsert);
-    } catch (SQLException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
-  }
-
-  public static void viewAllListings(Connection conn, Scanner myObj) {
-
-    try {
-      Statement stmt = conn.createStatement();
-      String sql = "SELECT * FROM Listing;";
-      ResultSet rs = stmt.executeQuery(sql);
-
-      // Extract results
-      while (rs.next()) {
-        // Retrieve by column name
-        int listID = rs.getInt("listID");
-        boolean entire = rs.getBoolean("entire");
-
-        // Display values
-        System.out.print("ID: " + listID);
-        System.out.println(", Entire: " + entire);
-      }
-      rs.close();
-    } catch (SQLException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
-
-  }
+  
 
   public static void main(String[] args)
       throws ClassNotFoundException, ParseException {
@@ -224,9 +20,9 @@ public class DAO {
     Class.forName(dbClassName);
     // Database credentials
     final String USER = "root";
-//    Dotenv dotenv = Dotenv.configure().load();
-//    final String PASS = dotenv.get("PASS");
-    final String PASS = "root";
+    Dotenv dotenv = Dotenv.configure().load();
+    final String PASS = dotenv.get("PASS");
+    // final String PASS = "root";
     System.out.println("Connecting to database...");
 
     // TODO Case sensitivity for the queries?
@@ -270,7 +66,7 @@ public class DAO {
 
       // Create a table Renter if it doesn't already exist
 
-      //TODO: Def doesn't matter but can we make everything plural
+      // TODO: Def doesn't matter but can we make everything plural
       String renterTable = "CREATE TABLE IF NOT EXISTS RENTER "
           + "(RenterSIN INT NOT NULL PRIMARY KEY,"
           + " cardType VARCHAR(12) NOT NULL, " + " cardNum INT NOT NULL, "
@@ -282,13 +78,13 @@ public class DAO {
       // Create a table Listing if it doesn't already exist
 
       String listingTable = "CREATE TABLE IF NOT EXISTS Listings "
-          + "(listID INT NOT NULL AUTO_INCREMENT PRIMARY KEY, " +
-          "price FLOAT NOT NULL, type VARCHAR(10) NOT NULL)";
+          + "(listID INT NOT NULL AUTO_INCREMENT PRIMARY KEY, "
+          + "price FLOAT NOT NULL, type VARCHAR(10) NOT NULL)";
 
 
       String hostsToListingTable = "CREATE TABLE IF NOT EXISTS HostsToListings "
-      + "(listID INT NOT NULL, FOREIGN KEY (listID) REFERENCES Listings(listID), " +
-      "hostSIN INT NOT NULL, FOREIGN KEY (hostSIN) REFERENCES Host(hostSIN), PRIMARY KEY(listID, hostSIN))";
+          + "(listID INT NOT NULL, FOREIGN KEY (listID) REFERENCES Listings(listID), "
+          + "hostSIN INT NOT NULL, FOREIGN KEY (hostSIN) REFERENCES Host(hostSIN), PRIMARY KEY(listID, hostSIN))";
 
       stmt.executeUpdate(listingTable);
       System.out.println("Created Listings table in given database...");
@@ -297,10 +93,8 @@ public class DAO {
       System.out.println("Created HostsTolistings table in given database...");
 
       String availabilitiesTable = "CREATE TABLE IF NOT EXISTS Availabilities "
-      + "(date DATE NOT NULL, listID INT NOT NULL, FOREIGN KEY (listID) REFERENCES Listings(listID), " + 
-      "PRIMARY KEY(listID, date) )";
-
-      
+          + "(date DATE NOT NULL, listID INT NOT NULL, FOREIGN KEY (listID) REFERENCES Listings(listID), "
+          + "PRIMARY KEY(listID, date) )";
 
       stmt.executeUpdate(availabilitiesTable);
       System.out.println("Created Availabilities table in given database...");
@@ -322,13 +116,13 @@ public class DAO {
         exit = myObj.nextLine(); // Read user choice
 
         if (exit.equals("1")) {
-          addUser(conn, myObj);
+          UserDAO.addUser(conn, myObj);
         }
         if (exit.equals("2")) {
-          login(conn, myObj);
+          UserDAO.login(conn, myObj);
         }
         if (exit.equals("3")) {
-          viewAllUsers(conn, myObj);
+          UserDAO.viewAllUsers(conn);
         }
         if (exit.equals("4")) {
           ListingDAO.addListing(conn, loggedInUser, myObj);
@@ -337,10 +131,10 @@ public class DAO {
           ListingDAO.viewAllListings(conn, myObj);
         }
         if (exit.equals("6")) {
-          deleteUser(conn, myObj);
+          UserDAO.deleteUser(conn, myObj);
         }
         if (exit.equals("7")) {
-          logout();
+          UserDAO.logout();
         }
       }
       System.out.println("Closing connection...");
