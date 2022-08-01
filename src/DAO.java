@@ -5,13 +5,13 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
 import java.util.Scanner;
-import io.github.cdimascio.dotenv.Dotenv;
+//import io.github.cdimascio.dotenv.Dotenv;
 
 public class DAO {
 
   private static final String dbClassName = "com.mysql.cj.jdbc.Driver";
   private static final String CONNECTION = "jdbc:mysql://127.0.0.1/mydb";
-  static int loggedIn = -1; // initial + do we need private/static/etc?
+  static int loggedInUser = -1; // initial + do we need private/static/etc?
 
   public static void addUser(Connection conn, Scanner myObj) {
 
@@ -71,8 +71,8 @@ public class DAO {
 
   public static void login(Connection conn, Scanner myObj) {
 
-    if (loggedIn != -1) {
-      System.out.println("You're already logged in as: " + loggedIn);
+    if (loggedInUser != -1) {
+      System.out.println("You're already logged in as: " + loggedInUser);
       return;
     }
     System.out.println("Provide your SIN");
@@ -87,8 +87,8 @@ public class DAO {
 
       if (rs.next()) {
         if (password.equals(rs.getString("upassword"))) {
-          loggedIn = SIN;
-          System.out.println("Succesfully logged in as: " + loggedIn);
+          loggedInUser = SIN;
+          System.out.println("Succesfully logged in as: " + loggedInUser);
 
         } else {
           System.out.println("Wrong password.");
@@ -140,7 +140,7 @@ public class DAO {
     // TODO ! What other tables/relationships should be affected if a Host
     // deletes? If a Renter deletes?s
 
-    if (loggedIn == -1) {
+    if (loggedInUser == -1) {
       System.out.println("You must be logged in to delete your account");
       return;
     }
@@ -151,16 +151,16 @@ public class DAO {
       System.out.println("Not deleting.");
       return;
     }
-    System.out.println("Deleting Account of" + loggedIn);
+    System.out.println("Deleting Account of" + loggedInUser);
 
     try {
 
       Statement stmt = conn.createStatement();
-      String sql = "DELETE FROM user WHERE SIN = " + loggedIn + ";";
+      String sql = "DELETE FROM user WHERE SIN = " + loggedInUser + ";";
       stmt.executeUpdate(sql);
 
-      loggedIn = -1;
-      System.out.println("Account deleted and logged out." + loggedIn);
+      loggedInUser = -1;
+      System.out.println("Account deleted and logged out." + loggedInUser);
     } catch (SQLException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
@@ -168,12 +168,12 @@ public class DAO {
   }
 
   public static void logout() {
-    if (loggedIn == -1) {
+    if (loggedInUser == -1) {
       System.out.println("You're already logged out.");
       return;
     }
 
-    loggedIn = -1;
+    loggedInUser = -1;
     System.out.println("You've been logged out");
   }
 
@@ -224,8 +224,9 @@ public class DAO {
     Class.forName(dbClassName);
     // Database credentials
     final String USER = "root";
-    Dotenv dotenv = Dotenv.configure().load();
-    final String PASS = dotenv.get("PASS");
+//    Dotenv dotenv = Dotenv.configure().load();
+//    final String PASS = dotenv.get("PASS");
+    final String PASS = "root";
     System.out.println("Connecting to database...");
 
     // TODO Case sensitivity for the queries?
@@ -269,6 +270,7 @@ public class DAO {
 
       // Create a table Renter if it doesn't already exist
 
+      //TODO: Def doesn't matter but can we make everything plural
       String renterTable = "CREATE TABLE IF NOT EXISTS RENTER "
           + "(RenterSIN INT NOT NULL PRIMARY KEY,"
           + " cardType VARCHAR(12) NOT NULL, " + " cardNum INT NOT NULL, "
@@ -279,14 +281,29 @@ public class DAO {
 
       // Create a table Listing if it doesn't already exist
 
-      String listingTable = "CREATE TABLE IF NOT EXISTS Listing "
-          + "(listID INT NOT NULL AUTO_INCREMENT PRIMARY KEY, "
-          + " entire BOOLEAN)";
+      String listingTable = "CREATE TABLE IF NOT EXISTS Listings "
+          + "(listID INT NOT NULL AUTO_INCREMENT PRIMARY KEY, " +
+          "price FLOAT NOT NULL, type VARCHAR(10) NOT NULL)";
+
+
+      String hostsToListingTable = "CREATE TABLE IF NOT EXISTS HostsToListings "
+      + "(listID INT NOT NULL, FOREIGN KEY (listID) REFERENCES Listings(listID), " +
+      "hostSIN INT NOT NULL, FOREIGN KEY (hostSIN) REFERENCES Host(hostSIN), PRIMARY KEY(listID, hostSIN))";
 
       stmt.executeUpdate(listingTable);
-      System.out.println("Created Listing table in given database...");
+      System.out.println("Created Listings table in given database...");
+      
+      stmt.executeUpdate(hostsToListingTable);
+      System.out.println("Created HostsTolistings table in given database...");
 
+      String availabilitiesTable = "CREATE TABLE IF NOT EXISTS Availabilities "
+      + "(date DATE NOT NULL, listID INT NOT NULL, FOREIGN KEY (listID) REFERENCES Listings(listID), " + 
+      "PRIMARY KEY(listID, date) )";
 
+      
+
+      stmt.executeUpdate(availabilitiesTable);
+      System.out.println("Created Availabilities table in given database...");
 
       Scanner myObj = new Scanner(System.in); // Create a Scanner object
 
@@ -314,10 +331,10 @@ public class DAO {
           viewAllUsers(conn, myObj);
         }
         if (exit.equals("4")) {
-          addListing(conn, myObj);
+          ListingDAO.addListing(conn, loggedInUser, myObj);
         }
         if (exit.equals("5")) {
-          viewAllListings(conn, myObj);
+          ListingDAO.viewAllListings(conn, myObj);
         }
         if (exit.equals("6")) {
           deleteUser(conn, myObj);
@@ -325,13 +342,8 @@ public class DAO {
         if (exit.equals("7")) {
           logout();
         }
-
-
       }
-
-
       System.out.println("Closing connection...");
-
       stmt.close();
       conn.close();
       System.out.println("Success!");
