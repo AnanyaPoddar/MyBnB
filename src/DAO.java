@@ -103,6 +103,29 @@ public class DAO {
       stmt.executeUpdate(availabilitiesTable);
       System.out.println("Created Availabilities table in given database...");
 
+      // TODO Delete when Ananya comes up with actual Booked table
+      String bookedTable = "CREATE TABLE IF NOT EXISTS Booked "
+          + "(listID INT NOT NULL, FOREIGN KEY (listID) REFERENCES Listings(listID), "
+          + "renterSIN INT NOT NULL, FOREIGN KEY (renterSIN) REFERENCES Renter(renterSIN), PRIMARY KEY(listID, renterSIN))";
+          stmt.executeUpdate(bookedTable);
+          System.out.println("Created Booked table in given database...");
+
+      // Must provide both rating and comment when providing a review
+      String rentersReviewHosts = "CREATE TABLE IF NOT EXISTS rentersReviewHosts "
+        + "(hostSIN INT NOT NULL, FOREIGN KEY (hostSIN) REFERENCES Host(hostSIN), "
+        + "renterSIN INT NOT NULL, FOREIGN KEY (renterSIN) REFERENCES Renter(renterSIN)," + 
+        " review VARCHAR(100) NOT NULL, " + " rating INT NOT NULL, " +
+        "PRIMARY KEY(hostSIN, renterSIN))";
+      stmt.executeUpdate(rentersReviewHosts);
+      System.out.println("Created renterReviewsHost table in given database...");
+
+
+
+
+
+
+
+
       Scanner myObj = new Scanner(System.in); // Create a Scanner object
 
       String exit = "-1";
@@ -118,6 +141,7 @@ public class DAO {
         System.out.println("Enter 6 to delete your account");
         System.out.println("Enter 7 to log out");
         System.out.println("Enter 8 to delete a listing");
+        System.out.println("Enter 9 to review a host");
         exit = myObj.nextLine(); // Read user choice
 
         if (exit.equals("1")) {
@@ -142,7 +166,11 @@ public class DAO {
           UserDAO.logout();
         }
         if (exit.equals("8")) {
+          UserDAO.renterReviewsHost(conn, myObj);
+        }
+        if (exit.equals("9")) {
           ListingDAO.deleteListing(conn, loggedInUser, myObj);
+          UserDAO.renterReviewsHost(conn, myObj);
         }
       }
       System.out.println("Closing connection...");

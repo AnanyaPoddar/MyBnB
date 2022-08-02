@@ -8,11 +8,11 @@ import java.time.Period;
 
 public class UserDAO {
     
-    public static boolean verifyUserInTable(Connection conn, int SIN,
+    public static boolean verifyUserInTable(Connection conn, int ID, String role,
       String table) {
         try {
         Statement stmt = conn.createStatement();
-        String sql = "SELECT * FROM " + table + " WHERE SIN = " + SIN + ";";
+        String sql = "SELECT * FROM " + table + " WHERE " + role + " = " + ID + ";";
         ResultSet rs = stmt.executeQuery(sql);
         if (rs.next()) {
             return true;
@@ -35,9 +35,13 @@ public class UserDAO {
     System.out.println("Provide your SIN");
     int sin = Integer.parseInt(myObj.nextLine()); // Read user input
     // Verify this SIN doesn't already exist
-    if (verifyUserInTable(conn, sin, "User")) {
+    if (verifyUserInTable(conn, sin, "SIN", "User")) {
       System.out.println("Sorry, there is already an account with this SIN");
       return;
+    }
+    if (sin <= 0){
+        System.out.println("The SIN must be positive integer.");
+        return;
     }
 
     System.out.println("Provide a password");
@@ -93,7 +97,7 @@ public class UserDAO {
 
 
     try {
-      // TODO Either both are inserted or neither is?
+      // TODO Either both statements are inserted or neither is?
       Statement insert = conn.createStatement();
       String userInsert = String.format(
           "INSERT INTO USER VALUES (%d, '%s', '%s', '%s', '%s', '%s');", sin,
@@ -109,7 +113,7 @@ public class UserDAO {
     }
   }
 
-  
+
   public static void login(Connection conn, Scanner myObj) {
 
     if (DAO.loggedInUser != -1) {
@@ -219,6 +223,88 @@ public class UserDAO {
 
     DAO.loggedInUser = -1;
     System.out.println("You've been logged out");
+  }
+
+  public static void renterReviewsHost(Connection conn, Scanner myObj){
+    // TODO We're assuming one Listing per Host right?
+
+
+    // Are you logged in as a renter?
+    if(!verifyUserInTable(conn, DAO.loggedInUser, "renterSIN",
+    "Renter")){
+        System.out.println("You must be logged in as a renter.");
+        return;
+    }
+
+    // Input a Host 
+    // TODO How will this be chosen during an actual workflow lol. Maybe we'll 
+    // display all hosts' id and then be like which one would you like to review?
+    System.out.println("Provide the SIN of the Host you'd like to review");
+    int hostSIN = Integer.parseInt(myObj.nextLine());
+
+    // Have you already left a review for this host?
+    try {
+        Statement stmt = conn.createStatement();
+        String sql = "SELECT * FROM rentersReviewHosts WHERE renterSIN = " + DAO.loggedInUser + " AND hostSIN = " + hostSIN + ";";
+        ResultSet rs = stmt.executeQuery(sql);
+        if (rs.next()) {
+            System.out.println("You've already left a review for this host.");
+            return;
+        }
+    } 
+    catch (SQLException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+    }
+
+
+    // Have you booked something from the host? (Join Booked & Hosts-Listing)
+    try {
+        Statement stmt = conn.createStatement();
+        String sql = "SELECT * FROM Booked JOIN HostsToListings ON Booked.listID = HostsToListings.listID WHERE renterSIN = " + DAO.loggedInUser + " AND hostSIN = " + hostSIN + ";";
+        ResultSet rs = stmt.executeQuery(sql);
+        if (rs.next()) {
+            System.out.println("You've booked from them before.");
+        }
+        else{
+            System.out.println("Cannot leave a review because you've never booked from them before.");
+            return;
+        }
+    } 
+    catch (SQLException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+    }
+
+    // Leave a review and rating 
+    System.out.println("What is your rating for the renter out of 5?");
+    int rating = Integer.parseInt(myObj.nextLine());
+    if(rating > 5 || rating < 1){
+        System.out.println("Rating can only be 1-5.");
+        return;
+    }
+    System.out.println("Provide you comment.");
+    String comment = myObj.nextLine();
+    if(comment.length() > 100){
+        System.out.println("Comment is too long. Must be 100 characters or less.");
+        return;
+    }
+
+    // insert into renterReviewsHost
+    try {
+        Statement insert = conn.createStatement();
+        String reviewInsert = String.format(
+            "INSERT INTO rentersReviewHosts VALUES (%d, %d, '%s', %d);", hostSIN,
+            DAO.loggedInUser, comment, rating);
+  
+        System.out.println(reviewInsert);
+        insert.executeUpdate(reviewInsert);
+      } catch (SQLException e) {
+        // TODO Auto-generated catch block [replace with generic error message]
+        e.printStackTrace();
+      }
+
+
   }
     
 }
