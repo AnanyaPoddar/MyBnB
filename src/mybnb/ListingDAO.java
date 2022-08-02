@@ -1,64 +1,12 @@
+package mybnb;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.time.LocalDate;
-import java.sql.Date;
-import java.util.List;
 import java.util.Scanner;
-import java.util.stream.Collectors;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;  
 
 public class ListingDAO {    
 
-  public static void addAvailabilities(Connection conn, int listingId, Scanner myObj){
-    System.out.println("Enter a range of availabilities for your listing in the YYYY-MM-DD format. Enter 0 to exit");
-    String end = "-1";
-    String start = "-1";
-    while(!start.equals("0") && !end.equals("0")){
-      System.out.println("Start date of range: ");
-      start = myObj.nextLine();
-      if(start.equals("0")) break;
-      
-      System.out.println("End date of range: ");
-      end = myObj.nextLine();
-      if(end.equals("0")) break;
-      //TODO: try-catch here
-      LocalDate startDate = LocalDate.parse(start);
-      LocalDate endDate = LocalDate.parse(end);
-
-      //startDate must be after endDate
-      if(startDate.isAfter(endDate)){
-        System.out.println("Not a valid date range. Start date must before end date. Exiting....");
-        break;
-      }
-      //if startDate is before current date
-      else if(startDate.isBefore(LocalDate.now())){
-        System.out.println("Not a valid date range. Start date must before the current date");
-      }
-
-      else{
-        //datesUntil enddate is exclusive, so add 1 day to include last date
-        List<LocalDate> dates = startDate.datesUntil(endDate.plusDays(1))
-        .collect(Collectors.toList());
-
-        try {
-          Statement statement = conn.createStatement();
-          for(LocalDate date: dates){
-            //convert from LocalDate to sql date
-            Date.valueOf(date);
-            String availInsert = String.format(
-              "INSERT INTO Availabilities(listID, date) VALUES (%d, '%s');", listingId, date);
-                  statement.executeUpdate(availInsert);
-          }
-        } catch (SQLException e) {
-          e.printStackTrace();
-        }
-      }
-    }
-
-  }
 
   //add listing, associated with specific logged-in host
   public static void addListing(Connection conn, int loggedInUser, Scanner myObj) {
@@ -97,7 +45,7 @@ public class ListingDAO {
             "INSERT INTO HostsToListings VALUES (%d, %d);", listID, loggedInUser);
             statement.executeUpdate(hostsToListingsInsert);
             //After listing is added, prompt user to add availabilities for that listing
-            addAvailabilities(conn, listID, myObj);
+            AvailabilityDAO.addAvailabilities(conn, listID, myObj);
         }
     } catch (SQLException e) {
       e.printStackTrace();
