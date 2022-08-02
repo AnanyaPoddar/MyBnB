@@ -6,7 +6,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
 import java.util.Scanner;
-// import io.github.cdimascio.dotenv.Dotenv;
+import io.github.cdimascio.dotenv.Dotenv;
 
 public class DAO {
 
@@ -22,9 +22,9 @@ public class DAO {
     Class.forName(dbClassName);
     // Database credentials
     final String USER = "root";
-    // Dotenv dotenv = Dotenv.configure().load();
-    // final String PASS = dotenv.get("PASS");
-    final String PASS = "root";
+    Dotenv dotenv = Dotenv.configure().load();
+    final String PASS = dotenv.get("PASS");
+    // final String PASS = "root";
     // final String PASS = "root";
     System.out.println("Connecting to database...");
 
@@ -121,6 +121,15 @@ public class DAO {
       stmt.executeUpdate(rentersReviewHosts);
       System.out.println("Created renterReviewsHost table in given database...");
 
+      // Must provide both rating and comment when providing a review
+      String hostsReviewRenters = "CREATE TABLE IF NOT EXISTS hostsReviewRenters "
+        + "(hostSIN INT NOT NULL, FOREIGN KEY (hostSIN) REFERENCES Host(hostSIN), "
+        + "renterSIN INT NOT NULL, FOREIGN KEY (renterSIN) REFERENCES Renter(renterSIN)," + 
+        " review VARCHAR(100) NOT NULL, " + " rating INT NOT NULL, " +
+        "PRIMARY KEY(hostSIN, renterSIN))";
+      stmt.executeUpdate(hostsReviewRenters);
+      System.out.println("Created hostsReviewRenters table in given database...");
+
 
 
 
@@ -143,7 +152,9 @@ public class DAO {
         System.out.println("Enter 6 to delete your account");
         System.out.println("Enter 7 to log out");
         System.out.println("Enter 8 to delete a listing");
-        System.out.println("Enter 9 to review a host");
+        System.out.println("Enter 9 to see all availabilities for a listing");
+        System.out.println("Enter 10 to review a host");
+        System.out.println("Enter 11 to review a renter");
         exit = myObj.nextLine(); // Read user choice
 
         if (exit.equals("1")) {
@@ -168,11 +179,16 @@ public class DAO {
           UserDAO.logout();
         }
         if (exit.equals("8")) {
+          ListingDAO.deleteListing(conn, loggedInUser, myObj);
+        }
+        if (exit.equals("9")) { // TODO Doesn't work for now?
+          AvailabilityDAO.getAvailabilities(conn, myObj);
+        }
+        if (exit.equals("10")) {
           UserDAO.renterReviewsHost(conn, myObj);
         }
-        if (exit.equals("9")) {
-          ListingDAO.deleteListing(conn, loggedInUser, myObj);
-          UserDAO.renterReviewsHost(conn, myObj);
+        if (exit.equals("11")) {
+          UserDAO.hostReviewsRenter(conn, myObj);
         }
       }
       System.out.println("Closing connection...");
