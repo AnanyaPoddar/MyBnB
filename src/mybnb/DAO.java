@@ -127,6 +127,14 @@ public class DAO {
       stmt.executeUpdate(hostsReviewRenters);
       System.out.println("Created hostsReviewRenters table in given database...");
 
+      // Must provide both rating and comment when providing a review
+      String rentersReviewListings = "CREATE TABLE IF NOT EXISTS rentersReviewListings "
+        + "(listID INT NOT NULL, FOREIGN KEY (listID) REFERENCES Listings(listID), "
+        + "renterSIN INT NOT NULL, FOREIGN KEY (renterSIN) REFERENCES Renter(renterSIN)," + 
+        " review VARCHAR(100) NOT NULL, " + " rating INT NOT NULL, " +
+        "PRIMARY KEY(listID, renterSIN))";
+      stmt.executeUpdate(rentersReviewListings);
+      System.out.println("Created rentersReviewListings table in given database...");
 
 
 
@@ -152,7 +160,8 @@ public class DAO {
         System.out.println("Enter 9 to see all availabilities for a listing");
         System.out.println("Enter 10 to review a host");
         System.out.println("Enter 11 to review a renter");
-        System.out.println("Enter 12 to modify availabilities for a listing");
+        System.out.println("Enter 12 to review a listing");
+        System.out.println("Enter 13 to modify availabilities for a listing");
         exit = myObj.nextLine(); // Read user choice
 
         if (exit.equals("1")) {
@@ -189,6 +198,9 @@ public class DAO {
           UserDAO.hostReviewsRenter(conn, myObj);
         }
         if (exit.equals("12")) {
+          UserDAO.rentersReviewListings(conn, myObj);
+        }
+        if (exit.equals("13")) {
           AvailabilityDAO.modifyAvailabilities(conn, loggedInUser, myObj);
         }
       }
