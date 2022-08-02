@@ -6,7 +6,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
 import java.util.Scanner;
-import io.github.cdimascio.dotenv.Dotenv;
+// import io.github.cdimascio.dotenv.Dotenv;
 
 public class DAO {
 
@@ -22,10 +22,9 @@ public class DAO {
     Class.forName(dbClassName);
     // Database credentials
     final String USER = "root";
-    Dotenv dotenv = Dotenv.configure().load();
-    final String PASS = dotenv.get("PASS");
-    // final String PASS = "root";
-    // final String PASS = "root";
+    // Dotenv dotenv = Dotenv.configure().load();
+    // final String PASS = dotenv.get("PASS");
+    final String PASS = "root";
     System.out.println("Connecting to database...");
 
     // TODO Case sensitivity for the queries?
@@ -84,7 +83,6 @@ public class DAO {
           + "(listID INT NOT NULL AUTO_INCREMENT PRIMARY KEY, "
           + "price FLOAT NOT NULL, type VARCHAR(10) NOT NULL)";
 
-      //TODO: Note table changed, added ON DELETE CASCADE
       String hostsToListingTable = "CREATE TABLE IF NOT EXISTS HostsToListings "
           + "(listID INT NOT NULL, FOREIGN KEY (listID) REFERENCES Listings(listID) ON DELETE CASCADE, "
           + "hostSIN INT NOT NULL, FOREIGN KEY (hostSIN) REFERENCES Host(hostSIN) ON DELETE CASCADE, " +
@@ -96,7 +94,6 @@ public class DAO {
       stmt.executeUpdate(hostsToListingTable);
       System.out.println("Created HostsTolistings table in given database...");
 
-      //TODO: Notice changed table to add on delete cascade
       String availabilitiesTable = "CREATE TABLE IF NOT EXISTS Availabilities "
           + "(date DATE NOT NULL, listID INT NOT NULL, " +
           "FOREIGN KEY (listID) REFERENCES Listings(listID) ON DELETE CASCADE, " +
@@ -155,6 +152,7 @@ public class DAO {
         System.out.println("Enter 9 to see all availabilities for a listing");
         System.out.println("Enter 10 to review a host");
         System.out.println("Enter 11 to review a renter");
+        System.out.println("Enter 12 to modify availabilities for a listing");
         exit = myObj.nextLine(); // Read user choice
 
         if (exit.equals("1")) {
@@ -181,7 +179,7 @@ public class DAO {
         if (exit.equals("8")) {
           ListingDAO.deleteListing(conn, loggedInUser, myObj);
         }
-        if (exit.equals("9")) { // TODO Doesn't work for now?
+        if (exit.equals("9")) {
           AvailabilityDAO.getAvailabilities(conn, myObj);
         }
         if (exit.equals("10")) {
@@ -189,6 +187,9 @@ public class DAO {
         }
         if (exit.equals("11")) {
           UserDAO.hostReviewsRenter(conn, myObj);
+        }
+        if (exit.equals("12")) {
+          AvailabilityDAO.modifyAvailabilities(conn, loggedInUser, myObj);
         }
       }
       System.out.println("Closing connection...");
