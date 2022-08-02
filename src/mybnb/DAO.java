@@ -102,10 +102,10 @@ public class DAO {
       stmt.executeUpdate(availabilitiesTable);
       System.out.println("Created Availabilities table in given database...");
 
-      // TODO Delete when Ananya comes up with actual Booked table
       String bookedTable = "CREATE TABLE IF NOT EXISTS Booked "
-          + "(listID INT NOT NULL, FOREIGN KEY (listID) REFERENCES Listings(listID), "
-          + "renterSIN INT NOT NULL, FOREIGN KEY (renterSIN) REFERENCES Renter(renterSIN), PRIMARY KEY(listID, renterSIN))";
+          + "(listID INT NOT NULL, FOREIGN KEY (listID) REFERENCES Listings(listID) ON DELETE CASCADE, "
+          + "renterSIN INT NOT NULL, FOREIGN KEY (renterSIN) REFERENCES Renter(renterSIN) ON DELETE CASCADE, "
+          + "date DATE NOT NULL, status varchar(10) NOT NULL DEFAULT 'booked', PRIMARY KEY(listID, renterSIN, date))";
           stmt.executeUpdate(bookedTable);
           System.out.println("Created Booked table in given database...");
 
@@ -136,12 +136,6 @@ public class DAO {
       stmt.executeUpdate(rentersReviewListings);
       System.out.println("Created rentersReviewListings table in given database...");
 
-
-
-
-
-
-
       Scanner myObj = new Scanner(System.in); // Create a Scanner object
 
       String exit = "-1";
@@ -162,6 +156,7 @@ public class DAO {
         System.out.println("Enter 11 to review a renter");
         System.out.println("Enter 12 to review a listing");
         System.out.println("Enter 13 to modify availabilities for a listing");
+        System.out.println("Enter 14 to book a listing");
         exit = myObj.nextLine(); // Read user choice
 
         if (exit.equals("1")) {
@@ -174,7 +169,7 @@ public class DAO {
           UserDAO.viewAllUsers(conn);
         }
         if (exit.equals("4")) {
-          ListingDAO.addListing(conn, loggedInUser, myObj);
+          ListingDAO.addListing(conn, myObj);
         }
         if (exit.equals("5")) {
           ListingDAO.viewAllListings(conn, myObj);
@@ -186,7 +181,7 @@ public class DAO {
           UserDAO.logout();
         }
         if (exit.equals("8")) {
-          ListingDAO.deleteListing(conn, loggedInUser, myObj);
+          ListingDAO.deleteListing(conn, myObj);
         }
         if (exit.equals("9")) {
           AvailabilityDAO.getAvailabilities(conn, myObj);
@@ -201,7 +196,10 @@ public class DAO {
           UserDAO.rentersReviewListings(conn, myObj);
         }
         if (exit.equals("13")) {
-          AvailabilityDAO.modifyAvailabilities(conn, loggedInUser, myObj);
+          AvailabilityDAO.modifyAvailabilities(conn, myObj);
+        }
+        if (exit.equals("14")) {
+          BookingsDAO.addBooking(conn, myObj);
         }
       }
       System.out.println("Closing connection...");

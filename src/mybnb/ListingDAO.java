@@ -9,7 +9,7 @@ public class ListingDAO {
 
 
   //add listing, associated with specific logged-in host
-  public static void addListing(Connection conn, int loggedInUser, Scanner myObj) {
+  public static void addListing(Connection conn, Scanner myObj) {
 
     //TODO: Check that user is logged in and that logged in user is a host, or better just show different options for host/user/logged in at beginning
     System.out.println("Enter the type of your listing. 1 = House, 2 = Guesthouse, 3 = Apartment, 4 = Hotel");
@@ -42,7 +42,7 @@ public class ListingDAO {
         if(rs.next()) {
             int listID = rs.getInt("listID");
             String hostsToListingsInsert = String.format(
-            "INSERT INTO HostsToListings VALUES (%d, %d);", listID, loggedInUser);
+            "INSERT INTO HostsToListings VALUES (%d, %d);", listID, DAO.loggedInUser);
             statement.executeUpdate(hostsToListingsInsert);
             //After listing is added, prompt user to add availabilities for that listing
             AvailabilityDAO.addAvailabilities(conn, listID, myObj);
@@ -77,11 +77,11 @@ public class ListingDAO {
     }
   }
 
-  public static void deleteListing(Connection conn, int loggedInUser, Scanner myObj){
+  public static void deleteListing(Connection conn, Scanner myObj){
     System.out.println("Enter the id of the listing you'd like to delete.");
     int listingID = Integer.parseInt(myObj.nextLine());
     //TODO: Can remove this check once we show different menu options based on logged-in, host, etc
-    if(loggedInUser == -1){
+    if(DAO.loggedInUser == -1){
       System.out.println("Must be logged in to delete a listing");
       return;
     }
@@ -92,7 +92,7 @@ public class ListingDAO {
       ResultSet rs = statement.executeQuery(checkHost);
       if(rs.next()){
         int hostSIN = rs.getInt("hostSIN");
-        if(hostSIN != loggedInUser){
+        if(hostSIN != DAO.loggedInUser){
           System.out.println("Only the host of the listing can delete it");
           return;
         }
