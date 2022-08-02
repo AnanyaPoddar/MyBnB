@@ -4,7 +4,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
 import java.util.Scanner;
-import io.github.cdimascio.dotenv.Dotenv;
+// import io.github.cdimascio.dotenv.Dotenv;
 
 public class DAO {
 
@@ -20,8 +20,9 @@ public class DAO {
     Class.forName(dbClassName);
     // Database credentials
     final String USER = "root";
-    Dotenv dotenv = Dotenv.configure().load();
-    final String PASS = dotenv.get("PASS");
+    // Dotenv dotenv = Dotenv.configure().load();
+    // final String PASS = dotenv.get("PASS");
+    final String PASS = "root";
     // final String PASS = "root";
     System.out.println("Connecting to database...");
 
@@ -81,10 +82,11 @@ public class DAO {
           + "(listID INT NOT NULL AUTO_INCREMENT PRIMARY KEY, "
           + "price FLOAT NOT NULL, type VARCHAR(10) NOT NULL)";
 
-
+      //TODO: Note table changed, added ON DELETE CASCADE
       String hostsToListingTable = "CREATE TABLE IF NOT EXISTS HostsToListings "
-          + "(listID INT NOT NULL, FOREIGN KEY (listID) REFERENCES Listings(listID), "
-          + "hostSIN INT NOT NULL, FOREIGN KEY (hostSIN) REFERENCES Host(hostSIN), PRIMARY KEY(listID, hostSIN))";
+          + "(listID INT NOT NULL, FOREIGN KEY (listID) REFERENCES Listings(listID) ON DELETE CASCADE, "
+          + "hostSIN INT NOT NULL, FOREIGN KEY (hostSIN) REFERENCES Host(hostSIN) ON DELETE CASCADE, " +
+          " PRIMARY KEY(listID, hostSIN))";
 
       stmt.executeUpdate(listingTable);
       System.out.println("Created Listings table in given database...");
@@ -92,9 +94,11 @@ public class DAO {
       stmt.executeUpdate(hostsToListingTable);
       System.out.println("Created HostsTolistings table in given database...");
 
+      //TODO: Notice changed table to add on delete cascade
       String availabilitiesTable = "CREATE TABLE IF NOT EXISTS Availabilities "
-          + "(date DATE NOT NULL, listID INT NOT NULL, FOREIGN KEY (listID) REFERENCES Listings(listID), "
-          + "PRIMARY KEY(listID, date) )";
+          + "(date DATE NOT NULL, listID INT NOT NULL, " +
+          "FOREIGN KEY (listID) REFERENCES Listings(listID) ON DELETE CASCADE, " +
+          "PRIMARY KEY(listID, date) )";
 
       stmt.executeUpdate(availabilitiesTable);
       System.out.println("Created Availabilities table in given database...");
@@ -113,6 +117,7 @@ public class DAO {
         System.out.println("Enter 5 to view all listings");
         System.out.println("Enter 6 to delete your account");
         System.out.println("Enter 7 to log out");
+        System.out.println("Enter 8 to delete a listing");
         exit = myObj.nextLine(); // Read user choice
 
         if (exit.equals("1")) {
@@ -135,6 +140,9 @@ public class DAO {
         }
         if (exit.equals("7")) {
           UserDAO.logout();
+        }
+        if (exit.equals("8")) {
+          ListingDAO.deleteListing(conn, loggedInUser, myObj);
         }
       }
       System.out.println("Closing connection...");
