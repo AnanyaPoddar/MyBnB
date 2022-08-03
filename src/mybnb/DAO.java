@@ -68,7 +68,6 @@ public class DAO {
 
       // Create a table Renter if it doesn't already exist
 
-      // TODO: Def doesn't matter but can we make everything plural
       String renterTable = "CREATE TABLE IF NOT EXISTS RENTER "
           + "(RenterSIN INT NOT NULL PRIMARY KEY,"
           + " cardType VARCHAR(12) NOT NULL, " + " cardNum INT NOT NULL, "
@@ -77,11 +76,10 @@ public class DAO {
       stmt.executeUpdate(renterTable);
       System.out.println("Created Renter table in given database...");
 
-      // Create a table Listing if it doesn't already exist
-
+      //TODO: Modified, removed price form listing and added to availability
       String listingTable = "CREATE TABLE IF NOT EXISTS Listings "
           + "(listID INT NOT NULL AUTO_INCREMENT PRIMARY KEY, "
-          + "price FLOAT NOT NULL, type VARCHAR(10) NOT NULL)";
+          + "type VARCHAR(10) NOT NULL)";
 
       String hostsToListingTable = "CREATE TABLE IF NOT EXISTS HostsToListings "
           + "(listID INT NOT NULL, FOREIGN KEY (listID) REFERENCES Listings(listID) ON DELETE CASCADE, "
@@ -95,16 +93,17 @@ public class DAO {
       System.out.println("Created HostsTolistings table in given database...");
 
       String availabilitiesTable = "CREATE TABLE IF NOT EXISTS Availabilities "
-          + "(date DATE NOT NULL, listID INT NOT NULL, " +
+          + "(date DATE NOT NULL, listID INT NOT NULL, price FLOAT NOT NULL check (price >= 0), isAvailable BOOLEAN default 1, " +
           "FOREIGN KEY (listID) REFERENCES Listings(listID) ON DELETE CASCADE, " +
           "PRIMARY KEY(listID, date) )";
 
       stmt.executeUpdate(availabilitiesTable);
       System.out.println("Created Availabilities table in given database...");
 
+      //updated table to add cost
       String bookedTable = "CREATE TABLE IF NOT EXISTS Booked "
           + "(listID INT NOT NULL, FOREIGN KEY (listID) REFERENCES Listings(listID) ON DELETE CASCADE, "
-          + "renterSIN INT NOT NULL, FOREIGN KEY (renterSIN) REFERENCES Renter(renterSIN) ON DELETE CASCADE, "
+          + "renterSIN INT NOT NULL, FOREIGN KEY (renterSIN) REFERENCES Renter(renterSIN) ON DELETE CASCADE, cost FLOAT NOT NULL check (cost >= 0), " 
           + "startDate DATE NOT NULL, endDate DATE NOT NULL, status varchar(10) NOT NULL DEFAULT 'booked', PRIMARY KEY(listID, startDate, endDate))";
           stmt.executeUpdate(bookedTable);
           System.out.println("Created Booked table in given database...");

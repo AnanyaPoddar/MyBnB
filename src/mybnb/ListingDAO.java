@@ -35,14 +35,11 @@ public class ListingDAO {
     else{
       System.out.println("Invalid type");
     }
-    System.out.println("Enter the price of your listing in CAD");
-    float price = Float.parseFloat(myObj.nextLine());
-    //TODO: Handle if it can't be parsed as an int
     try {
       Statement statement = conn.createStatement();
       String listingInsert =
       String.format(
-        "INSERT INTO Listings(type, price) VALUES ('%s', %f);", type, price);
+        "INSERT INTO Listings(type) VALUES ('%s');", type);
             statement.executeUpdate(listingInsert);
         String getListID = "SELECT LAST_INSERT_ID() as listID;";
         ResultSet rs = statement.executeQuery(getListID);
@@ -70,12 +67,10 @@ public class ListingDAO {
       while (rs.next()) {
         // Retrieve by column name
         int listID = rs.getInt("listID");
-        float price = rs.getFloat("price");
         String type = rs.getString("type");
 
         // Display values
         System.out.print("ID: " + listID);
-        System.out.print(", price: $" + price);
         System.out.println(", type: " + type);
       }
       rs.close();
@@ -146,7 +141,7 @@ public class ListingDAO {
     
     //get the count of the dates for each listId that appear in the dateRange above;
     //then only return the ones that appear the number of times equivalent to the length of dates (ie includes all the dates), and join with listings
-    String getListings = String.format("SELECT listings.listID, listings.price, listings.type " +
+    String getListings = String.format("SELECT listings.listID, listings.type " +
     "FROM (SELECT count(date) AS dateCount, listID FROM availabilities WHERE date in %s GROUP BY listID) AS a " +
     "JOIN listings ON listings.listID=a.listID WHERE a.dateCount = %d", stringDates, dates.size());
     System.out.println(getListings);
@@ -157,12 +152,10 @@ public class ListingDAO {
       while (rs.next()) {
         // Retrieve by column name
         int listID = rs.getInt("listID");
-        float price = rs.getFloat("price");
         String type = rs.getString("type");
 
         // Display values
         System.out.print("ID: " + listID);
-        System.out.print(", price: $" + price);
         System.out.println(", type: " + type);
       }
 

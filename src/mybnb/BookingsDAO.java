@@ -24,9 +24,11 @@ public class BookingsDAO {
 
         try {
             //check that the dates are all available for booking; if so, remove them from availabilities, and add to booked
-            if(!AvailabilityDAO.checkListingAvailabilityOnDates(conn, startDate, endDate, listingID)) return;
+            Float cost = AvailabilityDAO.getAvailabilityPriceOnDates(conn, startDate, endDate, listingID);
+            System.out.println(cost);
+            if(cost == -1) return;
             Statement statement = conn.createStatement();
-            String bookingInsert = String.format("INSERT INTO Booked(listID, renterSIN, startDate, endDate) VALUES (%d, %d, '%s', '%s');", listingID, DAO.loggedInUser, Date.valueOf(startDate), Date.valueOf(endDate));
+            String bookingInsert = String.format("INSERT INTO Booked(listID, renterSIN, startDate, endDate, cost) VALUES (%d, %d, '%s', '%s', %f);", listingID, DAO.loggedInUser, Date.valueOf(startDate), Date.valueOf(endDate), cost);
             statement.executeUpdate(bookingInsert);
             //remove from availabilities table only after successful booking;
             AvailabilityDAO.deleteAvailabilities(conn, listingID, startDate, endDate);
@@ -66,6 +68,7 @@ public class BookingsDAO {
                 System.out.println("ListID: " + rs.getInt("listID"));
                 System.out.println("Start Date: " + rs.getDate("startDate"));
                 System.out.println("End Date"  + rs.getDate("endDate"));
+                System.out.println("Cost " + rs.getString("cost"));
                 System.out.println("Status " + rs.getString("status"));
             }
 
@@ -117,7 +120,8 @@ public class BookingsDAO {
         LocalDate endDate = LocalDate.parse(end);
         cancelBooking(conn, myObj, listingID, startDate, endDate);
         //add back to availabilities table
-        AvailabilityDAO.addAvailabilities(conn, listingID, startDate, endDate);
+        //TODO: Readd this after fixing up the schemas
+        // AvailabilityDAO.setAvailable(conn, listingID, startDate, endDate);
 
     }
 
