@@ -31,7 +31,7 @@ public class BookingsDAO {
             String bookingInsert = String.format("INSERT INTO Booked(listID, renterSIN, startDate, endDate, cost) VALUES (%d, %d, '%s', '%s', %f);", listingID, DAO.loggedInUser, Date.valueOf(startDate), Date.valueOf(endDate), cost);
             statement.executeUpdate(bookingInsert);
             //remove from availabilities table only after successful booking;
-            AvailabilityDAO.deleteAvailabilities(conn, listingID, startDate, endDate);
+            AvailabilityDAO.setAvailability(conn, listingID, startDate, endDate, 0);
             System.out.println("Successfully added booking for listing with id " + listingID + " between dates " + startDate.toString() + " and " + endDate.toString());
         } catch (SQLException e) {
             e.printStackTrace();
@@ -121,7 +121,7 @@ public class BookingsDAO {
         cancelBooking(conn, myObj, listingID, startDate, endDate);
         //add back to availabilities table
         //TODO: Readd this after fixing up the schemas
-        // AvailabilityDAO.setAvailable(conn, listingID, startDate, endDate);
+        AvailabilityDAO.setAvailability(conn, listingID, startDate, endDate, 1);
 
     }
 

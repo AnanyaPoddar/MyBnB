@@ -140,7 +140,6 @@ public class DAO {
       String exit = "-1";
       while (!exit.equals("0")) {
         if(loggedInUser == -1){
-          //logged out view
           System.out.println("------------------------------------------------------");
           System.out.println("Enter 0 to exit.");
           System.out.println("Enter 1 to sign up as a new user.");

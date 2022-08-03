@@ -80,12 +80,13 @@ public class AvailabilityDAO{
   private static void getAvailabilities(Connection conn, int listingID, Scanner myObj){
     try {
       Statement statement = conn.createStatement();
-      String availabilities = String.format("SELECT date from Availabilities WHERE listID = %d AND isAvailable = 1;", listingID);
+      String availabilities = String.format("SELECT date, price from Availabilities WHERE listID = %d AND isAvailable = 1;", listingID);
       ResultSet rs = statement.executeQuery(availabilities);
       //TODO: Maybe provide feedback to user if the listingID DNE or if no availabilities for it exist
-      while(rs.next())
-        System.out.println(rs.getDate("date"));
-        System.out.println(rs.getFloat("price"));
+      while(rs.next()){
+        System.out.print("Date " + rs.getDate("date"));
+        System.out.println(" Price " + rs.getFloat("price"));
+      }
       System.out.println();
     }catch (SQLException e) {
       e.printStackTrace();
@@ -106,13 +107,16 @@ public class AvailabilityDAO{
 
     try {
       Statement statement = conn.createStatement();
-      for(LocalDate date: dates){
-        //TODO: Check, this should update the price if the key already exists
-        String availInsert = String.format("INSERT INTO Availabilities(listID, date, price) VALUES (%d, '%s', %f) " + 
-        "ON DUPLICATE KEY UPDATE price = %f;", listingID, date, price, price);
-        statement.executeUpdate(availInsert);
-        System.out.println("Success!");
+      String availInsert = "INSERT INTO Availabilities(listID, date, price) VALUES ";
+      for(int i = 0; i < dates.size(); i++){
+        if(i == dates.size()-1)
+          //TODO: Check, this should update the price if the key already exists
+          availInsert += String.format("(%d, '%s', %f) ON DUPLICATE KEY UPDATE price = %f;", listingID, dates.get(i), price, price);
+        else availInsert +=  String.format("(%d, '%s', %f)", listingID, dates.get(i), price);
       }
+      //updated so that it only executes the query once, rather than every time inside for loop
+      statement.executeUpdate(availInsert);
+      System.out.println("Success!");
     } catch (SQLException e) {
       //TODO: Because of check, it could fail if price is < 0, so maybe print that error here
         e.printStackTrace();
@@ -144,20 +148,27 @@ public class AvailabilityDAO{
     }
   }
 
-  public static void deleteAvailabilities(Connection conn, int listingID, LocalDate startDate, LocalDate endDate){
-    List<LocalDate> dates = startDate.datesUntil(endDate.plusDays(1)).collect(Collectors.toList());
 
-    try {
-      Statement statement = conn.createStatement();
-      for(LocalDate date: dates){
-        String availInsert = String.format(
-          "UPDATE Availabilities SET isAvailable = 0 WHERE listID = %d AND date = '%s';", listingID, date);
-              statement.executeUpdate(availInsert);
+    //change isAvailable to 0/1 for isAvailable
+    public static void setAvailability(Connection conn, int listingID, LocalDate startDate, LocalDate endDate, int isAvailable){
+      List<LocalDate> dates = startDate.datesUntil(endDate.plusDays(1)).collect(Collectors.toList());
+  
+      try {
+        Statement statement = conn.createStatement();
+        String stringDates = "(";
+        for(int i = 0; i < dates.size(); i++){
+          if(i==dates.size()-1) stringDates += String.format("'%s'", dates.get(i));
+          else stringDates += String.format("'%s',", dates.get(i));
+        }
+        stringDates  += ")";
+
+          String availInsert = String.format(
+            "UPDATE Availabilities SET isAvailable = %d WHERE listID = %d AND date in %s;", isAvailable, listingID, stringDates);
+                statement.executeUpdate(availInsert);
+      } catch (SQLException e) {
+        e.printStackTrace();
       }
-    } catch (SQLException e) {
-      e.printStackTrace();
     }
-  }
 
   //Helper, called by modifyAvailabilities, which already checks for the correct host, so not required here
   private static void deleteAvailabilities(Connection conn, int listingID, Scanner myObj){
@@ -178,7 +189,8 @@ public class AvailabilityDAO{
       LocalDate endDate = LocalDate.parse(end);
 
       if(!checkValidDates(startDate, endDate)) return;
-      deleteAvailabilities(conn, listingID, startDate, endDate);
+      //TODO: Check that none of the dates are booked
+      setAvailability(conn, listingID, startDate, endDate, 0);
     }
   }
 
@@ -196,6 +208,9 @@ public class AvailabilityDAO{
 
       System.out.println("Enter 1 to Add a range of availabilities or modify the price of a range of availabilities.");
       System.out.println("Enter 2 to Delete a range of availabilities\n");
+
+      //TODO: Check that none of the dates are booked when deleting or modifying the price
+
 
       int choice = Integer.parseInt(myObj.nextLine());
       if(choice == 1){
