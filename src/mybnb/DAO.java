@@ -68,7 +68,6 @@ public class DAO {
 
       // Create a table Renter if it doesn't already exist
 
-      // TODO: Def doesn't matter but can we make everything plural
       String renterTable = "CREATE TABLE IF NOT EXISTS RENTER "
           + "(RenterSIN INT NOT NULL PRIMARY KEY,"
           + " cardType VARCHAR(12) NOT NULL, " + " cardNum INT NOT NULL, "
@@ -77,11 +76,10 @@ public class DAO {
       stmt.executeUpdate(renterTable);
       System.out.println("Created Renter table in given database...");
 
-      // Create a table Listing if it doesn't already exist
-
+      //TODO: Modified, removed price form listing and added to availability
       String listingTable = "CREATE TABLE IF NOT EXISTS Listings "
           + "(listID INT NOT NULL AUTO_INCREMENT PRIMARY KEY, "
-          + "price FLOAT NOT NULL, type VARCHAR(10) NOT NULL)";
+          + "type VARCHAR(10) NOT NULL)";
 
       String hostsToListingTable = "CREATE TABLE IF NOT EXISTS HostsToListings "
           + "(listID INT NOT NULL, FOREIGN KEY (listID) REFERENCES Listings(listID) ON DELETE CASCADE, "
@@ -95,16 +93,17 @@ public class DAO {
       System.out.println("Created HostsTolistings table in given database...");
 
       String availabilitiesTable = "CREATE TABLE IF NOT EXISTS Availabilities "
-          + "(date DATE NOT NULL, listID INT NOT NULL, " +
+          + "(date DATE NOT NULL, listID INT NOT NULL, price FLOAT NOT NULL check (price >= 0), isAvailable BOOLEAN default 1, " +
           "FOREIGN KEY (listID) REFERENCES Listings(listID) ON DELETE CASCADE, " +
           "PRIMARY KEY(listID, date) )";
 
       stmt.executeUpdate(availabilitiesTable);
       System.out.println("Created Availabilities table in given database...");
 
+      //updated table to add cost
       String bookedTable = "CREATE TABLE IF NOT EXISTS Booked "
           + "(listID INT NOT NULL, FOREIGN KEY (listID) REFERENCES Listings(listID) ON DELETE CASCADE, "
-          + "renterSIN INT NOT NULL, FOREIGN KEY (renterSIN) REFERENCES Renter(renterSIN) ON DELETE CASCADE, "
+          + "renterSIN INT NOT NULL, FOREIGN KEY (renterSIN) REFERENCES Renter(renterSIN) ON DELETE CASCADE, cost FLOAT NOT NULL check (cost >= 0), " 
           + "startDate DATE NOT NULL, endDate DATE NOT NULL, status varchar(10) NOT NULL DEFAULT 'booked', PRIMARY KEY(listID, startDate, endDate))";
           stmt.executeUpdate(bookedTable);
           System.out.println("Created Booked table in given database...");
@@ -177,11 +176,13 @@ public class DAO {
       while (!exit.equals("0")) {
         if(loggedInUser == -1){
           //logged out view
+          System.out.println("------------------------------------------------------");
           System.out.println("Enter 0 to exit.");
           System.out.println("Enter 1 to sign up as a new user.");
           System.out.println("Enter 2 to log in based on SIN/password.");
           System.out.println("Enter 3 to view all listings.");
           System.out.println("Enter 4 to see all availabilities for a listing.");
+          System.out.println("------------------------------------------------------");
           exit = myObj.nextLine();
 
           if (exit.equals("1")) 
@@ -201,6 +202,7 @@ public class DAO {
 
         else{
           //Logged-in view, both
+          System.out.println("------------------------------------------------------");
           System.out.println("Enter 0 to exit.");
           System.out.println("Enter 1 to log out.");
           System.out.println("Enter 2 to delete your account.");
@@ -214,6 +216,7 @@ public class DAO {
             System.out.println("Enter 8 to cancel a booking.");
             System.out.println("Enter 9 to see all your booked listings.");
             System.out.println("Enter 10 to review a renter.");
+            System.out.println("------------------------------------------------------");
             exit = myObj.nextLine();    
 
             if (exit.equals("5")) 
@@ -241,6 +244,8 @@ public class DAO {
             System.out.println("Enter 7 to review a host.");
             System.out.println("Enter 8 to review a listing.");
             System.out.println("Enter 9 to see all your bookings."); 
+            System.out.println("Enter 10 to get all listings between two dates");
+            System.out.println("------------------------------------------------------");
             exit = myObj.nextLine(); 
             
             if (exit.equals("5")) 
@@ -257,6 +262,9 @@ public class DAO {
             
             if (exit.equals("9")) 
               BookingsDAO.getAllBookingsForRenter(conn);
+
+            if (exit.equals("10")) 
+              ListingDAO.getListingsAvailableBetweenDates(conn, myObj);
           }
           if (exit.equals("1")) UserDAO.logout();
           if (exit.equals("2")) UserDAO.deleteUser(conn, myObj);
