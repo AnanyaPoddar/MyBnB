@@ -3,7 +3,10 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 public class ListingDAO {    
 
@@ -114,6 +117,58 @@ public class ListingDAO {
     } catch (SQLException e) {
       e.printStackTrace();
     }
+  }
+
+
+  //the listing must be available for the entire duration, not just some dates in between
+  public static void getListingsAvailableBetweenDates(Connection conn, Scanner myObj){
+    //from availabilities table, get all the 
+
+    System.out.println("Start date of range: ");
+    String start = myObj.nextLine();
+    
+    System.out.println("End date of range: ");
+    String end = myObj.nextLine();
+    //TODO: try-catch here
+    LocalDate startDate = LocalDate.parse(start);
+    LocalDate endDate = LocalDate.parse(end);
+
+    if(!AvailabilityDAO.checkValidDates(startDate, endDate)) return;
+
+    //get all dates in range
+    List<LocalDate> dates = startDate.datesUntil(endDate.plusDays(1)).collect(Collectors.toList());
+    String stringDates = "(";
+    for(int i = 0; i < dates.size(); i++){
+      if(i==dates.size()-1) stringDates += String.format("'%s'", dates.get(i));
+      else stringDates += String.format("'%s',", dates.get(i));
+    }
+    stringDates  += ")";
+    
+    //get the count of the dates for each listId that appear in the dateRange above;
+    //then only return the ones that appear the number of times equivalent to the length of dates (ie includes all the dates), and join with listings
+    String getListings = String.format("SELECT listings.listID, listings.price, listings.type " +
+    "FROM (SELECT count(date) AS dateCount, listID FROM availabilities WHERE date in %s GROUP BY listID) AS a " +
+    "JOIN listings ON listings.listID=a.listID WHERE a.dateCount = %d", stringDates, dates.size());
+    System.out.println(getListings);
+    try {
+      Statement statement = conn.createStatement();
+      ResultSet rs = statement.executeQuery(getListings);
+      // Extract results
+      while (rs.next()) {
+        // Retrieve by column name
+        int listID = rs.getInt("listID");
+        float price = rs.getFloat("price");
+        String type = rs.getString("type");
+
+        // Display values
+        System.out.print("ID: " + listID);
+        System.out.print(", price: $" + price);
+        System.out.println(", type: " + type);
+      }
+
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } 
   }
 
 }

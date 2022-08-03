@@ -89,8 +89,20 @@ public class AvailabilityDAO{
   }
 
 
-  public static void addAvailabilities(Connection conn, int listingID, Scanner myObj, LocalDate startDate, LocalDate endDate){
+  public static void addAvailabilities(Connection conn, int listingID, LocalDate startDate, LocalDate endDate){
+    //datesUntil enddate is exclusive, so add 1 day to include last date
+    List<LocalDate> dates = startDate.datesUntil(endDate.plusDays(1))
+    .collect(Collectors.toList());
 
+    try {
+      Statement statement = conn.createStatement();
+      for(LocalDate date: dates){
+        String availInsert = String.format("INSERT INTO Availabilities(listID, date) VALUES (%d, '%s');", listingID, date);
+        statement.executeUpdate(availInsert);
+      }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
   }
 
   // This option only shows up when someone adds a new listing (or modifies existing, which already checks for correct host), hence no need to check the logged-in user?
@@ -113,20 +125,7 @@ public class AvailabilityDAO{
       if(!checkValidDates(startDate, endDate)) return;
 
       else{
-        //datesUntil enddate is exclusive, so add 1 day to include last date
-        List<LocalDate> dates = startDate.datesUntil(endDate.plusDays(1))
-        .collect(Collectors.toList());
-
-        try {
-          Statement statement = conn.createStatement();
-          for(LocalDate date: dates){
-            String availInsert = String.format(
-              "INSERT INTO Availabilities(listID, date) VALUES (%d, '%s');", listingID, date);
-                  statement.executeUpdate(availInsert);
-          }
-        } catch (SQLException e) {
-          e.printStackTrace();
-        }
+        addAvailabilities(conn, listingID, startDate, endDate);
       }
     }
   }

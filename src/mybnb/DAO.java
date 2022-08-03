@@ -142,11 +142,13 @@ public class DAO {
       while (!exit.equals("0")) {
         if(loggedInUser == -1){
           //logged out view
+          System.out.println("------------------------------------------------------");
           System.out.println("Enter 0 to exit.");
           System.out.println("Enter 1 to sign up as a new user.");
           System.out.println("Enter 2 to log in based on SIN/password.");
           System.out.println("Enter 3 to view all listings.");
           System.out.println("Enter 4 to see all availabilities for a listing.");
+          System.out.println("------------------------------------------------------");
           exit = myObj.nextLine();
 
           if (exit.equals("1")) 
@@ -166,6 +168,7 @@ public class DAO {
 
         else{
           //Logged-in view, both
+          System.out.println("------------------------------------------------------");
           System.out.println("Enter 0 to exit.");
           System.out.println("Enter 1 to log out.");
           System.out.println("Enter 2 to delete your account.");
@@ -179,6 +182,7 @@ public class DAO {
             System.out.println("Enter 8 to cancel a booking.");
             System.out.println("Enter 9 to see all your booked listings.");
             System.out.println("Enter 10 to review a renter.");
+            System.out.println("------------------------------------------------------");
             exit = myObj.nextLine();    
 
             if (exit.equals("5")) 
@@ -206,6 +210,8 @@ public class DAO {
             System.out.println("Enter 7 to review a host.");
             System.out.println("Enter 8 to review a listing.");
             System.out.println("Enter 9 to see all your bookings."); 
+            System.out.println("Enter 10 to get all listings between two dates");
+            System.out.println("------------------------------------------------------");
             exit = myObj.nextLine(); 
             
             if (exit.equals("5")) 
@@ -222,6 +228,9 @@ public class DAO {
             
             if (exit.equals("9")) 
               BookingsDAO.getAllBookingsForRenter(conn);
+
+            if (exit.equals("10")) 
+              ListingDAO.getListingsAvailableBetweenDates(conn, myObj);
           }
           if (exit.equals("1")) UserDAO.logout();
           if (exit.equals("2")) UserDAO.deleteUser(conn, myObj);

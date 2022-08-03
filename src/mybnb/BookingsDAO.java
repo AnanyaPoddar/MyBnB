@@ -14,11 +14,6 @@ public class BookingsDAO {
     public static void addBooking(Connection conn, Scanner myObj){
         System.out.println("Enter the id of the listing you'd like to book.\n");
         int listingID = Integer.parseInt(myObj.nextLine());
-        //Check that user is a logged-in renter
-        if(!UserDAO.verifyUserInTable(conn, DAO.loggedInUser, "renterSIN", "Renter")){
-            System.out.println("You must be logged in as a renter.");
-            return;
-        }
 
         System.out.println("Enter start date of your booking: ");
         String start = myObj.nextLine();
@@ -43,11 +38,6 @@ public class BookingsDAO {
 
     //TODO: optional field for status so you can get all past bookings, cancelled, etc
     public static void getAllBookingsForRenter(Connection conn){
-        //Check that user is a logged-in renter
-        if(!UserDAO.verifyUserInTable(conn, DAO.loggedInUser, "renterSIN", "Renter")){
-            System.out.println("You must be logged in as a renter.");
-            return;
-        }
         try {
             Statement statement = conn.createStatement();
             String bookings = String.format("SELECT * from Booked WHERE renterSIN = %d;", DAO.loggedInUser);
@@ -65,11 +55,6 @@ public class BookingsDAO {
 
 
     public static void getAllBookingsForHost(Connection conn){
-        //Check that user is a logged-in host
-        if(!UserDAO.verifyUserInTable(conn, DAO.loggedInUser, "hostSIN", "Host")){
-            System.out.println("You must be logged in as a host.");
-            return;
-        }
         try {
             Statement statement = conn.createStatement();
             //collect listings for host from hostsToListings, join with booked project listID, startDate, endDate
@@ -90,9 +75,7 @@ public class BookingsDAO {
     }
 
     //Helper
-    //TODO: Should type be localDate or string?
-    private static void cancelBooking(Connection conn, Scanner myObj, int listingID, String startDate, String endDate){
-        //TODO: Either parse as localdate or just ensure that valid format
+    private static void cancelBooking(Connection conn, Scanner myObj, int listingID, LocalDate startDate, LocalDate endDate){
         String deleteListing = String.format("UPDATE Booked SET status = 'cancelled' WHERE listID= %d AND startDate = '%s' AND endDate = '%s' ", listingID, startDate, endDate);
         try {
             Statement statement = conn.createStatement();
@@ -107,13 +90,6 @@ public class BookingsDAO {
     }
 
     public static void hostCancelsBooking(Connection conn, Scanner myObj) throws SQLException{
-        //TODO: Check logic - if a host cancels a booking, its status is set to cancelled in bookings table, and not readded to availabilities
-        //However, if a user cancels a booking, it becomes available again for someone else to book so needs to be readded to availabilities table
-        //Check that user is a logged-in host
-        if(!UserDAO.verifyUserInTable(conn, DAO.loggedInUser, "hostSIN", "Host")){
-            System.out.println("You must be logged in as a host.");
-            return;
-        }
         System.out.println("Enter the id of the listing you'd like to cancel a booking for.\n");
         int listingID = Integer.parseInt(myObj.nextLine());
         
@@ -123,29 +99,25 @@ public class BookingsDAO {
         String start = myObj.nextLine();
         System.out.println("Enter end date of the booking.");
         String end = myObj.nextLine();
-        cancelBooking(conn, myObj, listingID, start, end);
+        //TODO: Add all the parsing date stuff to ALL localdates, to give back appropriate feedback of not valid
+        LocalDate startDate = LocalDate.parse(start);
+        LocalDate endDate = LocalDate.parse(end);
+        cancelBooking(conn, myObj, listingID, startDate, endDate);
         //do not modify availabilities table, they are not available, just cancelled
     }   
 
     public static void userCancelsBooking(Connection conn, Scanner myObj){
-        if(!UserDAO.verifyUserInTable(conn, DAO.loggedInUser, "renterSIN", "Renter")){
-            System.out.println("You must be logged in as a renter.");
-            return;
-        }
         System.out.println("Enter the id of the listing you'd like to cancel a booking for.\n");
         int listingID = Integer.parseInt(myObj.nextLine());
         System.out.println("Enter start date of the booking.");
         String start = myObj.nextLine();
         System.out.println("Enter end date of the booking.");
         String end = myObj.nextLine();
-        cancelBooking(conn, myObj, listingID, start, end);
-
-        //TODO: Again weird discrepancy where availabilityDAO uses localDate but cancelBooking doesnt
-
-        //add back to availabilities table
         LocalDate startDate = LocalDate.parse(start);
         LocalDate endDate = LocalDate.parse(end);
-        // AvailabilityDAO.deleteAvailabilities(conn, listingID, startDate, endDate);
+        cancelBooking(conn, myObj, listingID, startDate, endDate);
+        //add back to availabilities table
+        AvailabilityDAO.addAvailabilities(conn, listingID, startDate, endDate);
 
     }
 
