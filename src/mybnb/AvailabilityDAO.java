@@ -66,7 +66,6 @@ public class AvailabilityDAO{
     
   }
 
-
   //TODO: ....... FIXX
   private static void getAvailabilities(Connection conn, int listingID, Scanner myObj){
     try {
@@ -74,9 +73,8 @@ public class AvailabilityDAO{
       String availabilities = String.format("SELECT date from Availabilities WHERE listID = %d;", listingID);
       ResultSet rs = statement.executeQuery(availabilities);
       //TODO: Maybe provide feedback to user if the listingID DNE or if no availabilities for it exist
-      while(rs.next()){
+      while(rs.next())
         System.out.println(rs.getDate("date"));
-      }
       System.out.println();
     }catch (SQLException e) {
       e.printStackTrace();
@@ -88,6 +86,11 @@ public class AvailabilityDAO{
     System.out.println("Enter the id of the listing you'd like to see availabilities for.");
     int listingID = Integer.parseInt(myObj.nextLine());
     getAvailabilities(conn, listingID, myObj);
+  }
+
+
+  public static void addAvailabilities(Connection conn, int listingID, Scanner myObj, LocalDate startDate, LocalDate endDate){
+
   }
 
   // This option only shows up when someone adds a new listing (or modifies existing, which already checks for correct host), hence no need to check the logged-in user?
@@ -117,8 +120,6 @@ public class AvailabilityDAO{
         try {
           Statement statement = conn.createStatement();
           for(LocalDate date: dates){
-            //convert from LocalDate to sql date
-            Date.valueOf(date);
             String availInsert = String.format(
               "INSERT INTO Availabilities(listID, date) VALUES (%d, '%s');", listingID, date);
                   statement.executeUpdate(availInsert);
@@ -132,14 +133,11 @@ public class AvailabilityDAO{
 
   //TODO: Same issue as before.... not reusable with the scanner stuff inside
   public static void deleteAvailabilities(Connection conn, int listingID, LocalDate startDate, LocalDate endDate){
-    List<LocalDate> dates = startDate.datesUntil(endDate.plusDays(1))
-    .collect(Collectors.toList());
+    List<LocalDate> dates = startDate.datesUntil(endDate.plusDays(1)).collect(Collectors.toList());
 
     try {
       Statement statement = conn.createStatement();
       for(LocalDate date: dates){
-        //convert from LocalDate to sql date
-        Date.valueOf(date);
         String availInsert = String.format(
           "DELETE FROM Availabilities WHERE listID = %d AND date = '%s';", listingID, date);
               statement.executeUpdate(availInsert);

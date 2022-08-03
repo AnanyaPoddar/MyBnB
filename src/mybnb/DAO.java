@@ -140,66 +140,93 @@ public class DAO {
 
       String exit = "-1";
       while (!exit.equals("0")) {
+        if(loggedInUser == -1){
+          //logged out view
+          System.out.println("Enter 0 to exit.");
+          System.out.println("Enter 1 to sign up as a new user.");
+          System.out.println("Enter 2 to log in based on SIN/password.");
+          System.out.println("Enter 3 to view all listings.");
+          System.out.println("Enter 4 to see all availabilities for a listing.");
+          exit = myObj.nextLine();
 
-        // Choices for user
-        System.out.println("Enter 0 to exit");
-        System.out.println("Enter 1 to add a new User");
-        System.out.println("Enter 2 to log in based on SIN/password");
-        System.out.println("Enter 3 to view all users");
-        System.out.println("Enter 4 to add a listing");
-        System.out.println("Enter 5 to view all listings");
-        System.out.println("Enter 6 to delete your account");
-        System.out.println("Enter 7 to log out");
-        System.out.println("Enter 8 to delete a listing");
-        System.out.println("Enter 9 to see all availabilities for a listing");
-        System.out.println("Enter 10 to review a host");
-        System.out.println("Enter 11 to review a renter");
-        System.out.println("Enter 12 to review a listing");
-        System.out.println("Enter 13 to modify availabilities for a listing");
-        System.out.println("Enter 14 to book a listing");
-        exit = myObj.nextLine(); // Read user choice
+          if (exit.equals("1")) 
+            UserDAO.addUser(conn, myObj);
+          
+          if (exit.equals("2")) 
+            UserDAO.login(conn, myObj);
+          
+          if (exit.equals("3")) 
+            ListingDAO.viewAllListings(conn, myObj);
+          
+          if (exit.equals("4")) 
+            AvailabilityDAO.getAvailabilities(conn, myObj);
 
-        if (exit.equals("1")) {
-          UserDAO.addUser(conn, myObj);
         }
-        if (exit.equals("2")) {
-          UserDAO.login(conn, myObj);
-        }
-        if (exit.equals("3")) {
-          UserDAO.viewAllUsers(conn);
-        }
-        if (exit.equals("4")) {
-          ListingDAO.addListing(conn, myObj);
-        }
-        if (exit.equals("5")) {
-          ListingDAO.viewAllListings(conn, myObj);
-        }
-        if (exit.equals("6")) {
-          UserDAO.deleteUser(conn, myObj);
-        }
-        if (exit.equals("7")) {
-          UserDAO.logout();
-        }
-        if (exit.equals("8")) {
-          ListingDAO.deleteListing(conn, myObj);
-        }
-        if (exit.equals("9")) {
-          AvailabilityDAO.getAvailabilities(conn, myObj);
-        }
-        if (exit.equals("10")) {
-          UserDAO.renterReviewsHost(conn, myObj);
-        }
-        if (exit.equals("11")) {
-          UserDAO.hostReviewsRenter(conn, myObj);
-        }
-        if (exit.equals("12")) {
-          UserDAO.rentersReviewListings(conn, myObj);
-        }
-        if (exit.equals("13")) {
-          AvailabilityDAO.modifyAvailabilities(conn, myObj);
-        }
-        if (exit.equals("14")) {
-          BookingsDAO.addBooking(conn, myObj);
+
+
+        else{
+          //Logged-in view, both
+          System.out.println("Enter 0 to exit.");
+          System.out.println("Enter 1 to log out.");
+          System.out.println("Enter 2 to delete your account.");
+          System.out.println("Enter 3 to view all listings.");
+          System.out.println("Enter 4 to see all availabilities for a listing.");
+
+          if(UserDAO.verifyUserInTable(conn, loggedInUser, "hostSIN", "Host")){
+            System.out.println("Enter 5 to add a listing.");
+            System.out.println("Enter 6 to delete a listing.");
+            System.out.println("Enter 7 to modify availabilities for a listing.");
+            System.out.println("Enter 8 to cancel a booking.");
+            System.out.println("Enter 9 to see all your booked listings.");
+            System.out.println("Enter 10 to review a renter.");
+            exit = myObj.nextLine();    
+
+            if (exit.equals("5")) 
+              ListingDAO.addListing(conn, myObj);
+            
+            if (exit.equals("6")) 
+              ListingDAO.deleteListing(conn, myObj);
+            
+            if (exit.equals("7")) 
+              AvailabilityDAO.modifyAvailabilities(conn, myObj);
+            
+            if (exit.equals("8")) 
+              BookingsDAO.hostCancelsBooking(conn, myObj);
+            
+            if (exit.equals("9")) 
+              BookingsDAO.getAllBookingsForHost(conn);
+            
+            if (exit.equals("10")) 
+              UserDAO.hostReviewsRenter(conn, myObj);
+          }
+
+          else{
+            System.out.println("Enter 5 to book a listing.");
+            System.out.println("Enter 6 to cancel a booking.");
+            System.out.println("Enter 7 to review a host.");
+            System.out.println("Enter 8 to review a listing.");
+            System.out.println("Enter 9 to see all your bookings."); 
+            exit = myObj.nextLine(); 
+            
+            if (exit.equals("5")) 
+              BookingsDAO.addBooking(conn, myObj);
+
+            if (exit.equals("6")) 
+              BookingsDAO.userCancelsBooking(conn, myObj);
+
+            if (exit.equals("7")) 
+              UserDAO.renterReviewsHost(conn, myObj);
+            
+            if (exit.equals("8")) 
+              UserDAO.rentersReviewListings(conn, myObj);
+            
+            if (exit.equals("9")) 
+              BookingsDAO.getAllBookingsForRenter(conn);
+          }
+          if (exit.equals("1")) UserDAO.logout();
+          if (exit.equals("2")) UserDAO.deleteUser(conn, myObj);
+          if (exit.equals("3")) ListingDAO.viewAllListings(conn, myObj);
+          if (exit.equals("4")) AvailabilityDAO.getAvailabilities(conn, myObj);
         }
       }
       System.out.println("Closing connection...");

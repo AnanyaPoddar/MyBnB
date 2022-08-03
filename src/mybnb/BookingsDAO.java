@@ -6,9 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Scanner;
-import java.util.stream.Collectors;
 
 public class BookingsDAO {
 
@@ -16,7 +14,6 @@ public class BookingsDAO {
     public static void addBooking(Connection conn, Scanner myObj){
         System.out.println("Enter the id of the listing you'd like to book.\n");
         int listingID = Integer.parseInt(myObj.nextLine());
-        //TODO: - Explain constraint in the ER diagram, only a logged-in renter can book something
         //Check that user is a logged-in renter
         if(!UserDAO.verifyUserInTable(conn, DAO.loggedInUser, "renterSIN", "Renter")){
             System.out.println("You must be logged in as a renter.");
@@ -29,7 +26,6 @@ public class BookingsDAO {
         String end = myObj.nextLine();
         LocalDate startDate = LocalDate.parse(start);
         LocalDate endDate = LocalDate.parse(end);
-
 
         try {
             //check that the dates are all available for booking; if so, remove them from availabilities, and add to booked
@@ -77,11 +73,9 @@ public class BookingsDAO {
         try {
             Statement statement = conn.createStatement();
             //collect listings for host from hostsToListings, join with booked project listID, startDate, endDate
-            //TODO: In order to group by listID in booked, need other projected things to either be aggregated or turn off strict mode
-            //Current this just organizes all hosts's listings in chronological order of bookings by startDate
             String bookings = String.format("SELECT Booked.listID, startDate, endDate, status FROM Booked " +
-            "JOIN (SELECT listID from hoststolistings WHERE hostSIN = '%s') as h1 " +
-            "ON Booked.listID=h1.listID ORDER BY Booked.startDate;", DAO.loggedInUser);
+            "JOIN (SELECT listID from HostsToListings WHERE hostSIN = '%s') as h1 " +
+            "ON Booked.listID=h1.listID ORDER BY Booked.listID;", DAO.loggedInUser);
             ResultSet rs = statement.executeQuery(bookings);
             while(rs.next()){
                 System.out.println("ListID: " + rs.getInt("listID"));
@@ -108,7 +102,6 @@ public class BookingsDAO {
             else
               System.out.println("No booking found with that listID, start date and end date combination.");
         } catch (SQLException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
@@ -149,10 +142,10 @@ public class BookingsDAO {
 
         //TODO: Again weird discrepancy where availabilityDAO uses localDate but cancelBooking doesnt
 
-        //remove from availabilities table
+        //add back to availabilities table
         LocalDate startDate = LocalDate.parse(start);
         LocalDate endDate = LocalDate.parse(end);
-        AvailabilityDAO.deleteAvailabilities(conn, listingID, startDate, endDate);
+        // AvailabilityDAO.deleteAvailabilities(conn, listingID, startDate, endDate);
 
     }
 
