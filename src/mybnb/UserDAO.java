@@ -3,9 +3,9 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Scanner;
 import java.time.LocalDate;
 import java.time.Period;
+import java.util.Scanner;
 
 public class UserDAO {
     
@@ -229,6 +229,7 @@ public class UserDAO {
     System.out.println("You've been logged out");
   }
 
+  // TODO For example you cannot comment on a listing if you haven’t rented it recently.
   public static void renterReviewsHost(Connection conn, Scanner myObj){
     // TODO We're assuming one Listing per Host right?
 
@@ -311,7 +312,7 @@ public class UserDAO {
 
   }
 
-  
+  // TODO For example you cannot comment on a listing if you haven’t rented it recently.
   public static void hostReviewsRenter(Connection conn, Scanner myObj){
     // TODO We're assuming one Listing per Host right?
 
@@ -392,6 +393,7 @@ public class UserDAO {
     }
   }
 
+  // TODO For example you cannot comment on a listing if you haven’t rented it recently.
   public static void rentersReviewListings(Connection conn, Scanner myObj){
     // TODO We're assuming one Listing per Host right?
 

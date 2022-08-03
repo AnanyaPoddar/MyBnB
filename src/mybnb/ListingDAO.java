@@ -84,6 +84,7 @@ public class ListingDAO {
             String country = myObj.nextLine();
             System.out.println("Provide the listing's postal code.");
             String postal = myObj.nextLine();
+            // TODO Verify postal code's properly formatted 0, 2, 4 is alpha, 1, 3, 5 is num
 
             String addressInsert = String.format(
                 "INSERT INTO ADDRESSES VALUES (%d, %d, '%s', '%s', '%s', '%s');", listID, unitNum, street, city, country, postal);

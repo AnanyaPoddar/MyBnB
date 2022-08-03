@@ -182,6 +182,7 @@ public class DAO {
           System.out.println("Enter 2 to log in based on SIN/password.");
           System.out.println("Enter 3 to view all listings.");
           System.out.println("Enter 4 to see all availabilities for a listing.");
+          System.out.println("Enter 5 to search and filter listings."); // TODO Where in logged in view?
           System.out.println("------------------------------------------------------");
           exit = myObj.nextLine();
 
@@ -196,6 +197,9 @@ public class DAO {
           
           if (exit.equals("4")) 
             AvailabilityDAO.getAvailabilities(conn, myObj);
+          
+            if (exit.equals("5")) 
+            Search.searchListings(conn, myObj);
 
         }
 
