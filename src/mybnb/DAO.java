@@ -105,7 +105,7 @@ public class DAO {
       String bookedTable = "CREATE TABLE IF NOT EXISTS Booked "
           + "(listID INT NOT NULL, FOREIGN KEY (listID) REFERENCES Listings(listID) ON DELETE CASCADE, "
           + "renterSIN INT NOT NULL, FOREIGN KEY (renterSIN) REFERENCES Renter(renterSIN) ON DELETE CASCADE, "
-          + "date DATE NOT NULL, status varchar(10) NOT NULL DEFAULT 'booked', PRIMARY KEY(listID, renterSIN, date))";
+          + "startDate DATE NOT NULL, endDate DATE NOT NULL, status varchar(10) NOT NULL DEFAULT 'booked', PRIMARY KEY(listID, startDate, endDate))";
           stmt.executeUpdate(bookedTable);
           System.out.println("Created Booked table in given database...");
 

@@ -11,7 +11,11 @@ public class ListingDAO {
   //add listing, associated with specific logged-in host
   public static void addListing(Connection conn, Scanner myObj) {
 
-    //TODO: Check that user is logged in and that logged in user is a host, or better just show different options for host/user/logged in at beginning
+    if(!UserDAO.verifyUserInTable(conn, DAO.loggedInUser, "hostSIN","Host")){
+        System.out.println("You must be logged in as a host.");
+        return;
+    }
+
     System.out.println("Enter the type of your listing. 1 = House, 2 = Guesthouse, 3 = Apartment, 4 = Hotel");
     // System.out.println("Are you renting out the entire place? 0 = No, 1 = Yes");
     int typeInput = Integer.parseInt(myObj.nextLine());

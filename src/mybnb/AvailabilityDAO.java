@@ -50,7 +50,12 @@ public class AvailabilityDAO{
     Statement statement = conn.createStatement();
     String checkHost = String.format("SELECT hostSIN from HostsToListings WHERE listID = %d;", listingID);
     ResultSet rs = statement.executeQuery(checkHost);
-    if(rs.next()){
+    //if not in hostsToListings table
+    if(!rs.next()){
+      System.out.println("Only the host of the listing has this permission.");
+      return false;
+    }
+    else{
       int hostSIN = rs.getInt("hostSIN");
       if(hostSIN != DAO.loggedInUser){
         System.out.println("Only the host of the listing has this permission.");
@@ -58,8 +63,6 @@ public class AvailabilityDAO{
       }
       return true;
     }
-    //If resultset has nothing, not in hoststolistings
-    return false;
     
   }
 
@@ -117,7 +120,7 @@ public class AvailabilityDAO{
             //convert from LocalDate to sql date
             Date.valueOf(date);
             String availInsert = String.format(
-              "INSERT INTO Booked(listID, renterSIN) VALUES (%d, '%d');", listingID, date);
+              "INSERT INTO Availabilities(listID, date) VALUES (%d, '%s');", listingID, date);
                   statement.executeUpdate(availInsert);
           }
         } catch (SQLException e) {
@@ -175,9 +178,10 @@ public class AvailabilityDAO{
   public static void modifyAvailabilities(Connection conn, Scanner myObj){
     System.out.println("Enter the id of the listing you'd like to modify availabilities for.\n");
     int listingID = Integer.parseInt(myObj.nextLine());
+    System.out.println(listingID);
     try {
       //Check that host of listing is the one attempting to modify availailibility
-      if(!hostsListing(conn, DAO.loggedInUser)) return;
+      if(!hostsListing(conn, listingID)) return;
       
       System.out.println("The current list of availabilities for this listing are as follows:\n");
       getAvailabilities(conn, listingID, myObj);
