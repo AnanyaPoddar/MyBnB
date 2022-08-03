@@ -6,7 +6,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
 import java.util.Scanner;
-// import io.github.cdimascio.dotenv.Dotenv;
+import io.github.cdimascio.dotenv.Dotenv;
 
 public class DAO {
 
@@ -22,9 +22,9 @@ public class DAO {
     Class.forName(dbClassName);
     // Database credentials
     final String USER = "root";
-    // Dotenv dotenv = Dotenv.configure().load();
-    // final String PASS = dotenv.get("PASS");
-    final String PASS = "root";
+    Dotenv dotenv = Dotenv.configure().load();
+    final String PASS = dotenv.get("PASS");
+    // final String PASS = "root";
     System.out.println("Connecting to database...");
 
     // TODO Case sensitivity for the queries?
@@ -135,6 +135,41 @@ public class DAO {
         "PRIMARY KEY(listID, renterSIN))";
       stmt.executeUpdate(rentersReviewListings);
       System.out.println("Created rentersReviewListings table in given database...");
+
+      // TODO latitude and longitude don't have to be keys here?
+      String locationsTable = "CREATE TABLE IF NOT EXISTS Locations "
+          + "(listID INT NOT NULL, FOREIGN KEY (listID) REFERENCES Listings(listID), " 
+          + "latitude FLOAT NOT NULL, longitude FLOAT NOT NULL, " +
+          "PRIMARY KEY(listID))";
+      stmt.executeUpdate(locationsTable);
+      System.out.println("Created locationsTable table in given database...");
+
+      String addressesTable =
+          "CREATE TABLE IF NOT EXISTS ADDRESSES " 
+          + "(listID INT NOT NULL, FOREIGN KEY (listID) REFERENCES Listings(listID), " 
+          + "unitNum INT NOT NULL, "
+          + " street VARCHAR(50) NOT NULL, "
+          + " city VARCHAR(25) NOT NULL, " 
+          + " country VARCHAR(100) NOT NULL, "
+          + " postal VARCHAR(10) NOT NULL, PRIMARY KEY (listID, unitNum, street, postal))";
+      stmt.executeUpdate(addressesTable);
+      System.out.println("Created addresses table in given database...");
+
+      String amenitiesTable = "CREATE TABLE IF NOT EXISTS AMENITIES "
+          + "(name VARCHAR(50) NOT NULL PRIMARY KEY,"
+          + "type VARCHAR(50) NOT NULL)";
+      stmt.executeUpdate(amenitiesTable);
+      System.out.println("Created amenities table in given database...");
+
+      String ListingsHaveAmenities = "CREATE TABLE IF NOT EXISTS ListingsHaveAmenities "
+          + "(listID INT NOT NULL, name VARCHAR(50) NOT NULL, " +
+          "FOREIGN KEY (name) REFERENCES AMENITIES(name) ON DELETE CASCADE, " + 
+          "FOREIGN KEY (listID) REFERENCES Listings(listID) ON DELETE CASCADE, " +
+          "PRIMARY KEY(name, listID) )";
+
+      stmt.executeUpdate(ListingsHaveAmenities);
+      System.out.println("Created ListingsHaveAmenities table in given database...");
+      
 
       Scanner myObj = new Scanner(System.in); // Create a Scanner object
 
