@@ -182,20 +182,22 @@ public class DAO {
           System.out.println("Enter 3 to view all listings.");
           System.out.println("Enter 4 to see all availabilities for a listing.");
           System.out.println("Enter 5 to search and filter listings."); // TODO Where in logged in view?
+          System.out.println("Enter 6 to see reports."); // TODO Where in logged in view?
           System.out.println("------------------------------------------------------");
           exit = myObj.nextLine();
 
           if (exit.equals("1")) 
             UserDAO.addUser(conn, myObj);
-          
           if (exit.equals("2")) 
             UserDAO.login(conn, myObj);
-          
           if (exit.equals("3")) 
             ListingDAO.viewAllListings(conn);
-          
           if (exit.equals("4")) 
             AvailabilityDriver.getAvailabilities(conn, myObj);
+          if (exit.equals("5")) 
+            Search.searchListings(conn, myObj);
+          if (exit.equals("6")) 
+            ReportsDriver.viewAllReports(conn, myObj);
         }
 
 

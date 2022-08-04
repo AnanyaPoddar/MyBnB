@@ -136,8 +136,6 @@ INSERT INTO Locations VALUES(16, 20.5, -98.9);
 INSERT INTO Addresses VALUES(16, 20, '16 Mexico City Street', 'Mexico City', 'Mexico', 'X3l M19');
 
 
-
-
 -- Insert Amenities -- skip the location-type amenities
 
 INSERT INTO AMENITIES(type, name) VALUES ('Essentials', 'Wifi');
@@ -194,7 +192,6 @@ INSERT INTO ListingsHaveAmenities VALUES (8, 'Carbon Monoxide Alarm');
 INSERT INTO ListingsHaveAmenities VALUES (9, 'Wifi');
 
 INSERT INTO ListingsHaveAmenities VALUES (10, 'Free Parking');
-
 
 -- Need some with same amenities to be able to suggest possible price ? 
 -- Also can suggest possible good amenities by saying - some percentage of total listings have this amenity
