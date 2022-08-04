@@ -196,7 +196,6 @@ public class DAO {
           
           if (exit.equals("4")) 
             AvailabilityDriver.getAvailabilities(conn, myObj);
-
         }
 
 
