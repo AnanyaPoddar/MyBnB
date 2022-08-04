@@ -3,9 +3,9 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Scanner;
 import java.time.LocalDate;
 import java.time.Period;
+import java.util.Scanner;
 
 public class UserDAO {
     
@@ -45,6 +45,7 @@ public class UserDAO {
         return;
     }
 
+    // TODO Verify password and email
     System.out.println("Provide a password");
     String password = myObj.nextLine();
     System.out.println("Provide your name");
@@ -62,6 +63,7 @@ public class UserDAO {
 
     // Verify user is >= 18 years old
     // TODO Parse the localDate how Ananya did in AVailabilities (won't need seperate year/month/day then)
+    // Ensure they give valid dates (like month can't be 15) <- LocalDate will probably catch this
     LocalDate today = LocalDate.now();
     try {
       LocalDate birthday = LocalDate.of(yob, mob, dob);
@@ -88,7 +90,7 @@ public class UserDAO {
       System.out.println("Provide a payment method (Credit or Debit)");
       String cardType = myObj.nextLine();
       System.out.println("Provide your card Number");
-      int cardNum = Integer.parseInt(myObj.nextLine()); // Read user input
+      int cardNum = Integer.parseInt(myObj.nextLine()); // Read user input // TODO must be int? 
       rentOrHostInsert = String.format(
           "INSERT INTO Renter VALUES (%d, '%s', %d);", sin, cardType, cardNum);
     } else {
@@ -227,6 +229,7 @@ public class UserDAO {
     System.out.println("You've been logged out");
   }
 
+  // TODO For example you cannot comment on a listing if you haven’t rented it recently.
   public static void renterReviewsHost(Connection conn, Scanner myObj){
     // TODO We're assuming one Listing per Host right?
 
@@ -309,7 +312,7 @@ public class UserDAO {
 
   }
 
-  
+  // TODO For example you cannot comment on a listing if you haven’t rented it recently.
   public static void hostReviewsRenter(Connection conn, Scanner myObj){
     // TODO We're assuming one Listing per Host right?
 
@@ -390,6 +393,7 @@ public class UserDAO {
     }
   }
 
+  // TODO For example you cannot comment on a listing if you haven’t rented it recently.
   public static void rentersReviewListings(Connection conn, Scanner myObj){
     // TODO We're assuming one Listing per Host right?
 
