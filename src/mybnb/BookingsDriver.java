@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.util.Scanner;
 
 public class BookingsDriver {
+    
     public static void addBooking(Connection conn, Scanner myObj){
         System.out.println("Enter the id of the listing you'd like to book.\n");
         int listingID = Integer.parseInt(myObj.nextLine());
@@ -19,7 +20,6 @@ public class BookingsDriver {
 
         BookingsDAO.addBooking(conn, listingID, startDate, endDate);
     }   
-
 
     public static void hostCancelsBooking(Connection conn, Scanner myObj){
         System.out.println("Enter the id of the listing you'd like to cancel a booking for.\n");
@@ -36,7 +36,8 @@ public class BookingsDriver {
             LocalDate startDate = LocalDate.parse(start);
             LocalDate endDate = LocalDate.parse(end);
             BookingsDAO.cancelBooking(conn, myObj, listingID, startDate, endDate);
-            //do not modify availabilities table, they are not available, just cancelled
+            //Modify availabilities table, they are not available, just cancelled
+            AvailabilityDAO.setAvailability(conn, listingID, startDate, endDate, "cancelled");
         } catch (SQLException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -54,7 +55,7 @@ public class BookingsDriver {
         LocalDate endDate = LocalDate.parse(end);
         BookingsDAO.cancelBooking(conn, myObj, listingID, startDate, endDate);
         //add back to availabilities table
-        AvailabilityDAO.setAvailability(conn, listingID, startDate, endDate, "cancelled");
+        AvailabilityDAO.setAvailability(conn, listingID, startDate, endDate, "available");
 
     }
     
