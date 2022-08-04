@@ -89,10 +89,10 @@ public class UserDAO {
       // TODO Should this be open choice or C = Credit, D = Debit
       System.out.println("Provide a payment method (Credit or Debit)");
       String cardType = myObj.nextLine();
-      System.out.println("Provide your card Number");
-      int cardNum = Integer.parseInt(myObj.nextLine()); // Read user input // TODO must be int? 
+      System.out.println("Provide your card number");
+      String cardNum= myObj.nextLine();
       rentOrHostInsert = String.format(
-          "INSERT INTO Renter VALUES (%d, '%s', %d);", sin, cardType, cardNum);
+          "INSERT INTO Renter VALUES (%d, '%s', '%s');", sin, cardType, cardNum);
     } else {
       rentOrHostInsert = String.format("INSERT INTO Host VALUES (%d);", sin);
     }
@@ -137,7 +137,8 @@ public class UserDAO {
       if (rs.next()) {
         if (password.equals(rs.getString("upassword"))) {
           DAO.loggedInUser = SIN;
-          System.out.println("Succesfully logged in as: " + DAO.loggedInUser);
+          //Probably don't show their SIN, just show the name
+          System.out.println("Succesfully logged in as: " + rs.getString("uname"));
 
         } else {
           System.out.println("Wrong password.");

@@ -61,7 +61,7 @@ public class DAO {
 
       String renterTable = "CREATE TABLE IF NOT EXISTS RENTER "
           + "(RenterSIN INT NOT NULL PRIMARY KEY,"
-          + " cardType VARCHAR(12) NOT NULL, " + " cardNum INT NOT NULL, "
+          + " cardType VARCHAR(12) NOT NULL, " + " cardNum varchar(16) NOT NULL, "
           + "INDEX par_ind (RenterSIN), FOREIGN KEY (RenterSIN) REFERENCES USER(SIN) ON DELETE CASCADE)";
 
       stmt.executeUpdate(renterTable);
