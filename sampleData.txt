@@ -1,0 +1,221 @@
+-- Insert renters
+
+INSERT INTO User VALUES (123456789, 'Renter1', 'Renter1', '123 Military Trail', 'Student', '2001-09-15');
+INSERT INTO Renter VALUES (123456789, 'credit', '4123456789012');
+
+INSERT INTO User VALUES (234567890, 'Renter2', 'Renter2', '456 Military Trail', 'Programmer', '1998-12-27');
+INSERT INTO Renter VALUES (234567890, 'credit', '4234567890123');
+
+INSERT INTO User VALUES (345678901, 'Renter3', 'Renter3', '789 Borough Drive', 'Cashier', '2000-10-20');
+INSERT INTO Renter VALUES (345678901, 'debit', '4345678901234');
+
+INSERT INTO User VALUES (456789012, 'Renter4', 'Renter4', '300 White Road', 'Teacher', '2001-09-22');
+INSERT INTO Renter VALUES (456789012, 'debit', '4456789012345');
+
+INSERT INTO User VALUES (567890123, 'Renter5', 'Renter5', '503 Morrish Road', 'Dentist', '1990-10-20');
+INSERT INTO Renter VALUES (567890123, 'credit', '4567890123456');
+
+INSERT INTO User VALUES (678901234, 'Renter6', 'Renter6', '422 Dawes Road', 'Librarian', '2001-09-30');
+INSERT INTO Renter VALUES (678901234, 'debit', '4678901234567');
+
+INSERT INTO User VALUES (789012345, 'Renter7', 'Renter7', '402 Kingston Road', 'Banker', '1996-01-31');
+INSERT INTO Renter VALUES (789012345, 'credit', '4789012345678');
+
+INSERT INTO User VALUES (890123456, 'Renter8', 'Renter8', '300 Spadina Avenue', 'Student', '2000-02-28');
+INSERT INTO Renter VALUES (890123456, 'credit', '4890123456789');
+
+-- Insert hosts
+
+INSERT INTO User VALUES (987654321, 'Host1', 'Host1', '456 Military Trail', 'Bartender', '2000-10-10');
+INSERT INTO Host VALUES (987654321);
+
+INSERT INTO User VALUES (876543210, 'Host2', 'Host2', '789 Military Trail', 'Professor', '1990-12-27');
+INSERT INTO Host VALUES (876543210);
+
+INSERT INTO User VALUES (765432101, 'Host3', 'Host3', '976 Borough Drive', 'Cashier', '1999-01-20');
+INSERT INTO Host VALUES (765432101);
+
+INSERT INTO User VALUES (654321012, 'Host4', 'Host4', '325 White Road', 'Teacher', '2000-09-22');
+INSERT INTO Host VALUES (654321012);
+
+INSERT INTO User VALUES (543210123, 'Host5', 'Host5', '200 Morrish Road', 'Dentist', '1987-10-20');
+INSERT INTO Host VALUES (543210123);
+
+INSERT INTO User VALUES (432101234, 'Host6', 'Host6', '403 Dawes Road', 'Librarian', '1990-09-30');
+INSERT INTO Host VALUES (432101234);
+
+INSERT INTO User VALUES (321012345, 'Host7', 'Host7', '404 Bloor Street', 'Engineer', '1988-11-20');
+INSERT INTO Host VALUES (321012345);
+
+INSERT INTO User VALUES (210123456, 'Host8', 'Host8', '200 Lebovic Avenue', 'Scientist', '1978-10-10');
+INSERT INTO Host VALUES (210123456);
+
+
+-- Insert Listings - 16 listings, ~ 2 for each host, also note this has to be done on a new dababase so that the listIDs start at 1
+
+ALTER TABLE Listings AUTO_INCREMENT = 1;
+
+INSERT INTO Listings(type) VALUES ("house");
+INSERT INTO HostsToListings(listID, hostSIN) VALUES (1, 987654321);
+INSERT INTO Locations VALUES(1, 43.1, -79);
+INSERT INTO Addresses VALUES(1, 0, '10 Dawes Road', 'Toronto', 'Canada', 'K2L 1L1');
+
+INSERT INTO Listings(type) VALUES ("apartment");
+INSERT INTO HostsToListings(listID, hostSIN) VALUES (2, 987654321);
+INSERT INTO Locations VALUES(2, 44.5, -80);
+INSERT INTO Addresses VALUES(2, 52, '53 Spadina Avenue', 'Toronto', 'Canada', 'K2L 3M2');
+
+INSERT INTO Listings(type) VALUES ("guesthouse");
+INSERT INTO HostsToListings(listID, hostSIN) VALUES (3, 876543210);
+INSERT INTO Locations VALUES(3, 42.7, -79.6);
+INSERT INTO Addresses VALUES(3, 0, '12 Parliament Avenue', 'Ottawa', 'Canada', 'H2K 1M1');
+
+INSERT INTO Listings(type) VALUES ("hotel");
+INSERT INTO HostsToListings(listID, hostSIN) VALUES (4, 876543210);
+INSERT INTO Locations VALUES(4, 47.2, -100.7);
+INSERT INTO Addresses VALUES(4, 20, '42 Vaughn Mills', 'Vaughn', 'Canada', 'J2L 1L2');
+
+INSERT INTO Listings(type) VALUES ("house");
+INSERT INTO HostsToListings(listID, hostSIN) VALUES (5, 765432101);
+INSERT INTO Locations VALUES(5, 49.9, -123.1);
+INSERT INTO Addresses VALUES(5, 0, '42 Valley Crescent', 'Vancouver', 'Canada', 'B1C 2C2');
+
+INSERT INTO Listings(type) VALUES ("apartment");
+INSERT INTO HostsToListings(listID, hostSIN) VALUES (6, 765432101);
+INSERT INTO Locations VALUES(6, 47.2, -100.7);
+INSERT INTO Addresses VALUES(6, 10, '40 Vaughn Mills', 'Vaughn', 'Canada', 'J2L 1L5');
+
+INSERT INTO Listings(type) VALUES ("guesthouse");
+INSERT INTO HostsToListings(listID, hostSIN) VALUES (7, 765432101);
+INSERT INTO Locations VALUES(7, 49.5, -120.3);
+INSERT INTO Addresses VALUES(7, 0, '200 Martin Road', 'Vancouver', 'Canada', 'B1C 1M1');
+
+INSERT INTO Listings(type) VALUES ("hotel");
+INSERT INTO HostsToListings(listID, hostSIN) VALUES (8, 654321012);
+INSERT INTO Locations VALUES(8, 45.3, -75.9);
+INSERT INTO Addresses VALUES(8, 20, '53 Miliary Trail', 'Scarborough', 'Canada', 'L1C 1M1');
+
+INSERT INTO Listings(type) VALUES ("house");
+INSERT INTO HostsToListings(listID, hostSIN) VALUES (9, 654321012);
+INSERT INTO Locations VALUES(9, 45.6, -75.5);
+INSERT INTO Addresses VALUES(9, 0, '59 Morrish Road', 'Scarborough', 'Canada', 'L1C 1M9');
+
+INSERT INTO Listings(type) VALUES ("apartment");
+INSERT INTO HostsToListings(listID, hostSIN) VALUES (10, 543210123);
+INSERT INTO Locations VALUES(10, 53.8, -127.2);
+INSERT INTO Addresses VALUES(10, 25, '59 Morrish Road', 'Victoria', 'Canada', 'L1C 1M9');
+
+INSERT INTO Listings(type) VALUES ("guesthouse");
+INSERT INTO HostsToListings(listID, hostSIN) VALUES (11, 543210123);
+INSERT INTO Locations VALUES(11, 38.7, -86);
+INSERT INTO Addresses VALUES(11, 0, '59 Nashville Road', 'Nashville', 'United States', 'R2C 2M9');
+
+INSERT INTO Listings(type) VALUES ("hotel");
+INSERT INTO HostsToListings(listID, hostSIN) VALUES (12, 432101234);
+INSERT INTO Locations VALUES(12, 41.1, -72);
+INSERT INTO Addresses VALUES(12, 12, '20 Hartford Road', 'Hartford', 'United States', 'N3M 1K9');
+
+INSERT INTO Listings(type) VALUES ("house");
+INSERT INTO HostsToListings(listID, hostSIN) VALUES (13, 432101234);
+INSERT INTO Locations VALUES(13, 38, -77.6);
+INSERT INTO Addresses VALUES(13, 0, '13 Washington Street', 'Washington', 'United States', 'N3M 1K9');
+
+INSERT INTO Listings(type) VALUES ("apartment");
+INSERT INTO HostsToListings(listID, hostSIN) VALUES (14, 321012345);
+INSERT INTO Locations VALUES(14, 39, -76.6);
+INSERT INTO Addresses VALUES(14, 14, '14 Washington Rd', 'Washington', 'United States', 'N3M 1L8');
+
+INSERT INTO Listings(type) VALUES ("guesthouse");
+INSERT INTO HostsToListings(listID, hostSIN) VALUES (15, 321012345);
+INSERT INTO Locations VALUES(15, 20, -99.6);
+INSERT INTO Addresses VALUES(15, 0, '15 Mexico City Street', 'Mexico City', 'Mexico', 'X3l M18');
+
+INSERT INTO Listings(type) VALUES ("hotel");
+INSERT INTO HostsToListings(listID, hostSIN) VALUES (16, 210123456);
+INSERT INTO Locations VALUES(16, 20.5, -98.9);
+INSERT INTO Addresses VALUES(16, 20, '16 Mexico City Street', 'Mexico City', 'Mexico', 'X3l M19');
+
+
+-- Insert Amenities -- skip the location-type amenities
+
+INSERT INTO AMENITIES(type, name) VALUES ('Essentials', 'Wifi');
+INSERT INTO AMENITIES(type, name) VALUES ('Essentials', 'Kitchen');
+INSERT INTO AMENITIES(type, name) VALUES ('Essentials', 'Washer');
+INSERT INTO AMENITIES(type, name) VALUES ('Features', 'Pool');
+INSERT INTO AMENITIES(type, name) VALUES ('Features', 'Free Parking');
+INSERT INTO AMENITIES(type, name) VALUES ('Safety', 'Smoke Alarm');
+INSERT INTO AMENITIES(type, name) VALUES ('Safety', 'Carbon Monoxide Alarm');
+
+
+-- Listings Have Amenities, we can modify this once we figure out host toolkit
+
+-- For 1: Suggest increase in price if you added a washer or pool, based on below 3
+
+INSERT INTO ListingsHaveAmenities VALUES (1, 'Wifi');
+INSERT INTO ListingsHaveAmenities VALUES (1, 'Kitchen');
+
+--- for 2,3,4, can suggest what would happen if you swapped out the last one for something else
+
+INSERT INTO ListingsHaveAmenities VALUES (2, 'Wifi');
+INSERT INTO ListingsHaveAmenities VALUES (2, 'Kitchen');
+INSERT INTO ListingsHaveAmenities VALUES (2, 'Washer');
+
+INSERT INTO ListingsHaveAmenities VALUES (3, 'Wifi');
+INSERT INTO ListingsHaveAmenities VALUES (3, 'Kitchen');
+INSERT INTO ListingsHaveAmenities VALUES (3, 'Pool');
+
+INSERT INTO ListingsHaveAmenities VALUES (4, 'Wifi');
+INSERT INTO ListingsHaveAmenities VALUES (4, 'Kitchen');
+INSERT INTO ListingsHaveAmenities VALUES (4, 'Free Parking');
+
+-- For 5: Suggest increase in price if you added wifi, based on 1
+
+INSERT INTO ListingsHaveAmenities VALUES (5, 'Kitchen');
+INSERT INTO ListingsHaveAmenities VALUES (5, 'Pool');
+
+-- For 6: Suggest increase in price if you added kitchen or smoke alarm based on 4 and 7
+
+INSERT INTO ListingsHaveAmenities VALUES (6, 'Wifi');
+INSERT INTO ListingsHaveAmenities VALUES (6, 'Free Parking');
+
+INSERT INTO ListingsHaveAmenities VALUES (7, 'Wifi');
+INSERT INTO ListingsHaveAmenities VALUES (7, 'Free Parking');
+INSERT INTO ListingsHaveAmenities VALUES (7, 'Smoke Alarm');
+
+INSERT INTO ListingsHaveAmenities VALUES (8, 'Free Parking');
+INSERT INTO ListingsHaveAmenities VALUES (8, 'Wifi');
+INSERT INTO ListingsHaveAmenities VALUES (8, 'Smoke Alarm');
+INSERT INTO ListingsHaveAmenities VALUES (8, 'Carbon Monoxide Alarm');
+
+-- Lots of suggestions possible here
+
+INSERT INTO ListingsHaveAmenities VALUES (9, 'Wifi');
+
+INSERT INTO ListingsHaveAmenities VALUES (10, 'Free Parking');
+
+-- Need some with same amenities to be able to suggest possible price ? 
+-- Also can suggest possible good amenities by saying - some percentage of total listings have this amenity
+
+INSERT INTO ListingsHaveAmenities VALUES (11, 'Wifi');
+INSERT INTO ListingsHaveAmenities VALUES (11, 'Free Parking');
+
+INSERT INTO ListingsHaveAmenities VALUES (12, 'Wifi');
+INSERT INTO ListingsHaveAmenities VALUES (12, 'Free Parking');
+INSERT INTO ListingsHaveAmenities VALUES (12, 'Smoke Alarm');
+
+INSERT INTO ListingsHaveAmenities VALUES (13, 'Pool');
+
+INSERT INTO ListingsHaveAmenities VALUES (14, 'Pool');
+INSERT INTO ListingsHaveAmenities VALUES (14, 'Wifi');
+
+INSERT INTO ListingsHaveAmenities VALUES (15, 'Pool');
+INSERT INTO ListingsHaveAmenities VALUES (15, 'Kitchen');
+
+INSERT INTO ListingsHaveAmenities VALUES (16, 'Smoke Alarm');
+INSERT INTO ListingsHaveAmenities VALUES (15, 'Wifi');
+
+
+
+
+
+
