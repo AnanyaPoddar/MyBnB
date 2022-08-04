@@ -109,6 +109,7 @@ public class DAO {
           System.out.println("Created Booked table in given database...");
 
       // Must provide both rating and comment when providing a review
+      // NOTE: not doing on delete cascade 
       String rentersReviewHosts = "CREATE TABLE IF NOT EXISTS rentersReviewHosts "
         + "(hostSIN INT NOT NULL, FOREIGN KEY (hostSIN) REFERENCES Host(hostSIN), "
         + "renterSIN INT NOT NULL, FOREIGN KEY (renterSIN) REFERENCES Renter(renterSIN)," + 
@@ -143,14 +144,16 @@ public class DAO {
       stmt.executeUpdate(locationsTable);
       System.out.println("Created locationsTable table in given database...");
 
+      // TODO does listID have to be a key or just unique?
+      // TODO unit#, street, postal are enough to constitute a key right?
       String addressesTable =
           "CREATE TABLE IF NOT EXISTS ADDRESSES " 
-          + "(listID INT NOT NULL, FOREIGN KEY (listID) REFERENCES Listings(listID), " 
+          + "(listID INT NOT NULL UNIQUE, FOREIGN KEY (listID) REFERENCES Listings(listID), " 
           + "unitNum INT NOT NULL, "
           + " street VARCHAR(50) NOT NULL, "
           + " city VARCHAR(25) NOT NULL, " 
           + " country VARCHAR(100) NOT NULL, "
-          + " postal VARCHAR(10) NOT NULL, PRIMARY KEY (listID, unitNum, street, postal))";
+          + " postal VARCHAR(10) NOT NULL, PRIMARY KEY (unitNum, street, postal))";
       stmt.executeUpdate(addressesTable);
       System.out.println("Created addresses table in given database...");
 
@@ -168,6 +171,10 @@ public class DAO {
 
       stmt.executeUpdate(ListingsHaveAmenities);
       System.out.println("Created ListingsHaveAmenities table in given database...");
+
+      // drop tables rentersreviewlistings, rentersreviewhosts, listingshaveamenities, hostsreviewrenters;
+      // drop tables hoststolistings, locations, amenities, addresses, availabilities, booked;
+      //  drop tables renter, host, user, listings;
       
 
       Scanner myObj = new Scanner(System.in); // Create a Scanner object

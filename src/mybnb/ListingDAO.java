@@ -82,9 +82,14 @@ public class ListingDAO {
             String city = myObj.nextLine();
             System.out.println("Provide the listing's country.");
             String country = myObj.nextLine();
-            System.out.println("Provide the listing's postal code.");
+            System.out.println("Provide the listing's postal code in the following format: L#L #L#.");
             String postal = myObj.nextLine();
             // TODO Verify postal code's properly formatted 0, 2, 4 is alpha, 1, 3, 5 is num
+            if(postal.length() != 7 || !Character.isLetter(postal.charAt(0)) || !Character.isLetter(postal.charAt(2)) || !Character.isLetter(postal.charAt(5)) || 
+            !Character.isDigit(postal.charAt(1)) || !Character.isDigit(postal.charAt(4)) || !Character.isDigit(postal.charAt(6)) || postal.charAt(3) != ' '){
+              System.out.println("Incorrect postal code format");
+              return;
+            }
 
             String addressInsert = String.format(
                 "INSERT INTO ADDRESSES VALUES (%d, %d, '%s', '%s', '%s', '%s');", listID, unitNum, street, city, country, postal);
@@ -195,10 +200,7 @@ public class ListingDAO {
     names[22] = "Waterfront";
     names[23] = "Smoke Alarm";
     names[24] = "Carbon Monoxide Alarm";
-    // Are the other indexes "" or something else?
-
-
-    
+    // TODO Are the other indexes "" or something else?
     
     for(int i = 1; i <= 24; i++){
       if(choices[i] == true){
@@ -239,13 +241,6 @@ public class ListingDAO {
         // TODO Auto-generated catch block
         e.printStackTrace();
         }
-          
-
-        
-
-
-        
-
       }
 
     }
