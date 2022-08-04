@@ -6,7 +6,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
 import java.util.Scanner;
-// import io.github.cdimascio.dotenv.Dotenv;
+import io.github.cdimascio.dotenv.Dotenv;
 
 public class DAO {
 
@@ -22,9 +22,9 @@ public class DAO {
     Class.forName(dbClassName);
     // Database credentials
     final String USER = "root";
-    // Dotenv dotenv = Dotenv.configure().load();
-    // final String PASS = dotenv.get("PASS");
-    final String PASS = "root";
+    Dotenv dotenv = Dotenv.configure().load();
+    final String PASS = dotenv.get("PASS");
+    // final String PASS = "root";
     System.out.println("Connecting to database...");
 
     try {
@@ -61,7 +61,7 @@ public class DAO {
 
       String renterTable = "CREATE TABLE IF NOT EXISTS RENTER "
           + "(RenterSIN INT NOT NULL PRIMARY KEY,"
-          + " cardType VARCHAR(12) NOT NULL, " + " cardNum INT NOT NULL, "
+          + " cardType VARCHAR(12) NOT NULL, " + " cardNum VARCHAR(16) NOT NULL, "
           + "INDEX par_ind (RenterSIN), FOREIGN KEY (RenterSIN) REFERENCES USER(SIN) ON DELETE CASCADE)";
 
       stmt.executeUpdate(renterTable);
@@ -196,6 +196,8 @@ public class DAO {
           
           if (exit.equals("4")) 
             AvailabilityDriver.getAvailabilities(conn, myObj);
+          if (exit.equals("5")) 
+            Search.searchListings(conn, myObj);
         }
 
 

@@ -31,6 +31,8 @@ public class Search {
                 addressSearch (conn, myObj);
             if(exit.equals("5"))
                 sortByPrice(conn, myObj);
+            if(exit.equals("6"))
+                fullyFilter(conn, myObj);
         }
     }
 
@@ -78,6 +80,10 @@ public class Search {
     public static void postalSearch (Connection conn, Scanner myObj){
         System.out.println("Provide the listing's postal code.");
         String postal = myObj.nextLine();
+        if(postal.length() != 7){
+            System.out.println("Invalid postal code.");
+            return;
+        }
 
         try {
             Statement statement = conn.createStatement();
@@ -113,7 +119,7 @@ public class Search {
         try {
             Statement statement = conn.createStatement();
             String listing = String.format("SELECT * FROM ADDRESSES "
-             + "WHERE unitNum = %d AND street = '%s' AND postal = '%s';", unitNum, street, postal); // returns meters!, so converts to km
+             + "WHERE unitNum = %d AND street = '%s' AND postal = '%s';", unitNum, street, postal);
             ResultSet rs = statement.executeQuery(listing);
 
             // TODO What info do I need to return/display?        
@@ -156,6 +162,125 @@ public class Search {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+
+    }
+
+    public static void fullyFilter (Connection conn, Scanner myObj){
+
+        // do we need lke views or something?
+
+        // filter by postal code
+        // TODO Maybe somehow make the postalSearch function be into this
+        System.out.println("Would you like to filter by postal code? Y = Yes");
+        String postalChoice = myObj.nextLine();
+        if (postalChoice.toLowerCase().equals("y")) {
+            System.out.println("Provide the listing's postal code.");
+            String postal = myObj.nextLine();
+            if(postal.length() != 7){
+                System.out.println("Invalid postal code.");
+                return;
+            }
+
+            try {
+                Statement statement = conn.createStatement();
+                String postalView = "CREATE OR REPLACE VIEW postalView AS SELECT listID, postal FROM ADDRESSES "
+                + "WHERE postal LIKE '" + postal.substring(0, 6) + "%';"; 
+                statement.executeUpdate(postalView);
+
+            } catch (SQLException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+        else {
+            try {
+                Statement statement = conn.createStatement();
+                String postalView = String.format("CREATE OR REPLACE VIEW postalView AS Select listID FROM LISTINGS;"); 
+                statement.executeUpdate(postalView);
+
+            } catch (SQLException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+
+        // price
+        System.out.println("Would you like to filter by price range? Y = Yes");
+        String priceChoice = myObj.nextLine();
+        if (priceChoice.toLowerCase().equals("y")) {
+            System.out.println("What's the minimum price in your range?"); // todo gotta input smth or it's error
+            int minPrice = Integer.parseInt(myObj.nextLine());    
+            System.out.println("What's the maximum price in your range?");
+            int maxPrice = Integer.parseInt(myObj.nextLine());  
+            // TODO We don't have to order by price this time right?
+            try {
+                Statement statement = conn.createStatement();
+                String priceView = String.format("CREATE OR REPLACE VIEW priceView AS SELECT DISTINCT postalView.*, price FROM postalView JOIN availabilities ON postalView.listID = availabilities.listID WHERE price >= %d AND price <= %d;", minPrice, maxPrice); 
+                System.out.println(priceView);
+                statement.executeUpdate(priceView);    
+            } catch (SQLException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            
+        }
+        else {
+            try {
+                Statement statement = conn.createStatement();
+                String priceView = String.format("CREATE OR REPLACE VIEW priceView AS Select * FROM postalView;"); 
+                statement.executeUpdate(priceView);
+
+            } catch (SQLException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+
+        // amenities 
+        // TODO Is it okay that the same listing is there multiple times for the multiple amenities it has?
+        System.out.println("Would you like to filter by amenities? Y = Yes");
+        String amenitiesChoice = myObj.nextLine();
+        if (amenitiesChoice.toLowerCase().equals("y")) {
+            System.out.println("Choose amenities one at a time. Enter 0 to exit.");
+            System.out.println("Essentials: Wifi, Kitchen, Washer");
+            System.out.println("Features: Pool, Free Parking");
+            System.out.println("Safety: Smoke alarm, CO Alarm");
+            String choice = myObj.nextLine();
+
+            String names = "name = '0'"; // this won't bring up anything, just to keep it here
+            while(!choice.equals("0")){
+                names += " OR name = '" + choice + "'";
+                choice = myObj.nextLine();
+            }
+            System.out.println(names);
+            try {
+                Statement statement = conn.createStatement();
+                String amenitiesView = "CREATE OR REPLACE VIEW amenitiesView AS SELECT DISTINCT priceView.*, name FROM priceView JOIN listingshaveamenities ON priceView.listID = listingshaveamenities.listID WHERE " + names + ";"; 
+                System.out.println(amenitiesView);
+                statement.executeUpdate(amenitiesView);    
+            } catch (SQLException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+        else {
+            try {
+                Statement statement = conn.createStatement();
+                String amenitiesView = String.format("CREATE OR REPLACE VIEW amenitiesView AS Select * FROM postalView;"); 
+                statement.executeUpdate(amenitiesView);
+    
+            } catch (SQLException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+
+        // availabilities
+
+        // others? avg rating in rentersReviewListings? listing type? locations?
+
+        // TODO
+        // Print just the DISTINCT listIDs at the end + show them whole table with all repetition of listID for price and amenities
 
     }
     
