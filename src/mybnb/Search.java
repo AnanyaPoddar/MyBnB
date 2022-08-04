@@ -13,11 +13,11 @@ public class Search {
             System.out.println("------------------------------------------------------");
             System.out.println("Enter 0 to exit searches."); 
             System.out.println("Enter 1 to search nearby location."); // done
-            System.out.println("Enter 2 to search nearby postal codes.");
-            // Similarly the search should provide an option to rank the listings by price (ascending or descending). Does this mean every single listing can be ranked by pricing or the nearby locations one only?
+            System.out.println("Enter 2 to search nearby postal codes."); // done
             System.out.println("Enter 3 to find a listing by address."); // done
             System.out.println("Enter 4 to find listings by time availabilities.");
-            System.out.println("Enter 5 to fully filter.");
+            System.out.println("Enter 5 to sort by price."); // done
+            System.out.println("Enter 6 to fully filter.");
             System.out.println("------------------------------------------------------");
 
 
@@ -29,6 +29,8 @@ public class Search {
                 postalSearch (conn, myObj);
             if(exit.equals("3"))
                 addressSearch (conn, myObj);
+            if(exit.equals("5"))
+                sortByPrice(conn, myObj);
         }
     }
 
@@ -74,6 +76,26 @@ public class Search {
     }
 
     public static void postalSearch (Connection conn, Scanner myObj){
+        System.out.println("Provide the listing's postal code.");
+        String postal = myObj.nextLine();
+
+        try {
+            Statement statement = conn.createStatement();
+            String listing = "SELECT * FROM ADDRESSES "
+             + "WHERE postal LIKE '" + postal.substring(0, 6) + "%';"; 
+            System.out.println(listing);
+            ResultSet rs = statement.executeQuery(listing);
+
+            // TODO What info do I need to return/display?        
+            while(rs.next()){
+                System.out.print("ListID: " + rs.getInt("listID"));
+                System.out.println(", Postal Code: " + rs.getString("postal"));
+            }
+
+        } catch (SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 
     }
 
@@ -94,15 +116,41 @@ public class Search {
              + "WHERE unitNum = %d AND street = '%s' AND postal = '%s';", unitNum, street, postal); // returns meters!, so converts to km
             ResultSet rs = statement.executeQuery(listing);
 
-            // TODO What does "return all listings mean? 
-            //is this enough or do i have to join with Listings etc to provide more info
-        
+            // TODO What info do I need to return/display?        
             while(rs.next()){
                 System.out.println("ListID: " + rs.getInt("listID"));
-                // System.out.print(", Latitude: " + rs.getFloat("Latitude"));
-                // System.out.print(", Longitude: " + rs.getFloat("Longitude"));
-                // System.out.println(", Distance: " + rs.getFloat("Distance"));
             }
+
+        } catch (SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+    }
+
+    public static void sortByPrice (Connection conn, Scanner myObj){
+
+        String order = "ASC";
+        System.out.println("Do you want the price to be sorted in ascending or descending? Default is Ascending. Press D for Descending");
+        String choice = myObj.nextLine();
+        if (choice.toLowerCase().equals("d")) {
+           order = "DESC";
+        }
+
+        // TODO Is what I'm displaying okay? Should it be dates available also??
+        try {
+            Statement statement = conn.createStatement();
+            String listing = "SELECT DISTINCT listID, price FROM availabilities ORDER BY PRICE " + order+ ";"; 
+            System.out.println(listing);
+            ResultSet rs = statement.executeQuery(listing);
+
+            // TODO What info do I need to return/display? I show multiple listID but no availabilities  
+            while(rs.next()){
+                System.out.print("ListID: " + rs.getInt("listID"));
+                System.out.println(", Price: " + rs.getFloat("price"));
+            }
+
+            System.out.println("To see on which dates the listings have the prices available, see all availabilities for a listing from the menu.");
 
         } catch (SQLException e) {
             // TODO Auto-generated catch block
