@@ -92,8 +92,10 @@ public class DAO {
       stmt.executeUpdate(hostsToListingTable);
       System.out.println("Created HostsTolistings table in given database...");
 
+      //status options for availabilities: booked, available, past, cancelled
       String availabilitiesTable = "CREATE TABLE IF NOT EXISTS Availabilities "
-          + "(date DATE NOT NULL, listID INT NOT NULL, price FLOAT NOT NULL check (price >= 0), isAvailable BOOLEAN default 1, " +
+          + "(date DATE NOT NULL, listID INT NOT NULL, price FLOAT NOT NULL check (price >= 0), " +
+          "status varchar(11) NOT NULL default 'available', " +
           "FOREIGN KEY (listID) REFERENCES Listings(listID) ON DELETE CASCADE, " +
           "PRIMARY KEY(listID, date) )";
 
@@ -159,7 +161,7 @@ public class DAO {
             ListingDAO.viewAllListings(conn, myObj);
           
           if (exit.equals("4")) 
-            AvailabilityDAO.getAvailabilities(conn, myObj);
+            AvailabilityDriver.getAvailabilities(conn, myObj);
 
         }
 
@@ -190,10 +192,10 @@ public class DAO {
               ListingDAO.deleteListing(conn, myObj);
             
             if (exit.equals("7")) 
-              AvailabilityDAO.modifyAvailabilities(conn, myObj);
+              AvailabilityDriver.modifyAvailabilities(conn, myObj);
             
             if (exit.equals("8")) 
-              BookingsDAO.hostCancelsBooking(conn, myObj);
+              BookingsDriver.hostCancelsBooking(conn, myObj);
             
             if (exit.equals("9")) 
               BookingsDAO.getAllBookingsForHost(conn);
@@ -213,10 +215,10 @@ public class DAO {
             exit = myObj.nextLine(); 
             
             if (exit.equals("5")) 
-              BookingsDAO.addBooking(conn, myObj);
+              BookingsDriver.addBooking(conn, myObj);
 
             if (exit.equals("6")) 
-              BookingsDAO.userCancelsBooking(conn, myObj);
+              BookingsDriver.userCancelsBooking(conn, myObj);
 
             if (exit.equals("7")) 
               UserDAO.renterReviewsHost(conn, myObj);
@@ -233,7 +235,7 @@ public class DAO {
           if (exit.equals("1")) UserDAO.logout();
           if (exit.equals("2")) UserDAO.deleteUser(conn, myObj);
           if (exit.equals("3")) ListingDAO.viewAllListings(conn, myObj);
-          if (exit.equals("4")) AvailabilityDAO.getAvailabilities(conn, myObj);
+          if (exit.equals("4")) AvailabilityDriver.getAvailabilities(conn, myObj);
         }
       }
       System.out.println("Closing connection...");

@@ -1,6 +1,5 @@
 package mybnb;
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -25,7 +24,6 @@ public class AvailabilityDAO{
     return true;
   }
 
-
   //Helper function, returns -1 if listing not available on all the dates mentioned, otherwise returns the total price
   public static float getAvailabilityPriceOnDates(Connection conn, LocalDate startDate, LocalDate endDate, int listingID) throws SQLException{
     //first check that the start and end date are valid
@@ -42,7 +40,7 @@ public class AvailabilityDAO{
     stringDates  += ")";
 
     String checkDates = String.format("SELECT count(date) = %d  as isBookable, sum(price) as cost " + 
-    "FROM Availabilities WHERE listID = %d AND date in %s AND isAvailable = 1;", dates.size(), listingID, stringDates);
+    "FROM Availabilities WHERE listID = %d AND date in %s AND status = 'available';", dates.size(), listingID, stringDates);
     ResultSet rs = statement.executeQuery(checkDates);
     if(rs.next()){
       if(rs.getInt("isBookable") == 0){
@@ -76,11 +74,12 @@ public class AvailabilityDAO{
     
   }
 
-  //this gets availabilities with isAvailable = 1
-  private static void getAvailabilities(Connection conn, int listingID, Scanner myObj){
+  //only returns AVAILABLE availabilities
+  public static void getAvailabilities(Connection conn, int listingID, Scanner myObj){
+    //TODO: This should also setAvailabilities to past first by checking against current date
     try {
       Statement statement = conn.createStatement();
-      String availabilities = String.format("SELECT date, price from Availabilities WHERE listID = %d AND isAvailable = 1;", listingID);
+      String availabilities = String.format("SELECT date, price from Availabilities WHERE listID = %d AND status = 'available';", listingID);
       ResultSet rs = statement.executeQuery(availabilities);
       //TODO: Maybe provide feedback to user if the listingID DNE or if no availabilities for it exist
       while(rs.next()){
@@ -92,13 +91,6 @@ public class AvailabilityDAO{
       e.printStackTrace();
     }
   }
-
-  public static void getAvailabilities(Connection conn, Scanner myObj){
-    System.out.println("Enter the id of the listing you'd like to see availabilities for.");
-    int listingID = Integer.parseInt(myObj.nextLine());
-    getAvailabilities(conn, listingID, myObj);
-  }
-
 
   public static void addAvailabilities(Connection conn, int listingID, LocalDate startDate, LocalDate endDate, float price){
     //datesUntil enddate is exclusive, so add 1 day to include last date
@@ -112,7 +104,7 @@ public class AvailabilityDAO{
         if(i == dates.size()-1)
           //TODO: Check, this should update the price if the key already exists
           availInsert += String.format("(%d, '%s', %f) ON DUPLICATE KEY UPDATE price = %f;", listingID, dates.get(i), price, price);
-        else availInsert +=  String.format("(%d, '%s', %f)", listingID, dates.get(i), price);
+        else availInsert +=  String.format("(%d, '%s', %f), ", listingID, dates.get(i), price);
       }
       //updated so that it only executes the query once, rather than every time inside for loop
       statement.executeUpdate(availInsert);
@@ -123,106 +115,38 @@ public class AvailabilityDAO{
     }
   }
 
-  public static void addAvailabilities(Connection conn, int listingID, Scanner myObj){
-    System.out.println("Enter a range of availabilities for your listing in the YYYY-MM-DD format. Enter 0 to exit\n");
-    String end = "-1";
-    String start = "-1";
-    while(!start.equals("0") && !end.equals("0")){
-      System.out.println("Start date of range: ");
-      start = myObj.nextLine();
-      if(start.equals("0")) break;
-      
-      System.out.println("End date of range: ");
-      end = myObj.nextLine();
-      if(end.equals("0")) break;
-      //TODO: try-catch here
-      LocalDate startDate = LocalDate.parse(start);
-      LocalDate endDate = LocalDate.parse(end);
+  //set availability status to either 'available', 'booked', 'past', or 'cancelled'
+  public static void setAvailability(Connection conn, int listingID, LocalDate startDate, LocalDate endDate, String status){
+    List<LocalDate> dates = startDate.datesUntil(endDate.plusDays(1)).collect(Collectors.toList());
 
-      if(!checkValidDates(startDate, endDate)) return;
-
-      System.out.println("Enter the price of this listing in CAD. This price is applied for each date within the given range.");
-      float price = Float.parseFloat(myObj.nextLine());
-
-      addAvailabilities(conn, listingID, startDate, endDate, price);
-    }
-  }
-
-
-    //change isAvailable to 0/1 for isAvailable
-    public static void setAvailability(Connection conn, int listingID, LocalDate startDate, LocalDate endDate, int isAvailable){
-      List<LocalDate> dates = startDate.datesUntil(endDate.plusDays(1)).collect(Collectors.toList());
-  
-      try {
-        Statement statement = conn.createStatement();
-        String stringDates = "(";
-        for(int i = 0; i < dates.size(); i++){
-          if(i==dates.size()-1) stringDates += String.format("'%s'", dates.get(i));
-          else stringDates += String.format("'%s',", dates.get(i));
-        }
-        stringDates  += ")";
-
-          String availInsert = String.format(
-            "UPDATE Availabilities SET isAvailable = %d WHERE listID = %d AND date in %s;", isAvailable, listingID, stringDates);
-                statement.executeUpdate(availInsert);
-      } catch (SQLException e) {
-        e.printStackTrace();
-      }
-    }
-
-  //Helper, called by modifyAvailabilities, which already checks for the correct host, so not required here
-  private static void deleteAvailabilities(Connection conn, int listingID, Scanner myObj){
-    System.out.println("Enter a range of availabilities to delete for your listing in the YYYY-MM-DD format. Enter 0 to exit\n");
-    String end = "-1";
-    String start = "-1";
-    while(!start.equals("0") && !end.equals("0")){
-      System.out.println("Start date of range: ");
-      start = myObj.nextLine();
-      if(start.equals("0")) break;
-      
-      System.out.println("End date of range: ");
-      end = myObj.nextLine();
-      if(end.equals("0")) break;
-
-      //TODO: try-catch here
-      LocalDate startDate = LocalDate.parse(start);
-      LocalDate endDate = LocalDate.parse(end);
-
-      if(!checkValidDates(startDate, endDate)) return;
-      //TODO: Check that none of the dates are booked
-      setAvailability(conn, listingID, startDate, endDate, 0);
-    }
-  }
-
-  //This option is accessible through the menu, hence have to check that the listing belongs to the current logged in user
-  public static void modifyAvailabilities(Connection conn, Scanner myObj){
-    System.out.println("Enter the id of the listing you'd like to modify availabilities for.\n");
-    int listingID = Integer.parseInt(myObj.nextLine());
-    System.out.println(listingID);
     try {
-      //Check that host of listing is the one attempting to modify availailibility
-      if(!hostsListing(conn, listingID)) return;
-      
-      System.out.println("The current list of availabilities for this listing are as follows:\n");
-      getAvailabilities(conn, listingID, myObj);
-
-      System.out.println("Enter 1 to Add a range of availabilities or modify the price of a range of availabilities.");
-      System.out.println("Enter 2 to Delete a range of availabilities\n");
-
-      //TODO: Check that none of the dates are booked when deleting or modifying the price
-
-
-      int choice = Integer.parseInt(myObj.nextLine());
-      if(choice == 1){
-        addAvailabilities(conn, listingID, myObj);
+      Statement statement = conn.createStatement();
+      String stringDates = "(";
+      for(int i = 0; i < dates.size(); i++){
+        if(i==dates.size()-1) stringDates += String.format("'%s'", dates.get(i));
+        else stringDates += String.format("'%s',", dates.get(i));
       }
-      else if (choice == 2){
-        deleteAvailabilities(conn, listingID, myObj);
-      }
+      stringDates  += ")";
 
+        String availInsert = String.format(
+          "UPDATE Availabilities SET status = '%s' WHERE listID = %d AND date in %s;", status, listingID, stringDates);
+              statement.executeUpdate(availInsert);
     } catch (SQLException e) {
       e.printStackTrace();
     }
-
   }
+
+  //helper
+  public static void deleteAvailabilities(int listingID, LocalDate startDate, LocalDate endDate){
+    List<LocalDate> dates = startDate.datesUntil(endDate.plusDays(1)).collect(Collectors.toList());
+    String stringDates = "(";
+      for(int i = 0; i < dates.size(); i++){
+        if(i==dates.size()-1) stringDates += String.format("'%s'", dates.get(i));
+        else stringDates += String.format("'%s',", dates.get(i));
+      }
+    stringDates  += ")";
+
+    String.format("DELETE FROM Availabilities WHERE listID = %d AND date IN %s", listingID, stringDates);
+  }
+
 }

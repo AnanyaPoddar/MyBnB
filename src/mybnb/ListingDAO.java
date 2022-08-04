@@ -10,15 +10,12 @@ import java.util.stream.Collectors;
 
 public class ListingDAO {    
 
-
   //add listing, associated with specific logged-in host
   public static void addListing(Connection conn, Scanner myObj) {
-
     if(!UserDAO.verifyUserInTable(conn, DAO.loggedInUser, "hostSIN","Host")){
         System.out.println("You must be logged in as a host.");
         return;
     }
-
     System.out.println("Enter the type of your listing. 1 = House, 2 = Guesthouse, 3 = Apartment, 4 = Hotel");
     // System.out.println("Are you renting out the entire place? 0 = No, 1 = Yes");
     int typeInput = Integer.parseInt(myObj.nextLine());
@@ -49,7 +46,7 @@ public class ListingDAO {
             "INSERT INTO HostsToListings VALUES (%d, %d);", listID, DAO.loggedInUser);
             statement.executeUpdate(hostsToListingsInsert);
             //After listing is added, prompt user to add availabilities for that listing
-            AvailabilityDAO.addAvailabilities(conn, listID, myObj);
+            AvailabilityDriver.addAvailabilities(conn, listID, myObj);
         }
     } catch (SQLException e) {
       e.printStackTrace();
