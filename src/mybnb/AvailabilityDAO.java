@@ -76,15 +76,16 @@ public class AvailabilityDAO{
 
   //only returns AVAILABLE availabilities
   public static void getAvailabilities(Connection conn, int listingID, Scanner myObj){
-    //TODO: This should also setAvailabilities to past first by checking against current date
+    //set availabilities to past first by checking against current date, then return the ones that are available from current date and onward
+    setPastAvailabilities(conn, listingID);
     try {
       Statement statement = conn.createStatement();
-      String availabilities = String.format("SELECT date, price from Availabilities WHERE listID = %d AND status = 'available';", listingID);
+      String availabilities = String.format("SELECT date, price from Availabilities WHERE listID = %d AND status = 'available' ORDER BY date;", listingID);
       ResultSet rs = statement.executeQuery(availabilities);
       //TODO: Maybe provide feedback to user if the listingID DNE or if no availabilities for it exist
       while(rs.next()){
         System.out.print("Date " + rs.getDate("date"));
-        System.out.println(" Price " + rs.getFloat("price"));
+        System.out.println(", Price " + rs.getFloat("price"));
       }
       System.out.println();
     }catch (SQLException e) {
@@ -94,8 +95,7 @@ public class AvailabilityDAO{
 
   public static void addAvailabilities(Connection conn, int listingID, LocalDate startDate, LocalDate endDate, float price){
     //datesUntil enddate is exclusive, so add 1 day to include last date
-    List<LocalDate> dates = startDate.datesUntil(endDate.plusDays(1))
-    .collect(Collectors.toList());
+    List<LocalDate> dates = startDate.datesUntil(endDate.plusDays(1)).collect(Collectors.toList());
 
     try {
       Statement statement = conn.createStatement();
@@ -115,6 +115,18 @@ public class AvailabilityDAO{
     }
   }
 
+  //sets availabilities to past based on current date
+  public static void setPastAvailabilities(Connection conn, int listingId){
+    String past = String.format("UPDATE availabilities SET status = 'past' WHERE listID = %d AND date < '%s'", listingId, LocalDate.now());
+    try {
+      Statement statement = conn.createStatement();
+      statement.executeUpdate(past);
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+  }
+
+
   //set availability status to either 'available', 'booked', 'past', or 'cancelled'
   public static void setAvailability(Connection conn, int listingID, LocalDate startDate, LocalDate endDate, String status){
     List<LocalDate> dates = startDate.datesUntil(endDate.plusDays(1)).collect(Collectors.toList());
@@ -128,9 +140,8 @@ public class AvailabilityDAO{
       }
       stringDates  += ")";
 
-        String availInsert = String.format(
-          "UPDATE Availabilities SET status = '%s' WHERE listID = %d AND date in %s;", status, listingID, stringDates);
-              statement.executeUpdate(availInsert);
+      String availInsert = String.format("UPDATE Availabilities SET status = '%s' WHERE listID = %d AND date in %s;", status, listingID, stringDates);
+      statement.executeUpdate(availInsert);
     } catch (SQLException e) {
       e.printStackTrace();
     }
@@ -140,10 +151,10 @@ public class AvailabilityDAO{
   public static void deleteAvailabilities(int listingID, LocalDate startDate, LocalDate endDate){
     List<LocalDate> dates = startDate.datesUntil(endDate.plusDays(1)).collect(Collectors.toList());
     String stringDates = "(";
-      for(int i = 0; i < dates.size(); i++){
-        if(i==dates.size()-1) stringDates += String.format("'%s'", dates.get(i));
-        else stringDates += String.format("'%s',", dates.get(i));
-      }
+    for(int i = 0; i < dates.size(); i++){
+      if(i==dates.size()-1) stringDates += String.format("'%s'", dates.get(i));
+      else stringDates += String.format("'%s',", dates.get(i));
+    }
     stringDates  += ")";
 
     String.format("DELETE FROM Availabilities WHERE listID = %d AND date IN %s", listingID, stringDates);

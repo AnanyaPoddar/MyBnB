@@ -6,7 +6,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
 import java.util.Scanner;
-import io.github.cdimascio.dotenv.Dotenv;
+// import io.github.cdimascio.dotenv.Dotenv;
 
 public class DAO {
 
@@ -22,16 +22,10 @@ public class DAO {
     Class.forName(dbClassName);
     // Database credentials
     final String USER = "root";
-    Dotenv dotenv = Dotenv.configure().load();
-    final String PASS = dotenv.get("PASS");
-    // final String PASS = "root";
+    // Dotenv dotenv = Dotenv.configure().load();
+    // final String PASS = dotenv.get("PASS");
+    final String PASS = "root";
     System.out.println("Connecting to database...");
-
-    // TODO Case sensitivity for the queries?
-    // TODO there should be a DAO where the methods reside and the other stuff
-    // is in a different file
-    // TODO These options will be buttons so that the user can't just enter
-    // anything willy nilly
 
     try {
       // Establish connection
@@ -48,9 +42,6 @@ public class DAO {
               + " upassword VARCHAR(12) NOT NULL, "
               + " uname VARCHAR(100) NOT NULL, " + " uaddress VARCHAR(100), "
               + " uoccupation VARCHAR(20), " + " uDOB DATE)";
-      // TODO CHECK (DATEDIFF ...) , CHECK (DATEDIFF("
-      // + [current date somehow] + ", uDOB) >= "18)
-      // SELECT DATEDIFF(u.uDOB, s.uDOB) FROM User u, User s;
 
       stmt.executeUpdate(userTable);
       System.out.println("Created User table in given database...");
@@ -201,7 +192,7 @@ public class DAO {
             UserDAO.login(conn, myObj);
           
           if (exit.equals("3")) 
-            ListingDAO.viewAllListings(conn, myObj);
+            ListingDAO.viewAllListings(conn);
           
           if (exit.equals("4")) 
             AvailabilityDriver.getAvailabilities(conn, myObj);
@@ -215,10 +206,10 @@ public class DAO {
           System.out.println("Enter 0 to exit.");
           System.out.println("Enter 1 to log out.");
           System.out.println("Enter 2 to delete your account.");
-          System.out.println("Enter 3 to view all listings.");
-          System.out.println("Enter 4 to see all availabilities for a listing.");
 
           if(UserDAO.verifyUserInTable(conn, loggedInUser, "hostSIN", "Host")){
+            System.out.println("Enter 3 to view all of your listings.");
+            System.out.println("Enter 4 to see all availabilities for a listing.");
             System.out.println("Enter 5 to add a listing.");
             System.out.println("Enter 6 to delete a listing.");
             System.out.println("Enter 7 to modify availabilities for a listing.");
@@ -226,8 +217,10 @@ public class DAO {
             System.out.println("Enter 9 to see all your booked listings.");
             System.out.println("Enter 10 to review a renter.");
             System.out.println("------------------------------------------------------");
-            exit = myObj.nextLine();    
-
+            exit = myObj.nextLine();  
+            //only show a host's own listings  
+            if (exit.equals("3")) ListingDAO.viewAllListingsByHost(conn);
+            if (exit.equals("4")) AvailabilityDriver.getAvailabilities(conn, myObj);
             if (exit.equals("5")) 
               ListingDAO.addListing(conn, myObj);
             
@@ -248,6 +241,8 @@ public class DAO {
           }
 
           else{
+            System.out.println("Enter 3 to view all of your listings.");
+            System.out.println("Enter 4 to see all availabilities for a listing.");
             System.out.println("Enter 5 to book a listing.");
             System.out.println("Enter 6 to cancel a booking.");
             System.out.println("Enter 7 to review a host.");
@@ -256,7 +251,8 @@ public class DAO {
             System.out.println("Enter 10 to get all listings between two dates");
             System.out.println("------------------------------------------------------");
             exit = myObj.nextLine(); 
-            
+            if (exit.equals("3")) ListingDAO.viewAllListings(conn);
+            if (exit.equals("4")) AvailabilityDriver.getAvailabilities(conn, myObj);
             if (exit.equals("5")) 
               BookingsDriver.addBooking(conn, myObj);
 
@@ -277,8 +273,7 @@ public class DAO {
           }
           if (exit.equals("1")) UserDAO.logout();
           if (exit.equals("2")) UserDAO.deleteUser(conn, myObj);
-          if (exit.equals("3")) ListingDAO.viewAllListings(conn, myObj);
-          if (exit.equals("4")) AvailabilityDriver.getAvailabilities(conn, myObj);
+
         }
       }
       System.out.println("Closing connection...");

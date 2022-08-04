@@ -4,11 +4,29 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 
 public class ListingDAO {    
+
+  //Helper
+  public static List<Integer> getAllListingsByHost(Connection conn) throws SQLException {
+    List<Integer> listings = new ArrayList<>();
+    Statement stmt = conn.createStatement();
+    String sql =  String.format("SELECT  listID from HostsToListings WHERE hostSIN=%d;", DAO.loggedInUser);
+    ResultSet rs = stmt.executeQuery(sql);
+
+    // Extract results
+    while (rs.next()) {
+      // Retrieve by column name
+      int listID = rs.getInt("listID");
+      listings.add(listID);
+    }
+    rs.close();
+    return listings;
+  }
 
   //add listing, associated with specific logged-in host
   public static void addListing(Connection conn, Scanner myObj) {
@@ -123,12 +141,35 @@ public class ListingDAO {
     }
   }
 
-  public static void viewAllListings(Connection conn, Scanner myObj) {
+  public static void viewAllListings(Connection conn) {
     // TODO Does it need to show their corresponding address/location? 
 
     try {
       Statement stmt = conn.createStatement();
       String sql = "SELECT * FROM Listings;";
+      ResultSet rs = stmt.executeQuery(sql);
+
+      // Extract results
+      while (rs.next()) {
+        // Retrieve by column name
+        int listID = rs.getInt("listID");
+        String type = rs.getString("type");
+
+        // Display values
+        System.out.print("ID: " + listID);
+        System.out.println(", type: " + type);
+      }
+      rs.close();
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+  }
+
+
+  public static void viewAllListingsByHost(Connection conn) {
+    try {
+      Statement stmt = conn.createStatement();
+      String sql =  String.format("SELECT listings.listID, type FROM HostsToListings JOIN Listings ON Listings.listID = HostsToListings.listID WHERE hostSIN = %d;", DAO.loggedInUser);
       ResultSet rs = stmt.executeQuery(sql);
 
       // Extract results
