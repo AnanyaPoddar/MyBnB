@@ -58,7 +58,7 @@ public class ReportsDAO {
     public static void numListingsByCity(Connection conn){
         try {
             Statement stmt = conn.createStatement();
-            String sql = String.format("SELECT count(listID) AS count, country, city FROM addresses GROUP BY city, country ORDER BY country, city;");
+            String sql = String.format("SELECT count(listID) AS count, country, city FROM addresses GROUP BY country, city ORDER BY country, city;");
             ResultSet rs = stmt.executeQuery(sql);
             while(rs.next()){
                 System.out.print("City: " + rs.getString("city"));

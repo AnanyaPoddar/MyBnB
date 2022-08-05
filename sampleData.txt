@@ -56,7 +56,7 @@ INSERT INTO Host VALUES (210123456);
 ALTER TABLE Listings AUTO_INCREMENT = 1;
 
 INSERT INTO Listings(type) VALUES ("house");
-INSERT INTO HostsToListings(listID, hostSIN) VALUES (1, 987654321);
+INSERT INTO HostsToListings(listID, hostSIN) VALUES (1, 543210123);
 INSERT INTO Locations VALUES(1, 43.1, -79);
 INSERT INTO Addresses VALUES(1, 0, '10 Dawes Road', 'Toronto', 'Canada', 'K2L 1L1');
 
@@ -135,6 +135,25 @@ INSERT INTO HostsToListings(listID, hostSIN) VALUES (16, 210123456);
 INSERT INTO Locations VALUES(16, 20.5, -98.9);
 INSERT INTO Addresses VALUES(16, 20, '16 Mexico City Street', 'Mexico City', 'Mexico', 'X3l M19');
 
+INSERT INTO Listings(type) VALUES ("apartment");
+INSERT INTO HostsToListings(listID, hostSIN) VALUES (17, 987654321);
+INSERT INTO Locations VALUES(17, 44.5, -80);
+INSERT INTO Addresses VALUES(17, 53, '53 Spadina Avenue', 'Toronto', 'Canada', 'K2L 3M2');
+
+INSERT INTO Listings(type) VALUES ("apartment");
+INSERT INTO HostsToListings(listID, hostSIN) VALUES (18, 987654321);
+INSERT INTO Locations VALUES(18, 44.5, -80);
+INSERT INTO Addresses VALUES(18, 54, '53 Spadina Avenue', 'Toronto', 'Canada', 'K2L 3M2');
+
+INSERT INTO Listings(type) VALUES ("apartment");
+INSERT INTO HostsToListings(listID, hostSIN) VALUES (19, 987654321);
+INSERT INTO Locations VALUES(19, 44.5, -80);
+INSERT INTO Addresses VALUES(19, 55, '53 Spadina Avenue', 'Toronto', 'Canada', 'K2L 3M2');
+
+INSERT INTO Listings(type) VALUES ("apartment");
+INSERT INTO HostsToListings(listID, hostSIN) VALUES (20, 987654321);
+INSERT INTO Locations VALUES(20, 44.5, -80);
+INSERT INTO Addresses VALUES(20, 56, '53 Spadina Avenue', 'Toronto', 'Canada', 'K2L 3M2');
 
 -- Insert Amenities -- skip the location-type amenities
 
@@ -317,8 +336,6 @@ INSERT INTO Availabilities(listID, date, price, status) VALUES (7, '2022-09-08',
 INSERT INTO Availabilities(listID, date, price, status) VALUES (7, '2022-09-09', 200, 'booked');
 INSERT INTO Availabilities(listID, date, price, status) VALUES (7, '2022-09-10', 200, 'booked');
 
-
-
 -- Insert cancelled bookings
 
 INSERT INTO Booked(listID, renterSIN, startDate, endDate, cost, status) VALUES (1, 567890123, '2022-09-08', '2022-09-10', 600, 'cancelled');
@@ -326,4 +343,24 @@ INSERT INTO Availabilities(listID, date, price, status) VALUES (1, '2022-09-08',
 INSERT INTO Availabilities(listID, date, price, status) VALUES (1, '2022-09-09', 200, 'cancelled');
 INSERT INTO Availabilities(listID, date, price, status) VALUES (1, '2022-09-10', 200, 'cancelled');
 
+INSERT INTO Booked(listID, renterSIN, startDate, endDate, cost, status) VALUES (2, 567890123, '2022-09-13', '2022-09-15', 600, 'cancelled');
+INSERT INTO Availabilities(listID, date, price, status) VALUES (2, '2022-09-13', 200, 'cancelled');
+INSERT INTO Availabilities(listID, date, price, status) VALUES (2, '2022-09-14', 200, 'cancelled');
+INSERT INTO Availabilities(listID, date, price, status) VALUES (2, '2022-09-15', 200, 'cancelled');
 
+INSERT INTO Booked(listID, renterSIN, startDate, endDate, cost, status) VALUES (3, 678901234, '2022-09-13', '2022-09-15', 660, 'cancelled');
+INSERT INTO Availabilities(listID, date, price, status) VALUES (3, '2022-09-13', 220, 'cancelled');
+INSERT INTO Availabilities(listID, date, price, status) VALUES (3, '2022-09-14', 220, 'cancelled');
+INSERT INTO Availabilities(listID, date, price, status) VALUES (3, '2022-09-15', 220, 'cancelled');
+
+INSERT INTO Booked(listID, renterSIN, startDate, endDate, cost, status) VALUES (5, 678901234, '2022-10-01', '2022-10-02', 260, 'cancelled');
+INSERT INTO Availabilities(listID, date, price, status) VALUES (5, '2022-10-01', 130, 'cancelled');
+INSERT INTO Availabilities(listID, date, price, status) VALUES (5, '2022-10-02', 130, 'cancelled');
+
+INSERT INTO Booked(listID, renterSIN, startDate, endDate, cost, status) VALUES (6, 789012345, '2022-10-01', '2022-10-02', 260, 'cancelled');
+INSERT INTO Availabilities(listID, date, price, status) VALUES (6, '2022-10-01', 130, 'cancelled');
+INSERT INTO Availabilities(listID, date, price, status) VALUES (6, '2022-10-02', 130, 'cancelled');
+
+INSERT INTO Booked(listID, renterSIN, startDate, endDate, cost, status) VALUES (6, 678901234, '2022-10-03', '2022-10-04', 260, 'cancelled');
+INSERT INTO Availabilities(listID, date, price, status) VALUES (6, '2022-10-03', 130, 'cancelled');
+INSERT INTO Availabilities(listID, date, price, status) VALUES (6, '2022-10-04', 130, 'cancelled');
