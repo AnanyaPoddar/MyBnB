@@ -4,6 +4,9 @@ import java.sql.SQLException;
 import java.util.Scanner;
 import java.sql.Statement;
 import java.sql.ResultSet;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class Search {
     public static void searchListings(Connection conn, Scanner myObj) {
@@ -80,7 +83,7 @@ public class Search {
     public static void postalSearch (Connection conn, Scanner myObj){
         System.out.println("Provide the listing's postal code.");
         String postal = myObj.nextLine();
-        if(postal.length() != 7){
+        if(postal.length() > 10){
             System.out.println("Invalid postal code.");
             return;
         }
@@ -88,7 +91,7 @@ public class Search {
         try {
             Statement statement = conn.createStatement();
             String listing = "SELECT * FROM ADDRESSES "
-             + "WHERE postal LIKE '" + postal.substring(0, 6) + "%';"; 
+             + "WHERE postal LIKE '" + postal.substring(0, postal.length() - 1) + "_';"; 
             System.out.println(listing);
             ResultSet rs = statement.executeQuery(listing);
 
@@ -146,7 +149,7 @@ public class Search {
         // TODO Is what I'm displaying okay? Should it be dates available also??
         try {
             Statement statement = conn.createStatement();
-            String listing = "SELECT DISTINCT listID, price FROM availabilities ORDER BY PRICE " + order+ ";"; 
+            String listing = "SELECT DISTINCT listID, avg(price) as price FROM availabilities GROUP BY listID ORDER BY PRICE " + order+ ";"; 
             System.out.println(listing);
             ResultSet rs = statement.executeQuery(listing);
 
@@ -167,7 +170,11 @@ public class Search {
 
     public static void fullyFilter (Connection conn, Scanner myObj){
 
+        // TODO Only when we do by price and availability: all the listings have an availability. other times, doesn't necessariy have availability. that's fine i think?
+
         // do we need lke views or something?
+        // TODO Maybe make some of these (esp availabilities) be different functions bc there's so much similarity w what's happening here and w it happening elsewhere
+        // TODO have the string amenities be assigned inside if/else but the try/catch can be outside?
 
         // filter by postal code
         // TODO Maybe somehow make the postalSearch function be into this
@@ -176,7 +183,7 @@ public class Search {
         if (postalChoice.toLowerCase().equals("y")) {
             System.out.println("Provide the listing's postal code.");
             String postal = myObj.nextLine();
-            if(postal.length() != 7){
+            if(postal.length() > 10){
                 System.out.println("Invalid postal code.");
                 return;
             }
@@ -184,7 +191,7 @@ public class Search {
             try {
                 Statement statement = conn.createStatement();
                 String postalView = "CREATE OR REPLACE VIEW postalView AS SELECT listID, postal FROM ADDRESSES "
-                + "WHERE postal LIKE '" + postal.substring(0, 6) + "%';"; 
+                + "WHERE postal LIKE '" + postal.substring(0, postal.length() - 1) + "_';"; 
                 statement.executeUpdate(postalView);
 
             } catch (SQLException e) {
@@ -215,7 +222,7 @@ public class Search {
             // TODO We don't have to order by price this time right?
             try {
                 Statement statement = conn.createStatement();
-                String priceView = String.format("CREATE OR REPLACE VIEW priceView AS SELECT DISTINCT postalView.*, price FROM postalView JOIN availabilities ON postalView.listID = availabilities.listID WHERE price >= %d AND price <= %d;", minPrice, maxPrice); 
+                String priceView = String.format("CREATE OR REPLACE VIEW priceView AS SELECT DISTINCT postalView.*, avg(price) as price FROM postalView JOIN availabilities ON postalView.listID = availabilities.listID WHERE price >= %d AND price <= %d GROUP BY listID;", minPrice, maxPrice); 
                 System.out.println(priceView);
                 statement.executeUpdate(priceView);    
             } catch (SQLException e) {
@@ -244,18 +251,20 @@ public class Search {
             System.out.println("Choose amenities one at a time. Enter 0 to exit.");
             System.out.println("Essentials: Wifi, Kitchen, Washer");
             System.out.println("Features: Pool, Free Parking");
-            System.out.println("Safety: Smoke alarm, CO Alarm");
+            System.out.println("Safety: Smoke alarm, Carbon Monoxide Alarm");
             String choice = myObj.nextLine();
 
             String names = "name = '0'"; // this won't bring up anything, just to keep it here
+            int count = 0;
             while(!choice.equals("0")){
                 names += " OR name = '" + choice + "'";
                 choice = myObj.nextLine();
+                count++;
             }
             System.out.println(names);
             try {
                 Statement statement = conn.createStatement();
-                String amenitiesView = "CREATE OR REPLACE VIEW amenitiesView AS SELECT DISTINCT priceView.*, name FROM priceView JOIN listingshaveamenities ON priceView.listID = listingshaveamenities.listID WHERE " + names + ";"; 
+                String amenitiesView = "CREATE OR REPLACE VIEW amenitiesView AS SELECT DISTINCT priceView.*, name FROM priceView JOIN listingshaveamenities ON priceView.listID = listingshaveamenities.listID WHERE " + names + " GROUP BY priceView.listID HAVING count(priceView.listID) = " + count + ";"; 
                 System.out.println(amenitiesView);
                 statement.executeUpdate(amenitiesView);    
             } catch (SQLException e) {
@@ -266,7 +275,7 @@ public class Search {
         else {
             try {
                 Statement statement = conn.createStatement();
-                String amenitiesView = String.format("CREATE OR REPLACE VIEW amenitiesView AS Select * FROM postalView;"); 
+                String amenitiesView = String.format("CREATE OR REPLACE VIEW amenitiesView AS Select * FROM priceView;"); 
                 statement.executeUpdate(amenitiesView);
     
             } catch (SQLException e) {
@@ -276,12 +285,79 @@ public class Search {
         }
 
         // availabilities
+        System.out.println("Would you like to filter by availabilities? Y = Yes");
+        String availabilitiesChoice = myObj.nextLine();
+        String getListings = "";
+        
+        if (availabilitiesChoice.toLowerCase().equals("y")) {
+            System.out.println("Start date of range: ");
+            String start = myObj.nextLine();
+            
+            System.out.println("End date of range: ");
+            String end = myObj.nextLine();
+            //TODO: try-catch here
+            LocalDate startDate = LocalDate.parse(start);
+            LocalDate endDate = LocalDate.parse(end);
 
-        // others? avg rating in rentersReviewListings? listing type? locations?
+            if(!AvailabilityDAO.checkValidDates(startDate, endDate)) return;
+
+            //get all dates in range
+            List<LocalDate> dates = startDate.datesUntil(endDate.plusDays(1)).collect(Collectors.toList());
+            String stringDates = "(";
+            for(int i = 0; i < dates.size(); i++){
+            if(i==dates.size()-1) stringDates += String.format("'%s'", dates.get(i));
+            else stringDates += String.format("'%s',", dates.get(i));
+            }
+            stringDates  += ")";
+
+            getListings = String.format("CREATE OR REPLACE VIEW availabilitiesView AS SELECT amenitiesview.*, listings.type " +
+            "FROM (SELECT count(date) AS dateCount, listID FROM availabilities WHERE date in %s GROUP BY listID) AS a JOIN listings ON listings.listID=a.listID JOIN amenitiesview ON listings.listID=amenitiesview.listID WHERE a.dateCount = %d", stringDates, dates.size());
+            
+
+        }
+        else {
+            getListings = "CREATE OR REPLACE VIEW availabilitiesView AS Select * FROM amenitiesView;";
+        }
+        try {
+            Statement statement = conn.createStatement();
+            statement.executeUpdate(getListings);
+      
+          } catch (SQLException e) {
+            e.printStackTrace();
+        } 
+        System.out.println(getListings);
+
+
+
+        // TODO others? avg rating in rentersReviewListings? listing type? locations?
 
         // TODO
         // Print just the DISTINCT listIDs at the end + show them whole table with all repetition of listID for price and amenities
 
+        try {
+            Statement statement = conn.createStatement();
+            String allListings = "Select * from availabilitiesView;";
+            ResultSet rs = statement.executeQuery(allListings);
+
+            // TODO What info do I need to return/display?        
+            while(rs.next()){
+                System.out.print("ListID: " + rs.getInt("listID"));
+                if (postalChoice.toLowerCase().equals("y"))
+                    System.out.print(", Postal: " + rs.getString("postal"));
+                if (priceChoice.toLowerCase().equals("y")) 
+                    System.out.print(", Price: " + rs.getFloat("price"));
+                if (amenitiesChoice.toLowerCase().equals("y")) // todo not needed bc only gives 1 amenity 
+                    System.out.print(", Amenities: " + rs.getString("name"));
+                if (availabilitiesChoice.toLowerCase().equals("y"))    
+                    System.out.print(", Type: " + rs.getString("type")); // todo not needed, just type
+                System.out.println("");
+            }
+
+      
+          } catch (SQLException e) {
+            e.printStackTrace();
+        } 
+        
     }
     
 }

@@ -140,7 +140,6 @@ INSERT INTO Addresses VALUES(16, 20, '16 Mexico City Street', 'Mexico City', 'Me
 
 INSERT INTO AMENITIES(type, name) VALUES ('Essentials', 'Wifi');
 INSERT INTO AMENITIES(type, name) VALUES ('Essentials', 'Kitchen');
-INSERT INTO AMENITIES(type, name) VALUES ('Essentials', 'Washer');
 INSERT INTO AMENITIES(type, name) VALUES ('Features', 'Pool');
 INSERT INTO AMENITIES(type, name) VALUES ('Features', 'Free Parking');
 INSERT INTO AMENITIES(type, name) VALUES ('Safety', 'Smoke Alarm');
@@ -157,7 +156,6 @@ INSERT INTO ListingsHaveAmenities VALUES (1, 'Kitchen');
 
 INSERT INTO ListingsHaveAmenities VALUES (2, 'Wifi');
 INSERT INTO ListingsHaveAmenities VALUES (2, 'Kitchen');
-INSERT INTO ListingsHaveAmenities VALUES (2, 'Washer');
 
 INSERT INTO ListingsHaveAmenities VALUES (3, 'Wifi');
 INSERT INTO ListingsHaveAmenities VALUES (3, 'Kitchen');

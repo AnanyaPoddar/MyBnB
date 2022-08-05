@@ -1,1 +1,2 @@
 - When a host cancels a booking, the listing does not become available for booking again. However, when a user does so, it becomes available.
+- Adjacent postal code means only the last number in the postal code is different
