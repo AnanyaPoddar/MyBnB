@@ -6,7 +6,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
 import java.util.Scanner;
-// import io.github.cdimascio.dotenv.Dotenv;
+import io.github.cdimascio.dotenv.Dotenv;
 
 public class DAO {
 
@@ -20,9 +20,9 @@ public class DAO {
     Class.forName(dbClassName);
     // Database credentials
     final String USER = "root";
-    // Dotenv dotenv = Dotenv.configure().load();
-    // final String PASS = dotenv.get("PASS");
-    final String PASS = "root";
+    Dotenv dotenv = Dotenv.configure().load();
+    final String PASS = dotenv.get("PASS");
+    // final String PASS = "root";
     System.out.println("Connecting to database...");
 
     try {
@@ -240,7 +240,7 @@ public class DAO {
           }
 
           else{
-            System.out.println("Enter 3 to view all of your listings.");
+            System.out.println("Enter 3 to view all listings.");
             System.out.println("Enter 4 to see all availabilities for a listing.");
             System.out.println("Enter 5 to book a listing.");
             System.out.println("Enter 6 to cancel a booking.");
