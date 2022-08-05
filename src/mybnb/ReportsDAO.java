@@ -123,6 +123,55 @@ public class ReportsDAO {
         }
     }
 
+    public static void rankRentersNumBookings(Connection conn, LocalDate startDate, LocalDate endDate){
+        try {
+            // TODO Which statuses should be included or not
+            // TODO Does this include past bookings even if it's not in the date range? should have brackets?
+            Statement stmt = conn.createStatement();
+            String sql = String.format("SELECT renterSIN, COUNT(renterSIN) as NUMBOOKINGS from BOOKED WHERE startDate >= '%s' AND endDate <= '%s' AND (status = 'booked' OR status = 'past') GROUP BY renterSIN ORDER BY NUMBOOKINGS DESC;", startDate, endDate);
+            ResultSet rs = stmt.executeQuery(sql);
+            while(rs.next()){
+                System.out.print("renterSIN: " + rs.getInt("renterSIN"));
+                System.out.println(", Number of bookings: " + rs.getInt("numBookings"));
+            }
+
+            // TODO What if multiple cities of same name?
+            System.out.println("------------------------------------------------------");
+            System.out.println("Rank of renters by city");
+            System.out.println("Note: only users who have at least 2 bookings during the year of startDate will be displayed.");
+            String cityRank = String.format("SELECT booked.*, country, city, COUNT(booked.renterSIN) as NUMBOOKINGS from BOOKED JOIN ADDRESSES ON addresses.listID = booked.listID JOIN (select renterSIN from booked where extract(year from startDate) = extract(year from '%s') AND (status = 'booked' or status = 'past') GROUP BY renterSIN HAVING count(renterSIN) >= 2) as temp ON temp.renterSIN = booked.renterSIN WHERE startDate >= '%s' AND endDate <= '%s' AND (status = 'booked' OR status = 'past') GROUP BY booked.renterSIN, city ORDER BY city, NUMBOOKINGS DESC;", startDate, startDate, endDate);
+            ResultSet rs2 = stmt.executeQuery(cityRank);
+            while(rs2.next()){
+                System.out.print("renterSIN: " + rs2.getInt("renterSIN"));
+                System.out.print(", City: " + rs2.getString("city"));
+                System.out.println(", Number of bookings: " + rs2.getInt("numBookings"));
+            }
+
+        } catch (SQLException e) {
+            // TODO Replace with error?
+            e.printStackTrace();
+        }
+
+        // todo does the numBookings > 2 count cancelled as well? maybe not since we're not counting them in the whole query and the cancelled booking wouldn't appear in ranking
+        // select *, count(renterSIN) from booked where extract(year from startDate) = extract(year from '2022-01-01') AND (status = 'booked' or status = 'past') GROUP BY renterSIN HAVING count(renterSIN) >= 2;
+
+        // select booked.* from booked JOIN (select * from booked where extract(year from startDate) = extract(year from '2022-01-01') AND (status = 'booked' or status = 'past') GROUP BY renterSIN HAVING count(renterSIN) >= 2) as temp ON temp.renterSIN = booked.renterSIN;
+
+        // SELECT booked.*, country, city, COUNT(renterSIN) as NUMBOOKINGS from BOOKED JOIN ADDRESSES ON addresses.listID = booked.listID WHERE startDate >= '%s' AND endDate <= '%s' AND (status = 'booked' OR status = 'past') GROUP BY renterSIN, city ORDER BY city, NUMBOOKINGS DESC;
+
+        // SELECT booked.*, country, city, COUNT(booked.renterSIN) as NUMBOOKINGS from BOOKED JOIN ADDRESSES ON addresses.listID = booked.listID JOIN (select renterSIN from booked where extract(year from startDate) = extract(year from '2022-01-01') AND (status = 'booked' or status = 'past') GROUP BY renterSIN HAVING count(renterSIN) >= 2) as temp ON temp.renterSIN = booked.renterSIN WHERE startDate >= '2022-01-01' AND endDate <= '2022-12-31' AND (status = 'booked' OR status = 'past') GROUP BY booked.renterSIN, city ORDER BY city, NUMBOOKINGS DESC;
+
+        
+
+        // SELECT booked.*, country, city, COUNT(renterSIN) as NUMBOOKINGS from BOOKED JOIN ADDRESSES ON addresses.listID = booked.listID WHERE startDate >= '2022-08-10' AND endDate <= '2022-09-05' AND (status = 'booked' OR status = 'past') AND extract(year from startDate) = extract(year from '2022-01-01') GROUP BY renterSIN, city HAVING count(renterSIN) > 4 ORDER BY city, NUMBOOKINGS DESC;
+    }
+
+    
+
+    //  
+
+
+
     //TODO: Does rank mean actually assign a number ? or ordering is good enough?
     public static void rankHostsByListingsPerCountry(Connection conn){
         //joined with user to retrieve the username, otherwise would display the hostSIN

@@ -111,19 +111,18 @@ public class ListingDAO {
 
             // Choose amenities
             System.out.println("Choose amenities. Enter 0 to exit.");
-            System.out.println("Essentials: 1 = Wifi, 2 = Kitchen, 3 = Washer"); // get rid of washer
-            System.out.println("Features: 11 = Pool, 12 = Free Parking");
-            System.out.println("Location: 21 = Beachfront, 22 = Waterfront"); // TODO Remove this
-            System.out.println("Safety: 23 = Smoke alarm, 24 = Carbon Monoxide Alarm");
+            System.out.println("Essentials: 1 = Wifi, 2 = Kitchen");
+            System.out.println("Features: 3 = Pool, 4 = Free Parking");
+            System.out.println("Safety: 5 = Smoke Alarm, 6 = Carbon Monoxide Alarm");
             int choice = Integer.parseInt(myObj.nextLine());
 
-            Boolean[] amenities = new Boolean[25];
-            for (int i = 0; i < 25; i++) {
+            Boolean[] amenities = new Boolean[7];
+            for (int i = 0; i < 7; i++) {
               amenities[i] = false;
             }
             while(choice != 0){
-              if(choice > 25 || choice < 0){
-                System.out.println("Must choose between 1 - 24");
+              if(choice > 6 || choice < 0){
+                System.out.println("Must choose between 1 - 6");
               }
               else{
                 amenities[choice] = true;
@@ -241,22 +240,15 @@ public class ListingDAO {
 
   public static void addAmenities(Connection conn, Boolean[] choices, int listID){
     // TODO Later on, there won't be any more null insertions if 1-24 all have amenities assigned to them
-    String[] names = new String[25];
-    // for (int i = 0; i < 25; i++) {
-    //   names[i] = "";
-    // }
+    String[] names = new String[7];
     names[1] = "Wifi";
     names[2] = "Kitchen";
-    names[3] = "Washer";
-    names[11] = "Pool";
-    names[12] = "Free Parking";
-    names[21] = "Beachfront";
-    names[22] = "Waterfront";
-    names[23] = "Smoke Alarm";
-    names[24] = "Carbon Monoxide Alarm";
-    // TODO Are the other indexes "" or something else?
+    names[3] = "Pool";
+    names[4] = "Free Parking";
+    names[5] = "Smoke Alarm";
+    names[6] = "Carbon Monoxide Alarm";
     
-    for(int i = 1; i <= 24; i++){
+    for(int i = 1; i <= 6; i++){
       if(choices[i] == true){
         try {
           // is it in Amenities
@@ -269,13 +261,10 @@ public class ListingDAO {
           // if not, add (name, type to amenities)
           if (!rs.next()) {
             String type;
-            if(i == 23 || i == 24){
+            if(i == 5 || i == 6){
               type = "Safety";
             }
-            else if(i == 21 || i == 22){
-              type = "Location";
-            }
-            else if(i > 10){
+            else if(i == 3 || i == 4){
               type = "Features";
             }
             else{

@@ -159,8 +159,6 @@ public class Search {
                 System.out.println(", Price: " + rs.getFloat("price"));
             }
 
-            System.out.println("To see on which dates the listings have the prices available, see all availabilities for a listing from the menu.");
-
         } catch (SQLException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -222,7 +220,7 @@ public class Search {
             // TODO We don't have to order by price this time right?
             try {
                 Statement statement = conn.createStatement();
-                String priceView = String.format("CREATE OR REPLACE VIEW priceView AS SELECT DISTINCT postalView.*, avg(price) as price FROM postalView JOIN availabilities ON postalView.listID = availabilities.listID WHERE price >= %d AND price <= %d GROUP BY listID;", minPrice, maxPrice); 
+                String priceView = String.format("CREATE OR REPLACE VIEW priceView AS SELECT DISTINCT postalView.*, avg(price) as price FROM postalView JOIN availabilities ON postalView.listID = availabilities.listID GROUP BY listID HAVING avg(price) >= %d AND avg(price) <= %d ;", minPrice, maxPrice); 
                 System.out.println(priceView);
                 statement.executeUpdate(priceView);    
             } catch (SQLException e) {
@@ -248,10 +246,10 @@ public class Search {
         System.out.println("Would you like to filter by amenities? Y = Yes");
         String amenitiesChoice = myObj.nextLine();
         if (amenitiesChoice.toLowerCase().equals("y")) {
-            System.out.println("Choose amenities one at a time. Enter 0 to exit.");
-            System.out.println("Essentials: Wifi, Kitchen, Washer");
-            System.out.println("Features: Pool, Free Parking");
-            System.out.println("Safety: Smoke alarm, Carbon Monoxide Alarm");
+            System.out.println("Choose amenities. Enter 0 to exit.");
+            System.out.println("Essentials: 1 = Wifi, 2 = Kitchen");
+            System.out.println("Features: 3 = Pool, 4 = Free Parking");
+            System.out.println("Safety: 5 = Smoke Alarm, 6 = Carbon Monoxide Alarm");
             String choice = myObj.nextLine();
 
             String names = "name = '0'"; // this won't bring up anything, just to keep it here
@@ -331,22 +329,21 @@ public class Search {
 
         // TODO others? avg rating in rentersReviewListings? listing type? locations?
 
-        // TODO
-        // Print just the DISTINCT listIDs at the end + show them whole table with all repetition of listID for price and amenities
+        // Print
 
         try {
             Statement statement = conn.createStatement();
             String allListings = "Select * from availabilitiesView;";
             ResultSet rs = statement.executeQuery(allListings);
 
-            // TODO What info do I need to return/display?        
+            // TODO What info do I need to return/display? some of them unneeded       
             while(rs.next()){
                 System.out.print("ListID: " + rs.getInt("listID"));
                 if (postalChoice.toLowerCase().equals("y"))
                     System.out.print(", Postal: " + rs.getString("postal"));
                 if (priceChoice.toLowerCase().equals("y")) 
                     System.out.print(", Price: " + rs.getFloat("price"));
-                if (amenitiesChoice.toLowerCase().equals("y")) // todo not needed bc only gives 1 amenity 
+                if (amenitiesChoice.toLowerCase().equals("y")) // todo not needed bc only gives 1 amenity (we'll just assume it gives all)
                     System.out.print(", Amenities: " + rs.getString("name"));
                 if (availabilitiesChoice.toLowerCase().equals("y"))    
                     System.out.print(", Type: " + rs.getString("type")); // todo not needed, just type

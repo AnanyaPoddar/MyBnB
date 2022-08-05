@@ -39,6 +39,9 @@ public class ReportsDriver {
         System.out.println("Host(s) with Most Cancelled Bookings:");
         ReportsDAO.maxHostCancellations(conn);
         System.out.println("------------------------------------------------------");
+        System.out.println("Ranking of Renters by booking:");
+        ReportsDAO.rankRentersNumBookings(conn, startDate, endDate);
+        System.out.println("------------------------------------------------------");
     }
     
     private static void viewListingReports(Connection conn, Scanner myObj){

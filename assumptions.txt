@@ -1,2 +1,3 @@
 - When a host cancels a booking, the listing does not become available for booking again. However, when a user does so, it becomes available.
 - Adjacent postal code means only the last number in the postal code is different
+- "we are only interested in ranking those renters that have made at least two bookings in the year." In the year means same year as the year of the startDate
