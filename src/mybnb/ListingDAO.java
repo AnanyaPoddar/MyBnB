@@ -312,9 +312,8 @@ public class ListingDAO {
     //get the count of the dates for each listId that appear in the dateRange above;
     //then only return the ones that appear the number of times equivalent to the length of dates (ie includes all the dates), and join with listings
     String getListings = String.format("SELECT listings.listID, listings.type " +
-    "FROM (SELECT count(date) AS dateCount, listID FROM availabilities WHERE date in %s GROUP BY listID) AS a " +
+    "FROM (SELECT count(date) AS dateCount, listID FROM availabilities WHERE status='available' AND date in %s GROUP BY listID) AS a " +
     "JOIN listings ON listings.listID=a.listID WHERE a.dateCount = %d", stringDates, dates.size());
-    System.out.println(getListings);
     try {
       Statement statement = conn.createStatement();
       ResultSet rs = statement.executeQuery(getListings);

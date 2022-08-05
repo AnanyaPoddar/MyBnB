@@ -60,16 +60,16 @@ public class ReportsDAO {
     // }
 
     // //TODO: Does rank mean actually assign a number ? or ordering is good enough?
-    // public static void rankHostsByListingsPerCountry(Connection conn, String country){
-    //     try {
-    //         Statement stmt = conn.createStatement();
-    //         String sql = String.format("SELECT hostSIN, count(h.listID) AS numListings FROM HostsToListings AS h JOIN " +
-    //         "Addresses AS a ON a.listID = h.listID WHERE country='%s' GROUP BY(hostSIN) ORDER BY (numListings) DESC;", country);
-    //         ResultSet rs = stmt.executeQuery(sql);
-    //     } catch (SQLException e) {
-    //         e.printStackTrace();
-    //     }
-    // }
+    public static void rankHostsByListingsPerCountry(Connection conn, String country){
+        try {
+            Statement stmt = conn.createStatement();
+            String sql = String.format("SELECT hostSIN, count(h.listID) AS numListings FROM HostsToListings AS h JOIN " +
+            "Addresses AS a ON a.listID = h.listID WHERE country='%s' GROUP BY(hostSIN) ORDER BY (numListings) DESC;", country);
+            ResultSet rs = stmt.executeQuery(sql);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
     // public static void rankHostsByListingsPerCountryAndCity(Connection conn, String country, String city){
     //     try {

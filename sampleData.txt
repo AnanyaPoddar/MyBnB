@@ -215,6 +215,65 @@ INSERT INTO ListingsHaveAmenities VALUES (16, 'Smoke Alarm');
 INSERT INTO ListingsHaveAmenities VALUES (15, 'Wifi');
 
 
+-- Insert Availabilities
+
+INSERT INTO Availabilities(listID, date, price) VALUES (1, '2022-08-01', 90);
+INSERT INTO Availabilities(listID, date, price) VALUES (1, '2022-08-02', 90);
+INSERT INTO Availabilities(listID, date, price) VALUES (1, '2022-08-03', 90);
+INSERT INTO Availabilities(listID, date, price) VALUES (1, '2022-08-04', 90);
+INSERT INTO Availabilities(listID, date, price) VALUES (1, '2022-08-20', 100);
+INSERT INTO Availabilities(listID, date, price) VALUES (1, '2022-08-21', 100);
+INSERT INTO Availabilities(listID, date, price) VALUES (1, '2022-08-22', 100);
+INSERT INTO Availabilities(listID, date, price) VALUES (1, '2022-08-23', 100);
+
+INSERT INTO Availabilities(listID, date, price) VALUES (2, '2022-08-20', 120);
+INSERT INTO Availabilities(listID, date, price) VALUES (2, '2022-08-21', 120);
+INSERT INTO Availabilities(listID, date, price) VALUES (2, '2022-08-22', 130);
+INSERT INTO Availabilities(listID, date, price) VALUES (2, '2022-08-23', 130);
+
+INSERT INTO Availabilities(listID, date, price) VALUES (3, '2022-09-01', 110.50);
+INSERT INTO Availabilities(listID, date, price) VALUES (3, '2022-09-02', 105.50);
+INSERT INTO Availabilities(listID, date, price) VALUES (3, '2022-09-03', 105.50);
+INSERT INTO Availabilities(listID, date, price) VALUES (3, '2022-09-04', 100.50);
+
+INSERT INTO Availabilities(listID, date, price) VALUES (4, '2022-09-10', 210.50);
+INSERT INTO Availabilities(listID, date, price) VALUES (4, '2022-09-11', 205.50);
+INSERT INTO Availabilities(listID, date, price) VALUES (4, '2022-09-25', 205.50);
+INSERT INTO Availabilities(listID, date, price) VALUES (4, '2022-09-26', 200.50);
+
+INSERT INTO Availabilities(listID, date, price) VALUES (5, '2022-10-10', 210);
+INSERT INTO Availabilities(listID, date, price) VALUES (5, '2022-10-11', 130.50);
+INSERT INTO Availabilities(listID, date, price) VALUES (5, '2022-10-25', 130.50);
+INSERT INTO Availabilities(listID, date, price) VALUES (5, '2022-10-26', 130.50);
+
+INSERT INTO Availabilities(listID, date, price) VALUES (6, '2022-10-10', 310);
+INSERT INTO Availabilities(listID, date, price) VALUES (6, '2022-10-11', 310.50);
+
+INSERT INTO Availabilities(listID, date, price) VALUES (7, '2022-10-15', 200);
+INSERT INTO Availabilities(listID, date, price) VALUES (7, '2022-10-16', 200);
+INSERT INTO Availabilities(listID, date, price) VALUES (7, '2022-11-15', 200);
+INSERT INTO Availabilities(listID, date, price) VALUES (7, '2022-11-16', 200);
+
+INSERT INTO Availabilities(listID, date, price) VALUES (8, '2022-05-15', 100);
+INSERT INTO Availabilities(listID, date, price) VALUES (8, '2022-05-16', 100);
+INSERT INTO Availabilities(listID, date, price) VALUES (8, '2022-10-15', 200);
+INSERT INTO Availabilities(listID, date, price) VALUES (8, '2022-10-16', 200);
+
+INSERT INTO Availabilities(listID, date, price) VALUES (9, '2022-06-15', 500);
+INSERT INTO Availabilities(listID, date, price) VALUES (9, '2022-06-16', 500);
+INSERT INTO Availabilities(listID, date, price) VALUES (9, '2022-12-10', 500);
+INSERT INTO Availabilities(listID, date, price) VALUES (9, '2022-12-11', 500);
+
+INSERT INTO Availabilities(listID, date, price) VALUES (10, '2022-12-15', 500);
+
+INSERT INTO Availabilities(listID, date, price) VALUES (11, '2022-06-16', 250);
+INSERT INTO Availabilities(listID, date, price) VALUES (11, '2022-12-10', 250);
+INSERT INTO Availabilities(listID, date, price) VALUES (11, '2022-12-11', 250);
+
+INSERT INTO Availabilities(listID, date, price) VALUES (12, '2022-07-16', 150);
+INSERT INTO Availabilities(listID, date, price) VALUES (12, '2022-09-10', 150);
+INSERT INTO Availabilities(listID, date, price) VALUES (12, '2022-09-11', 150);
+
 
 
 
