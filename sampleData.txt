@@ -146,7 +146,6 @@ INSERT INTO AMENITIES(type, name) VALUES ('Features', 'Free Parking');
 INSERT INTO AMENITIES(type, name) VALUES ('Safety', 'Smoke Alarm');
 INSERT INTO AMENITIES(type, name) VALUES ('Safety', 'Carbon Monoxide Alarm');
 
-
 -- Listings Have Amenities, we can modify this once we figure out host toolkit
 
 -- For 1: Suggest increase in price if you added a washer or pool, based on below 3
@@ -304,14 +303,12 @@ INSERT INTO Availabilities(listID, date, price, status) VALUES (4, '2022-09-03',
 INSERT INTO Availabilities(listID, date, price, status) VALUES (4, '2022-09-04', 200, 'booked');
 INSERT INTO Availabilities(listID, date, price, status) VALUES (4, '2022-09-05', 200, 'booked');
 
-
 INSERT INTO Booked(listID, renterSIN, startDate, endDate, cost) VALUES (6, 345678901, '2022-09-01', '2022-09-05', 1500);
 INSERT INTO Availabilities(listID, date, price, status) VALUES (6, '2022-09-01', 300, 'booked');
 INSERT INTO Availabilities(listID, date, price, status) VALUES (6, '2022-09-02', 300, 'booked');
 INSERT INTO Availabilities(listID, date, price, status) VALUES (6, '2022-09-03', 300, 'booked');
 INSERT INTO Availabilities(listID, date, price, status) VALUES (6, '2022-09-04', 300, 'booked');
 INSERT INTO Availabilities(listID, date, price, status) VALUES (6, '2022-09-05', 300, 'booked');
-
 
 INSERT INTO Booked(listID, renterSIN, startDate, endDate, cost) VALUES (7, 345678901, '2022-09-06', '2022-09-07', 400);
 INSERT INTO Availabilities(listID, date, price, status) VALUES (7, '2022-09-06', 200, 'booked');
@@ -321,3 +318,12 @@ INSERT INTO Booked(listID, renterSIN, startDate, endDate, cost) VALUES (7, 45678
 INSERT INTO Availabilities(listID, date, price, status) VALUES (7, '2022-09-08', 200, 'booked');
 INSERT INTO Availabilities(listID, date, price, status) VALUES (7, '2022-09-09', 200, 'booked');
 INSERT INTO Availabilities(listID, date, price, status) VALUES (7, '2022-09-10', 200, 'booked');
+
+
+
+-- Insert cancelled bookings
+
+INSERT INTO Booked(listID, renterSIN, startDate, endDate, cost, status) VALUES (1, 567890123, '2022-09-08', '2022-09-10', 600, 'cancelled');
+INSERT INTO Availabilities(listID, date, price, status) VALUES (1, '2022-09-08', 200, 'cancelled');
+INSERT INTO Availabilities(listID, date, price, status) VALUES (1, '2022-09-09', 200, 'cancelled');
+INSERT INTO Availabilities(listID, date, price, status) VALUES (1, '2022-09-10', 200, 'cancelled');

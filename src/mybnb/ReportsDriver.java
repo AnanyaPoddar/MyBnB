@@ -29,13 +29,20 @@ public class ReportsDriver {
         //TODO: try-catch here
         LocalDate startDate = LocalDate.parse(start);
         LocalDate endDate = LocalDate.parse(end);
-        System.out.println("Number of Bookings By City:");
-        ReportsDAO.numBookingsByDates(conn, startDate, endDate);
         System.out.println("------------------------------------------------------");
-
+        System.out.println("Number of Bookings By City:");
+        ReportsDAO.numBookingsByDatesAndCity(conn, startDate, endDate);
+        System.out.println("------------------------------------------------------");
+        System.out.println("Renter(s) with Most Cancelled Bookings:");
+        ReportsDAO.maxRenterCancellations(conn);
+        System.out.println("------------------------------------------------------");
+        System.out.println("Host(s) with Most Cancelled Bookings:");
+        ReportsDAO.maxHostCancellations(conn);
+        System.out.println("------------------------------------------------------");
     }
     
     private static void viewListingReports(Connection conn, Scanner myObj){
+        System.out.println("------------------------------------------------------");
         System.out.println("Number of Listings by Country:");
         ReportsDAO.numListingsByCountry(conn);
         System.out.println("------------------------------------------------------");

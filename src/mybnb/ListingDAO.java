@@ -15,7 +15,7 @@ public class ListingDAO {
   public static List<Integer> getAllListingsByHost(Connection conn) throws SQLException {
     List<Integer> listings = new ArrayList<>();
     Statement stmt = conn.createStatement();
-    String sql =  String.format("SELECT  listID from HostsToListings WHERE hostSIN=%d;", DAO.loggedInUser);
+    String sql =  String.format("SELECT listID from HostsToListings WHERE hostSIN=%d;", DAO.loggedInUser);
     ResultSet rs = stmt.executeQuery(sql);
 
     // Extract results
@@ -142,11 +142,11 @@ public class ListingDAO {
   }
 
   public static void viewAllListings(Connection conn) {
-    // TODO Does it need to show their corresponding address/location? 
+    // Shows corresponding address (not location as that isn't necessarily relevant to the user)
 
     try {
       Statement stmt = conn.createStatement();
-      String sql = "SELECT * FROM Listings;";
+      String sql = "SELECT a.listID, type, unitNum, street, city, country, postal FROM listings AS l JOIN addresses AS a ON a.listID=l.listID;";
       ResultSet rs = stmt.executeQuery(sql);
 
       // Extract results
@@ -154,10 +154,19 @@ public class ListingDAO {
         // Retrieve by column name
         int listID = rs.getInt("listID");
         String type = rs.getString("type");
+        String street = rs.getString("street");
+        String city = rs.getString("city");
+        String country = rs.getString("country");
+        String postal = rs.getString("postal");
+        int unitNum = rs.getInt("unitNum");
+
 
         // Display values
         System.out.print("ID: " + listID);
         System.out.println(", type: " + type);
+        System.out.println("Address: " + street + ", " + (unitNum != 0 ? "unit " + unitNum + ", " : "") + city + ", " + country + ", " + postal);
+        System.out.println("------------------------------------------------------");
+
       }
       rs.close();
     } catch (SQLException e) {
@@ -169,7 +178,7 @@ public class ListingDAO {
   public static void viewAllListingsByHost(Connection conn) {
     try {
       Statement stmt = conn.createStatement();
-      String sql =  String.format("SELECT listings.listID, type FROM HostsToListings JOIN Listings ON Listings.listID = HostsToListings.listID WHERE hostSIN = %d;", DAO.loggedInUser);
+      String sql =  String.format("SELECT l.listID, type, street, city, country, postal, unitNum FROM Listings as l JOIN addresses AS a ON l.listID = a.listID JOIN HostsToListings AS h ON h.listID = a.listID WHERE hostSIN = %d", DAO.loggedInUser);
       ResultSet rs = stmt.executeQuery(sql);
 
       // Extract results
@@ -177,10 +186,18 @@ public class ListingDAO {
         // Retrieve by column name
         int listID = rs.getInt("listID");
         String type = rs.getString("type");
+        String street = rs.getString("street");
+        String city = rs.getString("city");
+        String country = rs.getString("country");
+        String postal = rs.getString("postal");
+        int unitNum = rs.getInt("unitNum");
 
         // Display values
         System.out.print("ID: " + listID);
         System.out.println(", type: " + type);
+        System.out.println("Address: " + street + ", " + (unitNum != 0 ? "unit " + unitNum + ", " : "") + city + ", " + country + ", " + postal);
+        System.out.println("------------------------------------------------------");
+
       }
       rs.close();
     } catch (SQLException e) {
