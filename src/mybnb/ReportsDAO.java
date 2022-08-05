@@ -176,10 +176,12 @@ public class ReportsDAO {
     public static void rankHostsByListingsPerCountry(Connection conn){
         //joined with user to retrieve the username, otherwise would display the hostSIN
         try {
+            //group by 2 things means both must be satisfied in the group
             Statement stmt = conn.createStatement();
             String sql = "SELECT count(*) AS count, country, uname as hostName FROM HostsToListings AS h " + 
             "JOIN addresses AS a ON a.listID=h.listID JOIN user ON h.hostSIN = user.SIN " +
             "GROUP BY country, hostSIN ORDER BY country,count(*) DESC;";
+
             ResultSet rs = stmt.executeQuery(sql);
             while(rs.next()){
                 System.out.print("Country: " + rs.getString("country"));
@@ -209,27 +211,50 @@ public class ReportsDAO {
         }
     }
 
+    //TODO: Is there anything to do with this info, do we actually need to flag
+    public static void possibleCommercialHostsByCountry(Connection conn){
+        //add another column for total count per country, then just check if count/totalCount >= 1/10        
+        String createView = "CREATE OR REPLACE VIEW hostListingsPerCountry AS " +
+        "(SELECT count(*) AS count, country, uname as hostName FROM HostsToListings AS h JOIN addresses AS a ON a.listID=h.listID " +
+        "JOIN user ON h.hostSIN = user.SIN GROUP BY country, hostSIN ORDER BY country,count(*) DESC);";
 
-    // public static void rankHostsByListingsPerCountry(Connection conn, String country){
-    //     try {
-    //         Statement stmt = conn.createStatement();
-    //         String sql = String.format("SELECT hostSIN, count(h.listID) AS numListings FROM HostsToListings AS h JOIN " +
-    //         "Addresses AS a ON a.listID = h.listID WHERE country='%s' GROUP BY(hostSIN) ORDER BY (numListings) DESC;", country);
-    //         ResultSet rs = stmt.executeQuery(sql);
-    //     } catch (SQLException e) {
-    //         e.printStackTrace();
-    //     }
-    // }
-
-    // public static void rankHostsByListingsPerCountryAndCity(Connection conn, String country, String city){
-    //     try {
-    //         Statement stmt = conn.createStatement();
-    //         String sql = String.format("SELECT hostSIN, count(h.listID) AS numListings FROM HostsToListings AS h JOIN " +
-    //         "Addresses AS a ON a.listID = h.listID WHERE country='%s' AND city = '%s' GROUP BY(hostSIN) ORDER BY (numListings) DESC;", country, city);
-    //         ResultSet rs = stmt.executeQuery(sql);
-    //     } catch (SQLException e) {
-    //         e.printStackTrace();
-    //     }
-    // }
+        String query = "SELECT a.country, hostName FROM hostListingsPerCountry as h JOIN " +
+        "(SELECT DISTINCT country, count(*) AS totalCount FROM addresses GROUP BY country) AS a " +
+        "ON a.country = h.country WHERE count/totalCount > 0.1 ORDER BY country, hostName;";
     
+        try {
+            Statement stmt = conn.createStatement();
+            stmt.execute(createView);
+            ResultSet rs = stmt.executeQuery(query);
+            while(rs.next()){
+                System.out.print("Country: " + rs.getString("country"));
+                System.out.println(", Host: " + rs.getString("hostName"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void possibleCommercialHostsByCity(Connection conn){
+        //add another column for total count per country, then just check if count/totalCount >= 1/10        
+        String createView = "CREATE OR REPLACE VIEW hostListingsPerCity AS " +
+        "(SELECT count(*) AS count, city, uname as hostName FROM HostsToListings AS h JOIN addresses AS a ON a.listID=h.listID " +
+        "JOIN user ON h.hostSIN = user.SIN GROUP BY city, hostSIN ORDER BY city,count(*) DESC);";
+
+        String query = "SELECT a.city, hostName FROM hostListingsPerCity as h JOIN " +
+        "(SELECT DISTINCT city, count(*) AS totalCount FROM addresses GROUP BY city) AS a " +
+        "ON a.city = h.city WHERE count/totalCount > 0.1 ORDER BY city, hostName;";
+    
+        try {
+            Statement stmt = conn.createStatement();
+            stmt.execute(createView);
+            ResultSet rs = stmt.executeQuery(query);
+            while(rs.next()){
+                System.out.print("City: " + rs.getString("city"));
+                System.out.println(", Host: " + rs.getString("hostName"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }

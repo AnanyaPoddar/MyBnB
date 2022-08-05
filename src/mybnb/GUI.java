@@ -1,6 +1,5 @@
 package mybnb;
 
-import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -16,7 +15,6 @@ public class GUI {
         JPanel panel = new JPanel();
         frame.add(panel);
         
-
         JLabel label = new JLabel("SIN");
         panel.add(label);
 

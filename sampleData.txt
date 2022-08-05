@@ -325,3 +325,5 @@ INSERT INTO Booked(listID, renterSIN, startDate, endDate, cost, status) VALUES (
 INSERT INTO Availabilities(listID, date, price, status) VALUES (1, '2022-09-08', 200, 'cancelled');
 INSERT INTO Availabilities(listID, date, price, status) VALUES (1, '2022-09-09', 200, 'cancelled');
 INSERT INTO Availabilities(listID, date, price, status) VALUES (1, '2022-09-10', 200, 'cancelled');
+
+
