@@ -46,5 +46,17 @@ public class ReportsDriver {
         System.out.println("Number of Listings by Country:");
         ReportsDAO.numListingsByCountry(conn);
         System.out.println("------------------------------------------------------");
+        System.out.println("Number of Listings by Country and City:");
+        ReportsDAO.numListingsByCity(conn);
+        System.out.println("------------------------------------------------------");
+        System.out.println("Number of Listings by Country and City and Postal Code:");
+        ReportsDAO.numListingsByPostalCode(conn);
+        System.out.println("------------------------------------------------------");
+        System.out.println("Rank Hosts By Listings Per Country:");
+        ReportsDAO.rankHostsByListingsPerCountry(conn);
+        System.out.println("------------------------------------------------------");
+        System.out.println("Rank Hosts By Listings Per City:");
+        ReportsDAO.rankHostsByListingsPerCity(conn);
+        System.out.println("------------------------------------------------------");
     }
 }
