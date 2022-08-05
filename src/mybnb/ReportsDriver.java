@@ -58,5 +58,13 @@ public class ReportsDriver {
         System.out.println("Rank Hosts By Listings Per City:");
         ReportsDAO.rankHostsByListingsPerCity(conn);
         System.out.println("------------------------------------------------------");
+        System.out.println("Possible Commercial Hosts Per Country:");
+        System.out.println("These are hosts who have more than 10% of listings in a specific country.");
+        ReportsDAO.possibleCommercialHostsByCountry(conn);
+        System.out.println("------------------------------------------------------");
+        System.out.println("Possible Commercial Hosts Per City:");
+        System.out.println("These are hosts who have more than 10% of listings in a specific city.");
+        ReportsDAO.possibleCommercialHostsByCountry(conn);
+        System.out.println("------------------------------------------------------");
     }
 }
