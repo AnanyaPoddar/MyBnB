@@ -85,7 +85,7 @@ public class UserDAO {
 
     String rentOrHostInsert;
     if (rOrH.equals("r") || rOrH.equals("R")) {
-      // " cardType VARCHAR(12) NOT NULL, " + " cardNum INT NOT NULL, "
+      
       // TODO Should this be open choice or C = Credit, D = Debit
       System.out.println("Provide a payment method (Credit or Debit)");
       String cardType = myObj.nextLine();
