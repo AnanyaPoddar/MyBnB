@@ -99,10 +99,9 @@ public class ListingDAO {
             String country = myObj.nextLine();
             System.out.println("Provide the listing's postal code in the following format: L#L #L#.");
             String postal = myObj.nextLine();
-            // TODO Verify postal code's properly formatted 0, 2, 4 is alpha, 1, 3, 5 is num
-            if(postal.length() != 7 || !Character.isLetter(postal.charAt(0)) || !Character.isLetter(postal.charAt(2)) || !Character.isLetter(postal.charAt(5)) || 
-            !Character.isDigit(postal.charAt(1)) || !Character.isDigit(postal.charAt(4)) || !Character.isDigit(postal.charAt(6)) || postal.charAt(3) != ' '){
-              System.out.println("Incorrect postal code format");
+            // Different countries have different postal codes
+            if(postal.length() > 10 ) {
+              System.out.println("Postal code too long.");
               return;
             }
 
@@ -112,10 +111,10 @@ public class ListingDAO {
 
             // Choose amenities
             System.out.println("Choose amenities. Enter 0 to exit.");
-            System.out.println("Essentials: 1 = Wifi, 2 = Kitchen, 3 = Washer");
+            System.out.println("Essentials: 1 = Wifi, 2 = Kitchen, 3 = Washer"); // get rid of washer
             System.out.println("Features: 11 = Pool, 12 = Free Parking");
-            System.out.println("Location: 21 = Beachfront, 22 = Waterfront");
-            System.out.println("Safety: 23 = Smoke alarm, 24 = CO Alarm");
+            System.out.println("Location: 21 = Beachfront, 22 = Waterfront"); // TODO Remove this
+            System.out.println("Safety: 23 = Smoke alarm, 24 = Carbon Monoxide Alarm");
             int choice = Integer.parseInt(myObj.nextLine());
 
             Boolean[] amenities = new Boolean[25];
@@ -248,7 +247,7 @@ public class ListingDAO {
           String sql = 
           String.format(
             "SELECT * FROM AMENITIES WHERE name = '%s';", names[i]);
-          System.out.println(sql);
+          System.out.println(sql); // todo delete
           ResultSet rs = stmt.executeQuery(sql);
           // if not, add (name, type to amenities)
           if (!rs.next()) {
