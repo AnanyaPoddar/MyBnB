@@ -16,6 +16,8 @@ public class DAO {
 
   public static void main(String[] args)
       throws ClassNotFoundException, ParseException {
+        // GUI gui = new GUI();
+        
     // Register JDBC driver
     Class.forName(dbClassName);
     // Database credentials
