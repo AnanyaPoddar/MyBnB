@@ -6,7 +6,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
 import java.util.Scanner;
-import io.github.cdimascio.dotenv.Dotenv;
+// import io.github.cdimascio.dotenv.Dotenv;
 
 public class DAO {
 
@@ -14,17 +14,15 @@ public class DAO {
   private static final String CONNECTION = "jdbc:mysql://127.0.0.1/mydb";
   static int loggedInUser = -1; // initial + do we need private/static/etc?
 
-  
-
   public static void main(String[] args)
       throws ClassNotFoundException, ParseException {
     // Register JDBC driver
     Class.forName(dbClassName);
     // Database credentials
     final String USER = "root";
-    Dotenv dotenv = Dotenv.configure().load();
-    final String PASS = dotenv.get("PASS");
-    // final String PASS = "root";
+    // Dotenv dotenv = Dotenv.configure().load();
+    // final String PASS = dotenv.get("PASS");
+    final String PASS = "root";
     System.out.println("Connecting to database...");
 
     try {
