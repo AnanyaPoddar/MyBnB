@@ -6,6 +6,7 @@ import java.sql.Statement;
 import java.sql.ResultSet;
 import java.time.LocalDate;
 import java.util.List;
+import java.text.DecimalFormat;
 import java.util.stream.Collectors;
 
 public class Search {
@@ -22,7 +23,6 @@ public class Search {
             System.out.println("Enter 5 to sort by price."); // done
             System.out.println("Enter 6 to fully filter.");
             System.out.println("------------------------------------------------------");
-
             exit = myObj.nextLine(); 
 
             if(exit.equals("1"))
@@ -71,10 +71,10 @@ public class Search {
             if (choice.toLowerCase().equals("d")) {
                 order = "DESC";
             }
-            listings = String.format("SELECT DISTINCT locations.listID, latitude, longitude, ST_Distance_Sphere(point(locations.longitude, locations.latitude), point(%f, %f))/1000 as distance, avg(price) as price FROM locations JOIN availabilities on availabilities.listID = locations.listID WHERE ST_Distance_Sphere(point(locations.longitude, locations.latitude), point(%f, %f)) <= %d GROUP BY listID ORDER BY price %s, distance", longitude,latitude, longitude, latitude, searchDistance*1000, order );
+            listings = String.format("SELECT DISTINCT locations.listID, latitude, longitude, ST_Distance_Sphere(point(locations.longitude, locations.latitude), point(%f, %f))/1000 as distance, avg(price) as price, addresses.* FROM locations JOIN addresses ON addresses.listID = locations.listID JOIN availabilities on availabilities.listID = locations.listID WHERE ST_Distance_Sphere(point(locations.longitude, locations.latitude), point(%f, %f)) <= %d GROUP BY locations.listID ORDER BY price %s, distance", longitude,latitude, longitude, latitude, searchDistance*1000, order );
         }
         else {
-            listings = String.format("SELECT *, ST_Distance_Sphere(point(locations.longitude, locations.latitude), point(%f, %f))/1000 as distance FROM LOCATIONS WHERE ST_Distance_Sphere(point(locations.longitude, locations.latitude), point(%f, %f)) <= %d ORDER BY distance;", longitude,latitude, longitude, latitude, searchDistance*1000); // returns meters!, so converts to km
+            listings = String.format("SELECT *, ST_Distance_Sphere(point(locations.longitude, locations.latitude), point(%f, %f))/1000 as distance, addresses.* FROM LOCATIONS JOIN addresses ON addresses.listID = locations.listID WHERE ST_Distance_Sphere(point(locations.longitude, locations.latitude), point(%f, %f)) <= %d ORDER BY distance;", longitude,latitude, longitude, latitude, searchDistance*1000); // returns meters!, so converts to km
         }
 
         System.out.println(listings);
@@ -88,7 +88,14 @@ public class Search {
                 System.out.print("ListID: " + rs.getInt("listID"));
                 System.out.print(", Latitude: " + rs.getFloat("Latitude"));
                 System.out.print(", Longitude: " + rs.getFloat("Longitude"));
-                System.out.println(", Distance: " + rs.getFloat("Distance"));
+                System.out.println(", Distance: " + rs.getFloat("Distance") + "km");
+                int unitNum = rs.getInt("unitNum");
+                System.out.println("Address: " + rs.getString("street")+ ", " + (unitNum != 0 ? "unit " + unitNum + ", " : "") + rs.getString("city") + ", " + rs.getString("country") + ", " + rs.getString("postal"));
+                if(priceChoice.toLowerCase().equals("y")){
+                    DecimalFormat df = new DecimalFormat("0.00");
+                    System.out.println("Price $" + df.format(rs.getFloat("price")));
+                }
+                System.out.println("");
             }
 
         } catch (SQLException e) {
@@ -112,10 +119,14 @@ public class Search {
             System.out.println(listing);
             ResultSet rs = statement.executeQuery(listing);
 
-            // TODO What info do I need to return/display?        
+            if(!rs.isBeforeFirst()) {
+                System.out.println("No listings at or near this postal code."); 
+                return;
+              }  
             while(rs.next()){
-                System.out.print("ListID: " + rs.getInt("listID"));
-                System.out.println(", Postal Code: " + rs.getString("postal"));
+                int unitNum = rs.getInt("unitNum");
+                System.out.println("ListID: " + rs.getInt("listID"));
+                System.out.println("Address: " + rs.getString("street")+ ", " + (unitNum != 0 ? "unit " + unitNum + ", " : "") + rs.getString("city") + ", " + rs.getString("country") + ", " + rs.getString("postal") + "\n");
             }
 
         } catch (SQLException e) {
@@ -129,8 +140,12 @@ public class Search {
     public static void addressSearch (Connection conn, Scanner myObj){
         System.out.println("Provide the unit #, street, and postal code to find a listing.");
 
-        System.out.println("Provide the unit number.");
-        int unitNum = Integer.parseInt(myObj.nextLine());   
+        int unitNum = 0;
+        System.out.println("Is there a unit number? Y = yes.");
+        if(myObj.nextLine().toLowerCase().equals("y")){
+            System.out.println("Provide the unit number.");
+            unitNum = Integer.parseInt(myObj.nextLine());   
+        }
         System.out.println("Provide the listing's street name.");
         String street = myObj.nextLine();
         System.out.println("Provide the listing's postal code.");
@@ -143,8 +158,11 @@ public class Search {
             ResultSet rs = statement.executeQuery(listing);
 
             // TODO What info do I need to return/display?        
-            while(rs.next()){
+            if(rs.next()){
                 System.out.println("ListID: " + rs.getInt("listID"));
+            }
+            else {
+                System.out.println("No listing at that address");
             }
 
         } catch (SQLException e) {
@@ -167,7 +185,7 @@ public class Search {
         try {
             Statement statement = conn.createStatement();
             String listing = "SELECT DISTINCT listID, avg(price) as price FROM availabilities GROUP BY listID ORDER BY PRICE " + order+ ";"; 
-            System.out.println(listing);
+            System.out.println(listing); // TODO Delete
             ResultSet rs = statement.executeQuery(listing);
 
             // TODO What info do I need to return/display? I show multiple listID but no availabilities  
