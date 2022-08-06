@@ -1,3 +1,28 @@
+-- 
+
+-- Wifi -> $50
+-- Wifi + pool -> $60
+-- wifi + kitchen 
+-- wifi + free parking
+
+-- Pool
+-- pool + kitchen
+-- pool + parking
+
+-- kitchen
+-- kitchen + parking
+
+-- parking
+
+-- wifi + pool + kitchen
+-- wifi + pool + parking
+-- wifi + kitchen + parking
+-- pool + kitchen + parking
+
+-- wifi + pool + kitchen + parking
+
+
+
 -- Insert renters
 
 INSERT INTO User VALUES (123456789, 'Renter1', 'Renter1', '123 Military Trail', 'Student', '2001-09-15');

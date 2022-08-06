@@ -6,7 +6,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
 import java.util.Scanner;
-import io.github.cdimascio.dotenv.Dotenv;
+// import io.github.cdimascio.dotenv.Dotenv;
 
 public class DAO {
 
@@ -16,15 +16,14 @@ public class DAO {
 
   public static void main(String[] args)
       throws ClassNotFoundException, ParseException {
-        // GUI gui = new GUI();
-        
+
     // Register JDBC driver
     Class.forName(dbClassName);
     // Database credentials
     final String USER = "root";
-    Dotenv dotenv = Dotenv.configure().load();
-    final String PASS = dotenv.get("PASS");
-    // final String PASS = "root";
+    // Dotenv dotenv = Dotenv.configure().load();
+    // final String PASS = dotenv.get("PASS");
+    final String PASS = "root";
     System.out.println("Connecting to database...");
 
     try {
@@ -223,6 +222,8 @@ public class DAO {
             System.out.println("Enter 8 to cancel a booking.");
             System.out.println("Enter 9 to see all your booked listings.");
             System.out.println("Enter 10 to review a renter.");
+            //TODO: Move this to workflow when they're creating a listing
+            System.out.println("Enter 11 to get suggested amenities.");
             System.out.println("------------------------------------------------------");
             exit = myObj.nextLine();  
             //only show a host's own listings  
@@ -245,6 +246,8 @@ public class DAO {
             
             if (exit.equals("10")) 
               UserDAO.hostReviewsRenter(conn, myObj);
+            if (exit.equals("11")) 
+              HostToolkit.suggestedAmenities(conn);
           }
 
           else{

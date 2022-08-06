@@ -131,6 +131,9 @@ public class ListingDAO {
             }
             addAmenities(conn, amenities, listID);
 
+            //suggest a price here because you have all of the information required
+            HostToolkit.suggestPrice(conn, type, country, city, street, postal);
+
             //After listing is added, prompt user to add availabilities for that listing
             AvailabilityDriver.addAvailabilities(conn, listID, myObj);
         }

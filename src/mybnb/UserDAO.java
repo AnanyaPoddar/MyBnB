@@ -6,8 +6,11 @@ import java.sql.Statement;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.Scanner;
+import java.io.Console;
 
 public class UserDAO {
+
+    Console console;
     
     public static boolean verifyUserInTable(Connection conn, int ID, String role,
       String table) {
@@ -119,10 +122,11 @@ public class UserDAO {
       System.out.println("You're already logged in as: " + DAO.loggedInUser);
       return;
     }
+    // myObj.nextLine();
     System.out.println("Provide your username.");
     String uname = myObj.nextLine();
-    System.out.println("Provide you password");
-    String password = myObj.nextLine();
+    System.out.println("Provide you password (masked for security)");
+    String password = String.valueOf(System.console().readPassword());
 
     try {
       Statement stmt = conn.createStatement();
