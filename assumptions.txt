@@ -4,3 +4,5 @@
 - We generate reports only for listings that are currently on the site; deleted listings, and their associated bookings do not contribute to the reports.
 - we must have input (ie. latitude longitude etc)
 - SIN #s don't start with a 0
+- You must input both a rating and a comment (not one or the other)
+- "clearly mention what payment information you expect and store that in your database." We want just card type and card number

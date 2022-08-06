@@ -165,6 +165,12 @@ public class DAO {
       stmt.executeUpdate(ListingsHaveAmenities);
       System.out.println("Created ListingsHaveAmenities table in given database...");
 
+      // used for noun phrase word cloud
+      String npReviews = "CREATE TABLE IF NOT EXISTS npReviews "
+        + "(nounPhrase VARCHAR(100) NOT NULL)";
+      stmt.executeUpdate(npReviews);
+      System.out.println("Created npReviews table in given database...");
+
       // drop tables rentersreviewlistings, rentersreviewhosts, listingshaveamenities, hostsreviewrenters,  hoststolistings, locations, amenities, addresses, availabilities, booked, renter, host, user, listings;
       
 

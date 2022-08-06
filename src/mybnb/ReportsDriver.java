@@ -12,10 +12,12 @@ public class ReportsDriver {
         System.out.println("Enter 0 to exit.");
         System.out.println("1 - Reports About Number of Bookings");
         System.out.println("2 - Reports About Number of Listings");
+        System.out.println("3 - Reports About Number of Noun Phrases in a Listing's Reviews");
         System.out.println("------------------------------------------------------");
         String choice = myObj.nextLine();
         if (choice.equals("1")) viewBookingReports(conn, myObj);
         if (choice.equals("2")) viewListingReports(conn, myObj);
+        if (choice.equals("3")) parser(conn, myObj);
     }
 
     private static void viewBookingReports(Connection conn,Scanner myObj){
@@ -69,5 +71,16 @@ public class ReportsDriver {
         System.out.println("These are hosts who have more than 10% of listings in a specific city.");
         ReportsDAO.possibleCommercialHostsByCountry(conn);
         System.out.println("------------------------------------------------------");
+    }
+
+    private static void parser(Connection conn, Scanner myObj){
+        System.out.println("Start listID of the listing you would like: ");
+        int listID = Integer.parseInt(myObj.nextLine());  
+        System.out.println("------------------------------------------------------");
+        System.out.println("Noun Phrases of listID: " + listID);
+        NounParser.parser(conn, listID);
+        System.out.println("------------------------------------------------------");
+
+
     }
 }
