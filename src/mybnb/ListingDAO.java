@@ -130,10 +130,8 @@ public class ListingDAO {
               choice = Integer.parseInt(myObj.nextLine());
             }
             addAmenities(conn, amenities, listID);
-
             //suggest a price here because you have all of the information required
             HostToolkit.suggestPrice(conn, type, country, city, street, postal);
-
             //After listing is added, prompt user to add availabilities for that listing
             AvailabilityDriver.addAvailabilities(conn, listID, myObj);
         }
@@ -144,7 +142,6 @@ public class ListingDAO {
 
   public static void viewAllListings(Connection conn) {
     // Shows corresponding address (not location as that isn't necessarily relevant to the user)
-
     try {
       Statement stmt = conn.createStatement();
       String sql = "SELECT a.listID, type, unitNum, street, city, country, postal FROM listings AS l JOIN addresses AS a ON a.listID=l.listID;";

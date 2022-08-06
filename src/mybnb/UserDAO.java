@@ -6,11 +6,8 @@ import java.sql.Statement;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.Scanner;
-import java.io.Console;
 
 public class UserDAO {
-
-    Console console;
     
     public static boolean verifyUserInTable(Connection conn, int ID, String role,
       String table) {
@@ -42,8 +39,7 @@ public class UserDAO {
         System.out.println("The SIN must be positive integer.");
         return;
     }
-
-    // TODO Verify password and email
+    // TODO: Verify password and email
     System.out.println("Provide a password");
     String password = myObj.nextLine();
     System.out.println("Provide your username");
@@ -138,8 +134,6 @@ public class UserDAO {
           DAO.loggedInUser = rs.getInt("SIN");
           //Probably don't show their SIN, just show the name
           System.out.println("Succesfully logged in as: " + rs.getString("uname"));
-          System.out.println("SIN: " + DAO.loggedInUser);
-
         } else {
           System.out.println("Wrong password.");
 
@@ -149,7 +143,6 @@ public class UserDAO {
       }
       rs.close();
     } catch (SQLException e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     }
 

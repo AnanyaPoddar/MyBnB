@@ -67,7 +67,6 @@ public class DAO {
       stmt.executeUpdate(renterTable);
       System.out.println("Created Renter table in given database...");
 
-      //TODO: Modified, removed price form listing and added to availability
       String listingTable = "CREATE TABLE IF NOT EXISTS Listings "
           + "(listID INT NOT NULL AUTO_INCREMENT PRIMARY KEY, "
           + "type VARCHAR(10) NOT NULL)";

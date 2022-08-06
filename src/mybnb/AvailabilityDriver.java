@@ -77,8 +77,6 @@ public class AvailabilityDriver {
         }
       stringDates  += ")";
 
-      //TODO: Technically none of the sql stuff should be in the driver 
-
       //Check that none of the dates are booked when deleting or modifying the price
       String isBooked = String.format("SELECT count(date) > 0 as isBooked FROM Availabilities WHERE listID = %d AND status='booked' AND date IN %s;", listingID, stringDates);
       Statement statement = conn.createStatement();
