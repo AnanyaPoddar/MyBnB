@@ -3,6 +3,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Scanner;
 import java.sql.Statement;
+import java.text.DecimalFormat;
 import java.sql.ResultSet;
 import java.time.LocalDate;
 import java.util.List;
@@ -10,19 +11,22 @@ import java.text.DecimalFormat;
 import java.util.stream.Collectors;
 
 public class Search {
+
+    static DecimalFormat df = new DecimalFormat("0.00");
+    
     public static void searchListings(Connection conn, Scanner myObj) {
         System.out.println("Find listings by various search/filtering methods");
         String exit = "-1";
         while (!exit.equals("0")) {
-            System.out.println("------------------------------------------------------");
-            System.out.println("Enter 0 to exit searches."); 
-            System.out.println("Enter 1 to search nearby location."); // done
-            System.out.println("Enter 2 to search nearby postal codes."); // done
-            System.out.println("Enter 3 to find a listing by address."); // done
-            System.out.println("Enter 4 to find listings by time availabilities.");
-            System.out.println("Enter 5 to sort by price."); // done
-            System.out.println("Enter 6 to fully filter.");
-            System.out.println("------------------------------------------------------");
+            System.out.println("----------------------- Search -----------------------");
+            System.out.println("0 - Exit Searches."); 
+            System.out.println("1 - Search Nearby Location."); 
+            System.out.println("2 - Search Nearby Postal Codes."); 
+            System.out.println("3 - Find a Listing by Address."); 
+            System.out.println("4 - Find Listings by Availabilities.");
+            System.out.println("5 - Sort by Price."); 
+            System.out.println("6 - Fully filter.");
+
             exit = myObj.nextLine(); 
 
             if(exit.equals("1"))
@@ -31,6 +35,8 @@ public class Search {
                 postalSearch (conn, myObj);
             if(exit.equals("3"))
                 addressSearch (conn, myObj);
+            if(exit.equals("4"))
+                ListingDAO.getListingsAvailableBetweenDates(conn, myObj);
             if(exit.equals("5"))
                 sortByPrice(conn, myObj);
             if(exit.equals("6"))
@@ -77,7 +83,6 @@ public class Search {
             listings = String.format("SELECT *, ST_Distance_Sphere(point(locations.longitude, locations.latitude), point(%f, %f))/1000 as distance, addresses.* FROM LOCATIONS JOIN addresses ON addresses.listID = locations.listID WHERE ST_Distance_Sphere(point(locations.longitude, locations.latitude), point(%f, %f)) <= %d ORDER BY distance;", longitude,latitude, longitude, latitude, searchDistance*1000); // returns meters!, so converts to km
         }
 
-        System.out.println(listings);
         try {
             Statement statement = conn.createStatement();
             ResultSet rs = statement.executeQuery(listings);
@@ -92,7 +97,6 @@ public class Search {
                 int unitNum = rs.getInt("unitNum");
                 System.out.println("Address: " + rs.getString("street")+ ", " + (unitNum != 0 ? "unit " + unitNum + ", " : "") + rs.getString("city") + ", " + rs.getString("country") + ", " + rs.getString("postal"));
                 if(priceChoice.toLowerCase().equals("y")){
-                    DecimalFormat df = new DecimalFormat("0.00");
                     System.out.println("Price $" + df.format(rs.getFloat("price")));
                 }
                 System.out.println("");
@@ -116,7 +120,6 @@ public class Search {
             Statement statement = conn.createStatement();
             String listing = "SELECT * FROM ADDRESSES "
              + "WHERE postal LIKE '" + postal.substring(0, postal.length() - 1) + "_';"; 
-            System.out.println(listing);
             ResultSet rs = statement.executeQuery(listing);
 
             if(!rs.isBeforeFirst()) {
@@ -185,13 +188,12 @@ public class Search {
         try {
             Statement statement = conn.createStatement();
             String listing = "SELECT DISTINCT listID, avg(price) as price FROM availabilities GROUP BY listID ORDER BY PRICE " + order+ ";"; 
-            System.out.println(listing); // TODO Delete
             ResultSet rs = statement.executeQuery(listing);
 
             // TODO What info do I need to return/display? I show multiple listID but no availabilities  
             while(rs.next()){
                 System.out.print("ListID: " + rs.getInt("listID"));
-                System.out.println(", Price: " + rs.getFloat("price"));
+                System.out.println(", Price $" + df.format(rs.getFloat("price")));
             }
 
         } catch (SQLException e) {
@@ -256,7 +258,6 @@ public class Search {
             try {
                 Statement statement = conn.createStatement();
                 String priceView = String.format("CREATE OR REPLACE VIEW priceView AS SELECT DISTINCT postalView.*, avg(price) as price FROM postalView JOIN availabilities ON postalView.listID = availabilities.listID GROUP BY listID HAVING avg(price) >= %d AND avg(price) <= %d ;", minPrice, maxPrice); 
-                System.out.println(priceView);
                 statement.executeUpdate(priceView);    
             } catch (SQLException e) {
                 // TODO Auto-generated catch block
@@ -294,11 +295,9 @@ public class Search {
                 choice = myObj.nextLine();
                 count++;
             }
-            System.out.println(names);
             try {
                 Statement statement = conn.createStatement();
                 String amenitiesView = "CREATE OR REPLACE VIEW amenitiesView AS SELECT DISTINCT priceView.* FROM priceView JOIN listingshaveamenities ON priceView.listID = listingshaveamenities.listID WHERE " + names + " GROUP BY priceView.listID HAVING count(priceView.listID) = " + count + ";"; 
-                System.out.println(amenitiesView);
                 statement.executeUpdate(amenitiesView);    
             } catch (SQLException e) {
                 // TODO Auto-generated catch block
@@ -318,7 +317,7 @@ public class Search {
         }
 
         // availabilities
-        System.out.println("Would you like to filter by availabilities? Y = Yes");
+        System.out.println("Would you like to filter by availabilities? We only return listings that are available for the whole range. Y = Yes");
         String availabilitiesChoice = myObj.nextLine();
         String getListings = "";
         
@@ -338,8 +337,8 @@ public class Search {
             List<LocalDate> dates = startDate.datesUntil(endDate.plusDays(1)).collect(Collectors.toList());
             String stringDates = "(";
             for(int i = 0; i < dates.size(); i++){
-            if(i==dates.size()-1) stringDates += String.format("'%s'", dates.get(i));
-            else stringDates += String.format("'%s',", dates.get(i));
+                if(i==dates.size()-1) stringDates += String.format("'%s'", dates.get(i));
+                else stringDates += String.format("'%s',", dates.get(i));
             }
             stringDates  += ")";
 
@@ -358,13 +357,6 @@ public class Search {
           } catch (SQLException e) {
             e.printStackTrace();
         } 
-        System.out.println(getListings);
-
-
-
-        // TODO others? avg rating in rentersReviewListings? listing type? locations?
-
-        // Print
 
         try {
             Statement statement = conn.createStatement();
@@ -377,15 +369,12 @@ public class Search {
                 if (postalChoice.toLowerCase().equals("y"))
                     System.out.print(", Postal: " + rs.getString("postal"));
                 if (priceChoice.toLowerCase().equals("y")) 
-                    System.out.print(", Price: " + rs.getFloat("price"));
-                // if (amenitiesChoice.toLowerCase().equals("y")) // todo not needed bc only gives 1 amenity (we'll just assume it gives all)
-                //     System.out.print(", Amenities: " + rs.getString("name"));
+                    System.out.print(", Price $" + df.format(rs.getFloat("price")));
                 if (availabilitiesChoice.toLowerCase().equals("y"))    
                     System.out.print(", Type: " + rs.getString("type")); // todo not needed, just type
                 System.out.println("");
             }
 
-      
           } catch (SQLException e) {
             e.printStackTrace();
         } 

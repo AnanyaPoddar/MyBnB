@@ -67,7 +67,7 @@ public class DDL {
 
             // TODO latitude and longitude don't have to be keys here?
             String locationsTable = "CREATE TABLE IF NOT EXISTS Locations "
-                + "(listID INT NOT NULL, FOREIGN KEY (listID) REFERENCES Listings(listID), " 
+                + "(listID INT NOT NULL, FOREIGN KEY (listID) REFERENCES Listings(listID) ON DELETE CASCADE, " 
                 + "latitude FLOAT NOT NULL CONSTRAINT CK_latitude  check (latitude >= -90 and latitude <= 90)," + 
                 " longitude FLOAT NOT NULL CONSTRAINT CK_longitude check (longitude >= -180 and longitude <= 180), " +
                 "PRIMARY KEY(listID))";

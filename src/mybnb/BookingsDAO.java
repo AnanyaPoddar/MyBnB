@@ -5,12 +5,15 @@ import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Scanner;
 
 public class BookingsDAO {
+    static DecimalFormat df = new DecimalFormat("0.00");
 
+    
     public static void addBooking(Connection conn, int listingID, LocalDate startDate, LocalDate endDate){
         try {
             //check that the dates are all available for booking; if so, remove them from availabilities, and add to booked
@@ -28,37 +31,45 @@ public class BookingsDAO {
 
     }
 
+    //Updated to show relevant information such as the host and address
     public static void getAllBookingsForRenter(Connection conn, String status){
         //Update bookings to past before displaying here
         setPastBookingsByRenter(conn);
         try {
             Statement statement = conn.createStatement();
-            String bookings = String.format("SELECT * from Booked WHERE renterSIN = %d AND status = '%s';", Main.loggedInUser, status);
+            // String bookings = String.format("SELECT * from Booked WHERE renterSIN = %d AND status = '%s';", Main.loggedInUser, status);
+
+            String bookings = String.format("SELECT startDate, endDate, cost, u.uname AS host, a.* from Booked AS b "+
+            "JOIN hostsToListings AS h ON h.listID=b.listID JOIN user AS u ON hostSIN=u.SIN JOIN addresses AS a ON a.listID=b.listID " +
+            "WHERE renterSIN = %d AND status = '%s' ;", Main.loggedInUser, status);
             ResultSet rs = statement.executeQuery(bookings);
             while(rs.next()){
-                System.out.println("ListId: " + rs.getInt("listID"));
+                System.out.println("ListId: " + rs.getInt("listID") + ", Host: " +rs.getString("host") + " , Cost: $" + df.format(rs.getFloat("cost")));
                 System.out.println("Dates: " + rs.getDate("startDate") + " - " + rs.getDate("endDate"));
-                System.out.println("Cost: " + rs.getString("cost") + "\n");
+                int unitNum = rs.getInt("unitNum");
+                System.out.println("Address: " + rs.getString("street")+ ", " + (unitNum != 0 ? "unit " + unitNum + ", " : "") + rs.getString("city") + ", " + rs.getString("country") + ", " + rs.getString("postal")+ "\n");
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
+    //Updated to show relevant information such as the renter and address
     public static void getAllBookingsForHost(Connection conn, String status){
         //Update host's bookings to past before displaying here
         setPastBookingsByHost(conn);
         try {
             Statement statement = conn.createStatement();
             //collect listings for host from hostsToListings, join with booked project listID, startDate, endDate
-            String bookings = String.format("SELECT Booked.listID, startDate, endDate, cost, status FROM Booked " +
-            "JOIN (SELECT listID from HostsToListings WHERE hostSIN = '%s') as h1 " +
-            "ON Booked.listID=h1.listID WHERE status = '%s' ORDER BY Booked.listID;", Main.loggedInUser, status);
+            String bookings = String.format("SELECT startDate, endDate, cost, u.uname AS renter, a.* from Booked AS b " +
+            "JOIN (SELECT listID from HostsToListings WHERE hostSIN = %d) as h1 ON b.listID=h1.listID " + 
+            "JOIN addresses AS a ON a.listID=b.listID JOIN user as u ON u.SIN=b.renterSIN WHERE status = '%s' ORDER BY b.listID;", Main.loggedInUser, status);
             ResultSet rs = statement.executeQuery(bookings);
             while(rs.next()){
-                System.out.println("ListID: " + rs.getInt("listID"));
+                System.out.println("ListId: " + rs.getInt("listID") + ", Renter: " +rs.getString("renter") + " , Cost: $" + df.format(rs.getFloat("cost")));
                 System.out.println("Dates: " + rs.getDate("startDate") + " - " + rs.getDate("endDate"));
-                System.out.println("Cost: " + rs.getString("cost") + "\n");
+                int unitNum = rs.getInt("unitNum");
+                System.out.println("Address: " + rs.getString("street")+ ", " + (unitNum != 0 ? "unit " + unitNum + ", " : "") + rs.getString("city") + ", " + rs.getString("country") + ", " + rs.getString("postal")+ "\n");
             }
 
         } catch (SQLException e) {

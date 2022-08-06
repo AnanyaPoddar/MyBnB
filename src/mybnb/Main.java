@@ -6,7 +6,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
 import java.util.Scanner;
-import io.github.cdimascio.dotenv.Dotenv;
+// import io.github.cdimascio.dotenv.Dotenv;
 
 public class Main {
 
@@ -17,13 +17,13 @@ public class Main {
   public static void main(String[] args)
       throws ClassNotFoundException, ParseException {
 
-    // Register JDBC driver
+    // Register JDBC driver1
     Class.forName(dbClassName);
     // Database credentials
     final String USER = "root";
-    Dotenv dotenv = Dotenv.configure().load();
-    final String PASS = dotenv.get("PASS");
-    // final String PASS = "root";
+    // Dotenv dotenv = Dotenv.configure().load();
+    // final String PASS = dotenv.get("PASS");
+    final String PASS = "root";
 
     try {
       // Establish connection
@@ -44,9 +44,9 @@ public class Main {
           System.out.println("1 - Sign Up ");
           System.out.println("2 - Log In");
           System.out.println("3 - View, Search, and Filter Listings");
-          System.out.println("4 - View reports"); // TODO Where in logged in view?
+          System.out.println("4 - View reports"); // TODO: Where in logged in view?
           System.out.println("------------------------------------------------------");
-          exit = myObj.next();
+          exit = myObj.nextLine();
           if (exit.equals("1")) 
             UserDAO.addUser(conn, myObj);
           if (exit.equals("2")) 
@@ -66,13 +66,17 @@ public class Main {
           if(UserDAO.verifyUserInTable(conn, loggedInUser, "hostSIN", "Host")){
             System.out.println("3 - View and Manage Your Listings"); // this includes modifying availabilities, adding and deleting listings
             System.out.println("4 - View and Manage Your Bookings");
+            System.out.println("5 - Add a Listing");
+
             // //TODO: Move this to workflow when they're creating a listing
             // System.out.println("Enter 11 to get suggested amenities.");
             System.out.println("------------------------------------------------------");
-            exit = myObj.next();  
+            exit = myObj.nextLine(); 
             //only show a host's own listings  
             if (exit.equals("3")) MenuDriver.hostListingMenu(conn, myObj);
-            if (exit.equals("4")) MenuDriver.hostBookingMenu(conn, myObj);
+            else if (exit.equals("4")) MenuDriver.hostBookingMenu(conn, myObj);
+            else if (exit.equals("5")) ListingDAO.addListing(conn, myObj);
+
           }
 
           else{
@@ -81,14 +85,13 @@ public class Main {
             System.out.println("5 - Book a Listing"); // or should this go under 3?
             // System.out.println("Enter 10 to get all listings between two dates"); // TODO: Is this encapsulated in search or shld it be done specifically as a menu option
             System.out.println("------------------------------------------------------");
-            exit = myObj.next(); 
+            exit = myObj.nextLine(); 
             if (exit.equals("3")) MenuDriver.loggedOutOrRenterListingMenu(conn, myObj);
-            if (exit.equals("4")) MenuDriver.renterBookingMenu(conn, myObj);
-            if (exit.equals("4")) BookingsDriver.addBooking(conn, myObj);
+            else if (exit.equals("4")) MenuDriver.renterBookingMenu(conn, myObj);
+            else if (exit.equals("5")) BookingsDriver.addBooking(conn, myObj);
           }
           if (exit.equals("1")) UserDAO.logout();
-          if (exit.equals("2")) UserDAO.deleteUser(conn, myObj);
-
+          else if (exit.equals("2")) UserDAO.deleteUser(conn, myObj);
         }
       }
       System.out.println("Closing connection...");

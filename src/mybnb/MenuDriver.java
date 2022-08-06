@@ -14,12 +14,12 @@ public class MenuDriver {
             System.out.println("2 - Check Availabilities for a Listing");
             //TODO: Does the "get listings between 2 dates need to go somewhere separate or here is fine"
             System.out.println("3 - Search and Filter Listings");
-            option = Integer.parseInt(myObj.next());
+            option = Integer.parseInt(myObj.nextLine());
             if(option == 1)
                 ListingDAO.viewAllListings(conn);
             else if(option == 2){
-                System.out.print("Enter a listID to see availabilities: ");
-                int listID = Integer.parseInt(myObj.next());
+                System.out.println("Enter a listID to see availabilities: ");
+                int listID = Integer.parseInt(myObj.nextLine());
                 AvailabilityDAO.getAvailabilities(conn, listID, myObj);
             }
             else if(option == 3){
@@ -37,22 +37,22 @@ public class MenuDriver {
             System.out.println("1 - View All Your Listings");
             System.out.println("2 - See/Modify Availabilities for a Listing");
             System.out.println("3 - Delete a Listing");
-            option = Integer.parseInt(myObj.next());
+            option = Integer.parseInt(myObj.nextLine());
             if(option == 1)
                 ListingDAO.viewAllListingsByHost(conn);
             else if(option == 2){
-                System.out.print("Enter a listID to see/modify availabilities: ");
-                int listID = Integer.parseInt(myObj.next());
-                System.out.print("Would you like to see availabilities for this listing? (Y/N) ");
-                if(myObj.next().toLowerCase().equals("y"))
+                System.out.println("Enter a listID to see/modify availabilities: ");
+                int listID = Integer.parseInt(myObj.nextLine());
+                System.out.println("Would you like to see availabilities for this listing? (Y/N) ");
+                if(myObj.nextLine().toLowerCase().equals("y"))
                     AvailabilityDAO.getAvailabilities(conn, listID, myObj);
-                System.out.print("Would you like to modify availabilities for this listing? (Y/N) ");
-                if(myObj.next().toLowerCase().equals("y"))
+                System.out.println("Would you like to modify availabilities for this listing? (Y/N) ");
+                if(myObj.nextLine().toLowerCase().equals("y"))
                     AvailabilityDriver.modifyAvailabilities(conn, myObj, listID);
             }
             else if(option == 3){
-                System.out.print("Enter a listID to delete a listing: ");
-                int listID = Integer.parseInt(myObj.next());
+                System.out.println("Enter a listID to delete a listing: ");
+                int listID = Integer.parseInt(myObj.nextLine());
                 ListingDAO.deleteListing(conn, myObj, listID);
             }
         }
@@ -68,12 +68,12 @@ public class MenuDriver {
             System.out.println("3 - View All Your Past Bookings"); //should review show up here?
             System.out.println("4 - Review a Past Renter");
 
-            option = Integer.parseInt(myObj.next());
+            option = Integer.parseInt(myObj.nextLine());
             if(option == 1)
                 BookingsDAO.getAllBookingsForHost(conn, "booked");
             else if(option == 2){
                 System.out.print("Enter a listID for the listing to cancel a booking for: ");
-                int listingID = Integer.parseInt(myObj.next());
+                int listingID = Integer.parseInt(myObj.nextLine());
                 BookingsDriver.hostCancelsBooking(conn, myObj, listingID);
             }
             else if(option == 3){
@@ -98,12 +98,12 @@ public class MenuDriver {
             System.out.println("5 - Review a Past Listing");
 
 
-            option = Integer.parseInt(myObj.next());
+            option = Integer.parseInt(myObj.nextLine());
             if(option == 1)
                 BookingsDAO.getAllBookingsForRenter(conn, "booked");
             else if(option == 2){
-                System.out.print("Enter a listID for the listing to cancel a booking for: ");
-                int listingID = Integer.parseInt(myObj.next());
+                System.out.println("Enter a listID for the listing to cancel a booking for: ");
+                int listingID = Integer.parseInt(myObj.nextLine());
                 BookingsDriver.renterCancelsBooking(conn, myObj, listingID);
             }
             else if(option == 3){

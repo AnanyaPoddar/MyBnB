@@ -14,12 +14,12 @@ public class AvailabilityDAO{
   public static boolean checkValidDates(LocalDate startDate, LocalDate endDate){
     //startDate must be after endDate
     if(startDate.isAfter(endDate)){
-      System.out.println("Not a valid date range. Start date must before end date. Exiting....\n");
+      System.out.println("Not a valid date range. Start date must be before end date. Exiting....\n");
       return false;
     }
     //if startDate is before current date
     else if(startDate.isBefore(LocalDate.now())){
-      System.out.println("Not a valid date range. Start date must before the current date\n");
+      System.out.println("Not a valid date range. Start date must be after the current date\n");
       return false;
     }
     return true;
