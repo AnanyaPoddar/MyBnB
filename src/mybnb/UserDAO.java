@@ -6,8 +6,11 @@ import java.sql.Statement;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.Scanner;
+import java.io.Console;
 
 public class UserDAO {
+
+    Console console;
     
     public static boolean verifyUserInTable(Connection conn, int ID, String role,
       String table) {
@@ -126,8 +129,9 @@ public class UserDAO {
     }
     System.out.println("Provide your SIN");
     int SIN = Integer.parseInt(myObj.nextLine());
-    System.out.println("Provide you password");
-    String password = myObj.nextLine();
+    System.out.println("Provide you password (masked for security)");
+    String password = String.valueOf(System.console().readPassword());
+    // myObj.nextLine();
 
     try {
       Statement stmt = conn.createStatement();
