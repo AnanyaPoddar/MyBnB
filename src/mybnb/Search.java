@@ -3,28 +3,30 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Scanner;
 import java.sql.Statement;
+import java.text.DecimalFormat;
 import java.sql.ResultSet;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class Search {
+
+    private static DecimalFormat df = new DecimalFormat("0.00");
+
     public static void searchListings(Connection conn, Scanner myObj) {
         System.out.println("Find listings by various search/filtering methods");
         String exit = "-1";
         while (!exit.equals("0")) {
-            System.out.println("------------------------------------------------------");
-            System.out.println("Enter 0 to exit searches."); 
-            System.out.println("Enter 1 to search nearby location."); // done
-            System.out.println("Enter 2 to search nearby postal codes."); // done
-            System.out.println("Enter 3 to find a listing by address."); // done
-            System.out.println("Enter 4 to find listings by time availabilities.");
-            System.out.println("Enter 5 to sort by price."); // done
-            System.out.println("Enter 6 to fully filter.");
-            System.out.println("------------------------------------------------------");
+            System.out.println("----------------------- Search ------------------------");
+            System.out.println("0 - Exit Searches"); 
+            System.out.println("1 - Search Nearby Location"); // done
+            System.out.println("2 - Search Nearby Postal Codes"); // done
+            System.out.println("3 - Find a Listing by Address"); // done
+            System.out.println("4 - Find Listings by Availabilities");
+            System.out.println("5 - Sort by Price"); // done
+            System.out.println("6 - Fully Filter");
 
-
-            exit = myObj.nextLine(); 
+            exit = myObj.next(); 
 
             if(exit.equals("1"))
                 locationsDistance (conn, myObj);
@@ -41,21 +43,21 @@ public class Search {
 
     public static void locationsDistance (Connection conn, Scanner myObj){
 
-        System.out.println("Enter the latitude of your location (-90 to 90)");
-        float latitude = Float.parseFloat(myObj.nextLine());
+        System.out.print("Enter the latitude of your location (-90 to 90): ");
+        float latitude = Float.parseFloat(myObj.next());
         if(latitude > 90 || latitude < -90){
             System.out.println("Latitude must be in a -90 to 90 range.");
             return;
         }
 
-        System.out.println("Enter the longitude of your location (-180 to 180)");
-        float longitude = Float.parseFloat(myObj.nextLine());
+        System.out.print("Enter the longitude of your location (-180 to 180): ");
+        float longitude = Float.parseFloat(myObj.next());
         if(longitude > 180 || longitude < -180){
             System.out.println("Longitude must be in a -180 to 180 range.");
             return;
         }
 
-            int searchDistance = 50; 
+        int searchDistance = 50; 
         System.out.println("Would you like to specify a distance? Press any key or D = Default: 50km");
         if(!myObj.nextLine().toLowerCase().equals("d")){
             System.out.println("Enter the distance in kilometers from your location you want to search.");
@@ -79,7 +81,6 @@ public class Search {
         }
         
               
-
         try {
             System.out.println(listings);
             Statement statement = conn.createStatement();
@@ -105,8 +106,8 @@ public class Search {
     }
 
     public static void postalSearch (Connection conn, Scanner myObj){
-        System.out.println("Provide the listing's postal code.");
-        String postal = myObj.nextLine();
+        System.out.print("Provide the listing's postal code: ");
+        String postal = myObj.next();
         if(postal.length() > 10){
             System.out.println("Invalid postal code.");
             return;
@@ -136,12 +137,12 @@ public class Search {
     public static void addressSearch (Connection conn, Scanner myObj){
         System.out.println("Provide the unit #, street, and postal code to find a listing.");
 
-        System.out.println("Provide the unit number.");
-        int unitNum = Integer.parseInt(myObj.nextLine());   
-        System.out.println("Provide the listing's street name.");
-        String street = myObj.nextLine();
-        System.out.println("Provide the listing's postal code.");
-        String postal = myObj.nextLine();
+        System.out.print("Provide the unit number: ");
+        int unitNum = Integer.parseInt(myObj.next());   
+        System.out.print("Provide the listing's street name: ");
+        String street = myObj.next();
+        System.out.print("Provide the listing's postal code: ");
+        String postal = myObj.next();
 
         try {
             Statement statement = conn.createStatement();
@@ -164,8 +165,8 @@ public class Search {
     public static void sortByPrice (Connection conn, Scanner myObj){
 
         String order = "ASC";
-        System.out.println("Do you want the price to be sorted in ascending or descending? Default is Ascending. Press D for Descending");
-        String choice = myObj.nextLine();
+        System.out.print("Do you want the price to be sorted in ascending or descending? Default is Ascending. Press D for Descending ");
+        String choice = myObj.next();
         if (choice.toLowerCase().equals("d")) {
            order = "DESC";
         }
@@ -182,7 +183,7 @@ public class Search {
             // TODO What info do I need to return/display? I show multiple listID but no availabilities  
             while(rs.next()){
                 System.out.print("ListID: " + rs.getInt("listID"));
-                System.out.println(", Price: " + rs.getFloat("price"));
+                System.out.println(", Price $: " + df.format(rs.getFloat("price")));
             }
 
         } catch (SQLException e) {
@@ -202,13 +203,13 @@ public class Search {
 
         // filter by postal code
         // TODO Maybe somehow make the postalSearch function be into this
-        System.out.println("Would you like to filter by postal code? Y = Yes");
-        String postalChoice = myObj.nextLine();
+        System.out.print("Would you like to filter by postal code? (Y/N) ");
+        String postalChoice = myObj.next();
         if (postalChoice.toLowerCase().equals("y")) {
-            System.out.println("Provide the listing's postal code.");
-            String postal = myObj.nextLine();
+            System.out.print("Provide the listing's postal code: ");
+            String postal = myObj.next();
             if(postal.length() > 10){
-                System.out.println("Invalid postal code.");
+                System.out.println("Invalid postal code: ");
                 return;
             }
 
@@ -236,13 +237,13 @@ public class Search {
         }
 
         // price
-        System.out.println("Would you like to filter by price range? Y = Yes");
-        String priceChoice = myObj.nextLine();
+        System.out.print("Would you like to filter by price range? (Y/N) ");
+        String priceChoice = myObj.next();
         if (priceChoice.toLowerCase().equals("y")) {
-            System.out.println("What's the minimum price in your range?"); // todo gotta input smth or it's error
-            int minPrice = Integer.parseInt(myObj.nextLine());    
-            System.out.println("What's the maximum price in your range?");
-            int maxPrice = Integer.parseInt(myObj.nextLine());  
+            System.out.print("What's the minimum price in your range? "); // todo gotta input smth or it's error
+            int minPrice = Integer.parseInt(myObj.next());    
+            System.out.print("What's the maximum price in your range? ");
+            int maxPrice = Integer.parseInt(myObj.next());  
             // TODO We don't have to order by price this time right?
             try {
                 Statement statement = conn.createStatement();
@@ -269,14 +270,14 @@ public class Search {
 
         // amenities 
         // TODO Is it okay that the same listing is there multiple times for the multiple amenities it has?
-        System.out.println("Would you like to filter by amenities? Y = Yes");
-        String amenitiesChoice = myObj.nextLine();
+        System.out.println("Would you like to filter by amenities? (Y/N) ");
+        String amenitiesChoice = myObj.next();
         if (amenitiesChoice.toLowerCase().equals("y")) {
             System.out.println("Choose amenities. Enter 0 to exit.");
             System.out.println("Essentials: 1 = Wifi, 2 = Kitchen");
             System.out.println("Features: 3 = Pool, 4 = Free Parking");
             System.out.println("Safety: 5 = Smoke Alarm, 6 = Carbon Monoxide Alarm");
-            String choice = myObj.nextLine();
+            String choice = myObj.next();
 
             String names = "name = '0'"; // this won't bring up anything, just to keep it here
             int count = 0;
@@ -309,16 +310,16 @@ public class Search {
         }
 
         // availabilities
-        System.out.println("Would you like to filter by availabilities? Y = Yes");
-        String availabilitiesChoice = myObj.nextLine();
+        System.out.print("Would you like to filter by availabilities? (Y/N) ");
+        String availabilitiesChoice = myObj.next();
         String getListings = "";
         
         if (availabilitiesChoice.toLowerCase().equals("y")) {
-            System.out.println("Start date of range: ");
-            String start = myObj.nextLine();
+            System.out.print("Start date of range: ");
+            String start = myObj.next();
             
-            System.out.println("End date of range: ");
-            String end = myObj.nextLine();
+            System.out.print("End date of range: ");
+            String end = myObj.next();
             //TODO: try-catch here
             LocalDate startDate = LocalDate.parse(start);
             LocalDate endDate = LocalDate.parse(end);
@@ -336,7 +337,6 @@ public class Search {
 
             getListings = String.format("CREATE OR REPLACE VIEW availabilitiesView AS SELECT amenitiesview.*, listings.type " +
             "FROM (SELECT count(date) AS dateCount, listID FROM availabilities WHERE date in %s GROUP BY listID) AS a JOIN listings ON listings.listID=a.listID JOIN amenitiesview ON listings.listID=amenitiesview.listID WHERE a.dateCount = %d", stringDates, dates.size());
-            
 
         }
         else {
@@ -349,9 +349,6 @@ public class Search {
           } catch (SQLException e) {
             e.printStackTrace();
         } 
-        System.out.println(getListings);
-
-
 
         // TODO others? avg rating in rentersReviewListings? listing type? locations?
 
@@ -368,7 +365,7 @@ public class Search {
                 if (postalChoice.toLowerCase().equals("y"))
                     System.out.print(", Postal: " + rs.getString("postal"));
                 if (priceChoice.toLowerCase().equals("y")) 
-                    System.out.print(", Price: " + rs.getFloat("price"));
+                    System.out.print(", Price $: " + df.format(rs.getFloat("price")));
                 if (amenitiesChoice.toLowerCase().equals("y")) // todo not needed bc only gives 1 amenity (we'll just assume it gives all)
                     System.out.print(", Amenities: " + rs.getString("name"));
                 if (availabilitiesChoice.toLowerCase().equals("y"))    

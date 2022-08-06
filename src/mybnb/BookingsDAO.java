@@ -17,7 +17,7 @@ public class BookingsDAO {
             Float cost = AvailabilityDAO.getAvailabilityPriceOnDates(conn, startDate, endDate, listingID);
             if(cost == -1) return;
             Statement statement = conn.createStatement();
-            String bookingInsert = String.format("INSERT INTO Booked(listID, renterSIN, startDate, endDate, cost) VALUES (%d, %d, '%s', '%s', %f);", listingID, DAO.loggedInUser, Date.valueOf(startDate), Date.valueOf(endDate), cost);
+            String bookingInsert = String.format("INSERT INTO Booked(listID, renterSIN, startDate, endDate, cost) VALUES (%d, %d, '%s', '%s', %f);", listingID, Main.loggedInUser, Date.valueOf(startDate), Date.valueOf(endDate), cost);
             statement.executeUpdate(bookingInsert);
             //remove from availabilities table only after successful booking;
             AvailabilityDAO.setAvailability(conn, listingID, startDate, endDate, "booked");
@@ -28,28 +28,24 @@ public class BookingsDAO {
 
     }
 
-
-    //TODO: optional field for status so you can get all past bookings, cancelled, etc
-    public static void getAllBookingsForRenter(Connection conn){
+    public static void getAllBookingsForRenter(Connection conn, String status){
         //Update bookings to past before displaying here
         setPastBookingsByRenter(conn);
         try {
             Statement statement = conn.createStatement();
-            String bookings = String.format("SELECT * from Booked WHERE renterSIN = %d;", DAO.loggedInUser);
+            String bookings = String.format("SELECT * from Booked WHERE renterSIN = %d AND status = '%s';", Main.loggedInUser, status);
             ResultSet rs = statement.executeQuery(bookings);
             while(rs.next()){
                 System.out.println("ListId: " + rs.getInt("listID"));
-                System.out.println("Status: " + rs.getString("status"));
-                System.out.println("Start Date: " + rs.getDate("startDate"));
-                System.out.println("End Date: " + rs.getDate("endDate"));
-                System.out.println("--------------------------------------------------");
+                System.out.println("Dates: " + rs.getDate("startDate") + " - " + rs.getDate("endDate"));
+                System.out.println("Cost: " + rs.getString("cost") + "\n");
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    public static void getAllBookingsForHost(Connection conn){
+    public static void getAllBookingsForHost(Connection conn, String status){
         //Update host's bookings to past before displaying here
         setPastBookingsByHost(conn);
         try {
@@ -57,15 +53,12 @@ public class BookingsDAO {
             //collect listings for host from hostsToListings, join with booked project listID, startDate, endDate
             String bookings = String.format("SELECT Booked.listID, startDate, endDate, cost, status FROM Booked " +
             "JOIN (SELECT listID from HostsToListings WHERE hostSIN = '%s') as h1 " +
-            "ON Booked.listID=h1.listID ORDER BY Booked.listID;", DAO.loggedInUser);
+            "ON Booked.listID=h1.listID WHERE status = '%s' ORDER BY Booked.listID;", Main.loggedInUser, status);
             ResultSet rs = statement.executeQuery(bookings);
             while(rs.next()){
                 System.out.println("ListID: " + rs.getInt("listID"));
-                System.out.println("Start Date: " + rs.getDate("startDate"));
-                System.out.println("End Date: "  + rs.getDate("endDate"));
-                System.out.println("Cost: " + rs.getString("cost"));
-                System.out.println("Status: " + rs.getString("status"));
-                System.out.println("--------------------------------------------------");
+                System.out.println("Dates: " + rs.getDate("startDate") + " - " + rs.getDate("endDate"));
+                System.out.println("Cost: " + rs.getString("cost") + "\n");
             }
 
         } catch (SQLException e) {
@@ -75,10 +68,12 @@ public class BookingsDAO {
 
     //Helper
     public static void cancelBooking(Connection conn, Scanner myObj, int listingID, LocalDate startDate, LocalDate endDate){
-        String deleteListing = String.format("UPDATE Booked SET status = 'cancelled' WHERE listID= %d AND startDate = '%s' AND endDate = '%s';", listingID, startDate, endDate);
+        //first check that dates are valid and not past
+        if(!AvailabilityDAO.checkValidDates(startDate, endDate)) return;
+        String deleteBooking = String.format("UPDATE Booked SET status = 'cancelled' WHERE listID= %d AND startDate = '%s' AND endDate = '%s';", listingID, startDate, endDate);
         try {
             Statement statement = conn.createStatement();
-            int rows = statement.executeUpdate(deleteListing);
+            int rows = statement.executeUpdate(deleteBooking);
             if(rows > 0)
               System.out.println("Successfully cancelled booking with listID " + listingID);
             else
@@ -90,7 +85,7 @@ public class BookingsDAO {
 
     //when a renter wants to see their past bookings, update relevant bookings to past before displaying
     public static void setPastBookingsByRenter(Connection conn){
-        String past = String.format("UPDATE Booked SET status = 'past' WHERE renterSIN = %d AND endDate < '%s';", DAO.loggedInUser, LocalDate.now());
+        String past = String.format("UPDATE Booked SET status = 'past' WHERE renterSIN = %d AND endDate < '%s';", Main.loggedInUser, LocalDate.now());
         try {
           Statement statement = conn.createStatement();
           statement.executeUpdate(past);

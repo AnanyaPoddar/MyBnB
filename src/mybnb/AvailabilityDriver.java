@@ -13,7 +13,7 @@ public class AvailabilityDriver {
     
   public static void getAvailabilities(Connection conn, Scanner myObj){
     System.out.println("Enter the id of the listing you'd like to see availabilities for.");
-    int listingID = Integer.parseInt(myObj.nextLine());
+    int listingID = Integer.parseInt(myObj.next());
     AvailabilityDAO.getAvailabilities(conn, listingID, myObj);
   }
 
@@ -22,46 +22,45 @@ public class AvailabilityDriver {
     String end = "-1";
     String start = "-1";
     while(!start.equals("0") && !end.equals("0")){
-      System.out.println("Start date of range: ");
-      start = myObj.nextLine();
+      System.out.print("Start date of range: ");
+      start = myObj.next();
       if(start.equals("0")) break;
       
-      System.out.println("End date of range: ");
-      end = myObj.nextLine();
+      System.out.print("End date of range: ");
+      end = myObj.next();
       if(end.equals("0")) break;
       //TODO: try-catch here
       LocalDate startDate = LocalDate.parse(start);
       LocalDate endDate = LocalDate.parse(end);
 
       if(!AvailabilityDAO.checkValidDates(startDate, endDate)) return;
-      System.out.println("Enter the price of this listing in CAD. This price is applied for each date within the given range.");
-      float price = Float.parseFloat(myObj.nextLine());
+      System.out.print("Enter the price of this listing in CAD. This price is applied for each date within the given range: ");
+      float price = Float.parseFloat(myObj.next());
       AvailabilityDAO.addAvailabilities(conn, listingID, startDate, endDate, price);
     }
   }
 
 
-  public static void modifyAvailabilities(Connection conn, Scanner myObj){
-    System.out.println("Enter the id of the listing you'd like to modify availabilities for.\n");
-    int listingID = Integer.parseInt(myObj.nextLine());
-    System.out.println(listingID);
+  public static void modifyAvailabilities(Connection conn, Scanner myObj, int listingID){
     try {
       //Check that host of listing is the one attempting to modify availailibility
       if(!AvailabilityDAO.hostsListing(conn, listingID)) return;
       
-      System.out.println("The current list of availabilities for this listing are as follows:\n");
       AvailabilityDAO.getAvailabilities(conn, listingID, myObj);
 
-      System.out.println("Enter 1 to modify the price of a range of availabilities.");
-      System.out.println("Enter 2 to delete a range of availabilities\n");
+      System.out.println("Enter 1 to add/modify the price of a range of availabilities.");
+      System.out.println("Enter 2 to delete a range of availabilities");
 
-      int choice = Integer.parseInt(myObj.nextLine());
-      System.out.println("Enter the range of dates in the YYYY-MM-DD format.\n");
-      System.out.println("Start date of range: ");
-      String start = myObj.nextLine();
+      int choice = Integer.parseInt(myObj.next());
+      //invalid choice 
+      if(choice != 1 && choice !=2) return;
       
-      System.out.println("End date of range: ");
-      String end = myObj.nextLine();
+      System.out.println("Enter the range of dates in the YYYY-MM-DD format.");
+      System.out.print("Start date of range: ");
+      String start = myObj.next();
+      
+      System.out.print("End date of range: ");
+      String end = myObj.next();
   
       //TODO: try-catch here
       LocalDate startDate = LocalDate.parse(start);
@@ -77,8 +76,6 @@ public class AvailabilityDriver {
         }
       stringDates  += ")";
 
-      //TODO: Technically none of the sql stuff should be in the driver 
-
       //Check that none of the dates are booked when deleting or modifying the price
       String isBooked = String.format("SELECT count(date) > 0 as isBooked FROM Availabilities WHERE listID = %d AND status='booked' AND date IN %s;", listingID, stringDates);
       Statement statement = conn.createStatement();
@@ -90,8 +87,8 @@ public class AvailabilityDriver {
           return;
         }
         if(choice == 1){
-          System.out.println("Enter the price of this listing in CAD. This price is applied for each date within the given range.");
-          float price = Float.parseFloat(myObj.nextLine());
+          System.out.print("Enter the price of this listing in CAD. This price is applied for each date within the given range: ");
+          float price = Float.parseFloat(myObj.next());
           System.out.println("1 - Modifying Availabilities...");
           AvailabilityDAO.addAvailabilities(conn, listingID, startDate, endDate, price);
         }

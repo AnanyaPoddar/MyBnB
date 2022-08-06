@@ -15,7 +15,7 @@ public class ListingDAO {
   public static List<Integer> getAllListingsByHost(Connection conn) throws SQLException {
     List<Integer> listings = new ArrayList<>();
     Statement stmt = conn.createStatement();
-    String sql =  String.format("SELECT listID from HostsToListings WHERE hostSIN=%d;", DAO.loggedInUser);
+    String sql =  String.format("SELECT listID from HostsToListings WHERE hostSIN=%d;", Main.loggedInUser);
     ResultSet rs = stmt.executeQuery(sql);
 
     // Extract results
@@ -30,13 +30,8 @@ public class ListingDAO {
 
   //add listing, associated with specific logged-in host
   public static void addListing(Connection conn, Scanner myObj) {
-    if(!UserDAO.verifyUserInTable(conn, DAO.loggedInUser, "hostSIN","Host")){
-        System.out.println("You must be logged in as a host.");
-        return;
-    }
-    System.out.println("Enter the type of your listing. 1 = House, 2 = Guesthouse, 3 = Apartment, 4 = Hotel");
-    // System.out.println("Are you renting out the entire place? 0 = No, 1 = Yes");
-    int typeInput = Integer.parseInt(myObj.nextLine());
+    System.out.print("Enter the type of your listing. 1 = House, 2 = Guesthouse, 3 = Apartment, 4 = Hotel ");
+    int typeInput = Integer.parseInt(myObj.next());
     String type = null;
     if (typeInput == 1) 
       type = "house";
@@ -46,7 +41,6 @@ public class ListingDAO {
       type = "apartment";
     else if (typeInput == 4) 
       type = "hotel";
-    //TODO: Handle, stop reading
     else{
       System.out.println("Invalid type");
       return;
@@ -62,19 +56,19 @@ public class ListingDAO {
         if(rs.next()) {
             int listID = rs.getInt("listID");
             String hostsToListingsInsert = String.format(
-            "INSERT INTO HostsToListings VALUES (%d, %d);", listID, DAO.loggedInUser);
+            "INSERT INTO HostsToListings VALUES (%d, %d);", listID, Main.loggedInUser);
             statement.executeUpdate(hostsToListingsInsert);
 
             // Ask user for latitude and longitude (should be able to input 10, -10, -10.1, -10.1)
-            System.out.println("Enter the latitude of your listing (-90 to 90)");
-            float latitude = Float.parseFloat(myObj.nextLine());
+            System.out.print("Enter the latitude of your listing (-90 to 90) ");
+            float latitude = Float.parseFloat(myObj.next());
             if(latitude > 90 || latitude < -90){
               System.out.println("Latitude must be in a -90 to 90 range.");
               return; // TODO Should it just return when error?
             }
 
-            System.out.println("Enter the longitude of your listing (-180 to 180)");
-            float longitude = Float.parseFloat(myObj.nextLine());
+            System.out.print("Enter the longitude of your listing (-180 to 180) ");
+            float longitude = Float.parseFloat(myObj.next());
             if(longitude > 180 || longitude < -180){
               System.out.println("Longitude must be in a -180 to 180 range.");
               return; // TODO Should it just return when error?
@@ -87,18 +81,18 @@ public class ListingDAO {
             // Ask user for address + attributes
             int unitNum = 0;
             if(typeInput == 3 || typeInput == 4){
-              System.out.println("Provide the listing's unit number.");
-              unitNum = Integer.parseInt(myObj.nextLine()); 
+              System.out.print("Provide the listing's unit number: ");
+              unitNum = Integer.parseInt(myObj.next()); 
             }
 
-            System.out.println("Provide the listing's street name.");
-            String street = myObj.nextLine();
-            System.out.println("Provide the listing's city.");
-            String city = myObj.nextLine();
-            System.out.println("Provide the listing's country.");
-            String country = myObj.nextLine();
-            System.out.println("Provide the listing's postal code in the following format: L#L #L#.");
-            String postal = myObj.nextLine();
+            System.out.print("Provide the listing's street name: ");
+            String street = myObj.next();
+            System.out.print("Provide the listing's city: ");
+            String city = myObj.next();
+            System.out.print("Provide the listing's country: ");
+            String country = myObj.next();
+            System.out.print("Provide the listing's postal code in the following format: L#L #L# ");
+            String postal = myObj.next();
             // Different countries have different postal codes
             if(postal.length() > 10 ) {
               System.out.println("Postal code too long.");
@@ -114,7 +108,7 @@ public class ListingDAO {
             System.out.println("Essentials: 1 = Wifi, 2 = Kitchen");
             System.out.println("Features: 3 = Pool, 4 = Free Parking");
             System.out.println("Safety: 5 = Smoke Alarm, 6 = Carbon Monoxide Alarm");
-            int choice = Integer.parseInt(myObj.nextLine());
+            int choice = Integer.parseInt(myObj.next());
 
             Boolean[] amenities = new Boolean[7];
             for (int i = 0; i < 7; i++) {
@@ -130,10 +124,8 @@ public class ListingDAO {
               choice = Integer.parseInt(myObj.nextLine());
             }
             addAmenities(conn, amenities, listID);
-
             //suggest a price here because you have all of the information required
             HostToolkit.suggestPrice(conn, type, country, city, street, postal);
-
             //After listing is added, prompt user to add availabilities for that listing
             AvailabilityDriver.addAvailabilities(conn, listID, myObj);
         }
@@ -144,7 +136,6 @@ public class ListingDAO {
 
   public static void viewAllListings(Connection conn) {
     // Shows corresponding address (not location as that isn't necessarily relevant to the user)
-
     try {
       Statement stmt = conn.createStatement();
       String sql = "SELECT a.listID, type, unitNum, street, city, country, postal FROM listings AS l JOIN addresses AS a ON a.listID=l.listID;";
@@ -160,13 +151,10 @@ public class ListingDAO {
         String country = rs.getString("country");
         String postal = rs.getString("postal");
         int unitNum = rs.getInt("unitNum");
-
-
         // Display values
         System.out.print("ID: " + listID);
         System.out.println(", type: " + type);
-        System.out.println("Address: " + street + ", " + (unitNum != 0 ? "unit " + unitNum + ", " : "") + city + ", " + country + ", " + postal);
-        System.out.println("------------------------------------------------------");
+        System.out.println("Address: " + street + ", " + (unitNum != 0 ? "unit " + unitNum + ", " : "") + city + ", " + country + ", " + postal + "\n");
 
       }
       rs.close();
@@ -179,7 +167,8 @@ public class ListingDAO {
   public static void viewAllListingsByHost(Connection conn) {
     try {
       Statement stmt = conn.createStatement();
-      String sql =  String.format("SELECT l.listID, type, street, city, country, postal, unitNum FROM Listings as l JOIN addresses AS a ON l.listID = a.listID JOIN HostsToListings AS h ON h.listID = a.listID WHERE hostSIN = %d", DAO.loggedInUser);
+      String sql =  String.format("SELECT l.listID, type, street, city, country, postal, unitNum FROM Listings as l "+
+      "JOIN addresses AS a ON l.listID = a.listID JOIN HostsToListings AS h ON h.listID = a.listID WHERE hostSIN = %d", Main.loggedInUser);
       ResultSet rs = stmt.executeQuery(sql);
 
       // Extract results
@@ -196,9 +185,7 @@ public class ListingDAO {
         // Display values
         System.out.print("ID: " + listID);
         System.out.println(", type: " + type);
-        System.out.println("Address: " + street + ", " + (unitNum != 0 ? "unit " + unitNum + ", " : "") + city + ", " + country + ", " + postal);
-        System.out.println("------------------------------------------------------");
-
+        System.out.println("Address: " + street + ", " + (unitNum != 0 ? "unit " + unitNum + ", " : "") + city + ", " + country + ", " + postal + "\n");
       }
       rs.close();
     } catch (SQLException e) {
@@ -206,14 +193,7 @@ public class ListingDAO {
     }
   }
 
-  public static void deleteListing(Connection conn, Scanner myObj){
-    System.out.println("Enter the id of the listing you'd like to delete.");
-    int listingID = Integer.parseInt(myObj.nextLine());
-    //TODO: Can remove this check once we show different menu options based on logged-in, host, etc
-    if(DAO.loggedInUser == -1){
-      System.out.println("Must be logged in to delete a listing");
-      return;
-    }
+  public static void deleteListing(Connection conn, Scanner myObj, int listingID){
     try {
       Statement statement = conn.createStatement();
       //check if listing belongs to host
@@ -221,7 +201,7 @@ public class ListingDAO {
       ResultSet rs = statement.executeQuery(checkHost);
       if(rs.next()){
         int hostSIN = rs.getInt("hostSIN");
-        if(hostSIN != DAO.loggedInUser){
+        if(hostSIN != Main.loggedInUser){
           System.out.println("Only the host of the listing can delete it");
           return;
         }
@@ -298,10 +278,10 @@ public class ListingDAO {
     //from availabilities table, get all the 
 
     System.out.println("Start date of range: ");
-    String start = myObj.nextLine();
+    String start = myObj.next();
     
     System.out.println("End date of range: ");
-    String end = myObj.nextLine();
+    String end = myObj.next();
     //TODO: try-catch here
     LocalDate startDate = LocalDate.parse(start);
     LocalDate endDate = LocalDate.parse(end);

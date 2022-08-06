@@ -3,6 +3,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Scanner;
@@ -65,7 +66,7 @@ public class AvailabilityDAO{
     }
     else{
       int hostSIN = rs.getInt("hostSIN");
-      if(hostSIN != DAO.loggedInUser){
+      if(hostSIN != Main.loggedInUser){
         System.out.println("Only the host of the listing has this permission.");
         return false;
       }
@@ -82,12 +83,15 @@ public class AvailabilityDAO{
       Statement statement = conn.createStatement();
       String availabilities = String.format("SELECT date, price from Availabilities WHERE listID = %d AND status = 'available' ORDER BY date;", listingID);
       ResultSet rs = statement.executeQuery(availabilities);
-      //TODO: Maybe provide feedback to user if the listingID DNE or if no availabilities for it exist
+      if(!rs.isBeforeFirst()) {
+        System.out.println("No availabilities for this listing."); 
+        return;
+      }
       while(rs.next()){
         System.out.print("Date " + rs.getDate("date"));
-        System.out.println(", Price " + rs.getFloat("price"));
+        DecimalFormat df = new DecimalFormat("0.00");
+        System.out.println(", Price $" + df.format(rs.getFloat("price")));
       }
-      System.out.println();
     }catch (SQLException e) {
       e.printStackTrace();
     }
