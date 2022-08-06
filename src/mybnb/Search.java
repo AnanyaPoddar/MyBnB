@@ -7,7 +7,6 @@ import java.text.DecimalFormat;
 import java.sql.ResultSet;
 import java.time.LocalDate;
 import java.util.List;
-import java.text.DecimalFormat;
 import java.util.stream.Collectors;
 
 public class Search {
@@ -61,8 +60,8 @@ public class Search {
         }
 
         int searchDistance = 50; 
-        System.out.println("Would you like to specify a distance? Press any key or D = Default: 50km");
-        if(!myObj.nextLine().toLowerCase().equals("d")){
+        System.out.println("Would you like to specify a distance? Y = yes. Any key = Default: 50km");
+        if(myObj.nextLine().toLowerCase().equals("y")){
             System.out.println("Enter the distance in kilometers from your location you want to search.");
             searchDistance = Integer.parseInt(myObj.nextLine());
         } 
@@ -87,13 +86,16 @@ public class Search {
             Statement statement = conn.createStatement();
             ResultSet rs = statement.executeQuery(listings);
         
-            // TODO What does "return all listings mean? 
-            //is this enough or do i have to join with Listings etc to provide more info
+            System.out.println(""); 
+            if(!rs.isBeforeFirst()) {
+                System.out.println("No listings in " + searchDistance + "km of this location."); 
+                return;
+            }
             while(rs.next()){
                 System.out.print("ListID: " + rs.getInt("listID"));
                 System.out.print(", Latitude: " + rs.getFloat("Latitude"));
                 System.out.print(", Longitude: " + rs.getFloat("Longitude"));
-                System.out.println(", Distance: " + rs.getFloat("Distance") + "km");
+                System.out.println(", Distance: " + df.format(rs.getFloat("Distance")) + "km");
                 int unitNum = rs.getInt("unitNum");
                 System.out.println("Address: " + rs.getString("street")+ ", " + (unitNum != 0 ? "unit " + unitNum + ", " : "") + rs.getString("city") + ", " + rs.getString("country") + ", " + rs.getString("postal"));
                 if(priceChoice.toLowerCase().equals("y")){
@@ -122,6 +124,7 @@ public class Search {
              + "WHERE postal LIKE '" + postal.substring(0, postal.length() - 1) + "_';"; 
             ResultSet rs = statement.executeQuery(listing);
 
+            System.out.println(""); 
             if(!rs.isBeforeFirst()) {
                 System.out.println("No listings at or near this postal code."); 
                 return;
@@ -159,8 +162,8 @@ public class Search {
             String listing = String.format("SELECT * FROM ADDRESSES "
              + "WHERE unitNum = %d AND street = '%s' AND postal = '%s';", unitNum, street, postal);
             ResultSet rs = statement.executeQuery(listing);
-
-            // TODO What info do I need to return/display?        
+  
+            System.out.println("");  
             if(rs.next()){
                 System.out.println("ListID: " + rs.getInt("listID"));
             }
@@ -360,10 +363,14 @@ public class Search {
 
         try {
             Statement statement = conn.createStatement();
-            String allListings = "Select * from availabilitiesView;";
+            String allListings = "Select * from availabilitiesView JOIN addresses on addresses.listID = availabilitiesView.listID;";
             ResultSet rs = statement.executeQuery(allListings);
 
-            // TODO What info do I need to return/display? some of them unneeded       
+            System.out.println(""); 
+            if(!rs.isBeforeFirst()) {
+                System.out.println("No listings available with these filters."); 
+                return;
+            }
             while(rs.next()){
                 System.out.print("ListID: " + rs.getInt("listID"));
                 if (postalChoice.toLowerCase().equals("y"))
@@ -373,6 +380,9 @@ public class Search {
                 if (availabilitiesChoice.toLowerCase().equals("y"))    
                     System.out.print(", Type: " + rs.getString("type")); // todo not needed, just type
                 System.out.println("");
+                int unitNum = rs.getInt("unitNum");
+                System.out.println("Address: " + rs.getString("street")+ ", " + (unitNum != 0 ? "unit " + unitNum + ", " : "") + rs.getString("city") + ", " + rs.getString("country") + ", " + rs.getString("postal")+ "\n");
+                
             }
 
           } catch (SQLException e) {

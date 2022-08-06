@@ -90,7 +90,7 @@ public class ListingDAO {
             String city = myObj.nextLine();
             System.out.println("Provide the listing's country: ");
             String country = myObj.nextLine();
-            System.out.println("Provide the listing's postal code in the following format: L#L #L# ");
+            System.out.println("Provide the listing's postal code: ");
             String postal = myObj.nextLine();
             // Different countries have different postal codes
             if(postal.length() > 10 ) {
