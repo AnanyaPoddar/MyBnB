@@ -38,7 +38,7 @@ public class BookingsDAO {
             while(rs.next()){
                 System.out.println("ListId: " + rs.getInt("listID"));
                 System.out.println("Dates: " + rs.getDate("startDate") + " - " + rs.getDate("endDate"));
-                System.out.println("Cost: " + rs.getString("cost") + "\n\n");
+                System.out.println("Cost: " + rs.getString("cost") + "\n");
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -58,7 +58,7 @@ public class BookingsDAO {
             while(rs.next()){
                 System.out.println("ListID: " + rs.getInt("listID"));
                 System.out.println("Dates: " + rs.getDate("startDate") + " - " + rs.getDate("endDate"));
-                System.out.println("Cost: " + rs.getString("cost") + "\n\n");
+                System.out.println("Cost: " + rs.getString("cost") + "\n");
             }
 
         } catch (SQLException e) {

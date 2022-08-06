@@ -17,16 +17,14 @@ public class Search {
         System.out.println("Find listings by various search/filtering methods");
         String exit = "-1";
         while (!exit.equals("0")) {
-            System.out.println("------------------------------------------------------");
-            System.out.println("Enter 0 to exit searches."); 
-            System.out.println("Enter 1 to search nearby location."); // done
-            System.out.println("Enter 2 to search nearby postal codes."); // done
-            System.out.println("Enter 3 to find a listing by address."); // done
-            System.out.println("Enter 4 to find listings by time availabilities.");
-            System.out.println("Enter 5 to sort by price."); // done
-            System.out.println("Enter 6 to fully filter.");
-            System.out.println("------------------------------------------------------");
-
+            System.out.println("----------------------- Search ------------------------");
+            System.out.println("0 - Exit Searches"); 
+            System.out.println("1 - Search Nearby Location"); // done
+            System.out.println("2 - Search Nearby Postal Codes"); // done
+            System.out.println("3 - Find a Listing by Address"); // done
+            System.out.println("4 - Find Listings by Availabilities");
+            System.out.println("5 - Sort by Price"); // done
+            System.out.println("6 - Fully Filter");
 
             exit = myObj.next(); 
 
@@ -180,7 +178,7 @@ public class Search {
 
         // filter by postal code
         // TODO Maybe somehow make the postalSearch function be into this
-        System.out.print("Would you like to filter by postal code? Y = Yes ");
+        System.out.print("Would you like to filter by postal code? (Y/N) ");
         String postalChoice = myObj.next();
         if (postalChoice.toLowerCase().equals("y")) {
             System.out.print("Provide the listing's postal code: ");
@@ -214,7 +212,7 @@ public class Search {
         }
 
         // price
-        System.out.print("Would you like to filter by price range? Y = Yes ");
+        System.out.print("Would you like to filter by price range? (Y/N) ");
         String priceChoice = myObj.next();
         if (priceChoice.toLowerCase().equals("y")) {
             System.out.print("What's the minimum price in your range? "); // todo gotta input smth or it's error
@@ -247,7 +245,7 @@ public class Search {
 
         // amenities 
         // TODO Is it okay that the same listing is there multiple times for the multiple amenities it has?
-        System.out.println("Would you like to filter by amenities? Y = Yes ");
+        System.out.println("Would you like to filter by amenities? (Y/N) ");
         String amenitiesChoice = myObj.next();
         if (amenitiesChoice.toLowerCase().equals("y")) {
             System.out.println("Choose amenities. Enter 0 to exit.");
@@ -287,7 +285,7 @@ public class Search {
         }
 
         // availabilities
-        System.out.print("Would you like to filter by availabilities? Y = Yes ");
+        System.out.print("Would you like to filter by availabilities? (Y/N) ");
         String availabilitiesChoice = myObj.next();
         String getListings = "";
         
@@ -326,9 +324,6 @@ public class Search {
           } catch (SQLException e) {
             e.printStackTrace();
         } 
-        System.out.println(getListings);
-
-
 
         // TODO others? avg rating in rentersReviewListings? listing type? locations?
 

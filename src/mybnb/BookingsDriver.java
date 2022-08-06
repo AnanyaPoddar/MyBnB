@@ -41,9 +41,7 @@ public class BookingsDriver {
         }
     }   
 
-    public static void userCancelsBooking(Connection conn, Scanner myObj){
-        System.out.print("Enter the id of the listing you'd like to cancel a booking for: ");
-        int listingID = Integer.parseInt(myObj.next());
+    public static void renterCancelsBooking(Connection conn, Scanner myObj, int listingID){
         System.out.print("Enter start date of the booking: ");
         String start = myObj.next();
         System.out.print("Enter end date of the booking: ");

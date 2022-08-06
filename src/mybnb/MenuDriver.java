@@ -5,6 +5,30 @@ import java.util.Scanner;
 
 public class MenuDriver {
 
+    public static void loggedOutOrRenterListingMenu(Connection conn, Scanner myObj){
+        int option = -1;
+        while (option != 0) {
+            System.out.println("---------------------- Listings ----------------------");
+            System.out.println("0 - Exit Listings Mode"); 
+            System.out.println("1 - View All Listings");
+            System.out.println("2 - Check Availabilities for a Listing");
+            //TODO: Does the "get listings between 2 dates need to go somewhere separate or here is fine"
+            System.out.println("3 - Search and Filter Listings");
+            option = Integer.parseInt(myObj.next());
+            if(option == 1)
+                ListingDAO.viewAllListings(conn);
+            else if(option == 2){
+                System.out.print("Enter a listID to see availabilities: ");
+                int listID = Integer.parseInt(myObj.next());
+                AvailabilityDAO.getAvailabilities(conn, listID, myObj);
+            }
+            else if(option == 3){
+                Search.searchListings(conn, myObj);
+            }
+        }
+
+    }
+
     public static void hostListingMenu(Connection conn, Scanner myObj){
         int option = -1;
         while (option != 0) {
@@ -57,6 +81,39 @@ public class MenuDriver {
             }
             else if(option == 4){
                 UserDAO.hostReviewsRenter(conn, myObj);
+            }
+        }
+    }
+
+
+    public static void renterBookingMenu(Connection conn, Scanner myObj){
+        int option = -1;
+        while (option != 0) {
+            System.out.println("---------------------- Bookings ----------------------");
+            System.out.println("0 - Exit Bookings Mode"); 
+            System.out.println("1 - View All Your Upcoming Bookings");
+            System.out.println("2 - Cancel An Upcoming Booking");
+            System.out.println("3 - View All Your Past Bookings"); //should review show up here?
+            System.out.println("4 - Review a Past Host");
+            System.out.println("5 - Review a Past Listing");
+
+
+            option = Integer.parseInt(myObj.next());
+            if(option == 1)
+                BookingsDAO.getAllBookingsForRenter(conn, "booked");
+            else if(option == 2){
+                System.out.print("Enter a listID for the listing to cancel a booking for: ");
+                int listingID = Integer.parseInt(myObj.next());
+                BookingsDriver.renterCancelsBooking(conn, myObj, listingID);
+            }
+            else if(option == 3){
+                BookingsDAO.getAllBookingsForRenter(conn, "past");
+            }
+            else if(option == 4){
+                UserDAO.renterReviewsHost(conn, myObj);
+            }
+            else if(option == 5){
+                UserDAO.rentersReviewListings(conn, myObj);
             }
         }
     }

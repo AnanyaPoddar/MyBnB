@@ -4,14 +4,8 @@ import java.sql.Connection;
 import java.sql.Statement;
 
 public class DDL {
-    Connection conn;
-    Statement stmt;
-    
-    public DDL(Connection conn, Statement stmt){
-        conn = this.conn;
-        stmt = this.stmt;
-    }
-    public void createTables(){
+
+    public static void createTables(Connection conn, Statement stmt){
         try {
             String userTable = "CREATE TABLE IF NOT EXISTS USER " + "(SIN INT NOT NULL PRIMARY KEY "
                 + " CONSTRAINT CK_SIN_LENGTH check (length(SIN) = 9), upassword VARCHAR(12) NOT NULL, "
