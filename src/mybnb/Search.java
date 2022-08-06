@@ -55,14 +55,34 @@ public class Search {
             return;
         }
 
-        int searchDistance = 50; 
-        System.out.println("Enter the distance by degree from your location you want to search. Default: 50km");
-        searchDistance = Integer.parseInt(myObj.nextLine());        
-        // TODO if given nothing, it shouldn't error, just ""
+            int searchDistance = 50; 
+        System.out.println("Would you like to specify a distance? Press any key or D = Default: 50km");
+        if(!myObj.nextLine().toLowerCase().equals("d")){
+            System.out.println("Enter the distance in kilometers from your location you want to search.");
+            searchDistance = Integer.parseInt(myObj.nextLine());
+        } 
+
+        String listings = "";
+        String order = "ASC";
+        System.out.println("Would you like to sort by price? Y = yes, any key = no");
+        String priceChoice = myObj.nextLine();
+        if(priceChoice.toLowerCase().equals("y")){
+            System.out.println("Do you want the price to be sorted in ascending or descending? Default is Ascending. Press D for Descending");
+            String choice = myObj.nextLine();
+            if (choice.toLowerCase().equals("d")) {
+                order = "DESC";
+            }
+            listings = String.format("SELECT DISTINCT locations.listID, latitude, longitude, ST_Distance_Sphere(point(locations.longitude, locations.latitude), point(%f, %f))/1000 as distance, avg(price) as price FROM locations JOIN availabilities on availabilities.listID = locations.listID WHERE ST_Distance_Sphere(point(locations.longitude, locations.latitude), point(%f, %f)) <= %d GROUP BY listID ORDER BY price %s, distance", longitude,latitude, longitude, latitude, searchDistance*1000, order );
+        }
+        else {
+            listings = String.format("SELECT *, ST_Distance_Sphere(point(locations.longitude, locations.latitude), point(%f, %f))/1000 as distance FROM LOCATIONS WHERE ST_Distance_Sphere(point(locations.longitude, locations.latitude), point(%f, %f)) <= %d ORDER BY distance;", longitude,latitude, longitude, latitude, searchDistance*1000); // returns meters!, so converts to km
+        }
+        
+              
 
         try {
+            System.out.println(listings);
             Statement statement = conn.createStatement();
-            String listings = String.format("SELECT *, ST_Distance_Sphere(point(locations.latitude, locations.longitude), point(%f, %f))/1000 as distance FROM LOCATIONS WHERE ST_Distance_Sphere(point(locations.latitude, locations.longitude), point(%f, %f)) <= %d ORDER BY distance;", latitude, longitude, latitude, longitude, searchDistance*1000); // returns meters!, so converts to km
             ResultSet rs = statement.executeQuery(listings);
         
             // TODO What does "return all listings mean? 
@@ -71,6 +91,10 @@ public class Search {
                 System.out.print("ListID: " + rs.getInt("listID"));
                 System.out.print(", Latitude: " + rs.getFloat("Latitude"));
                 System.out.print(", Longitude: " + rs.getFloat("Longitude"));
+                
+                if(priceChoice.toLowerCase().equals("y")){
+                    System.out.print(", Price: " + rs.getFloat("price"));
+                }
                 System.out.println(", Distance: " + rs.getFloat("Distance"));
             }
 
@@ -145,6 +169,8 @@ public class Search {
         if (choice.toLowerCase().equals("d")) {
            order = "DESC";
         }
+
+        // SELECT DISTINCT locations.listID, latitude, longitude, ST_Distance_Sphere(point(locations.longitude, locations.latitude), point(0, 0))/1000 as distance, avg(price) as price FROM locations JOIN availabilities on availabilities.listID = locations.listID WHERE ST_Distance_Sphere(point(locations.longitude, locations.latitude), point(0, 0)) <= 100000000 GROUP BY listID ORDER BY price " + order + ", distance;
 
         // TODO Is what I'm displaying okay? Should it be dates available also??
         try {

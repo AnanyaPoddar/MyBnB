@@ -6,7 +6,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
 import java.util.Scanner;
-// import io.github.cdimascio.dotenv.Dotenv;
+import io.github.cdimascio.dotenv.Dotenv;
 
 public class DAO {
 
@@ -21,9 +21,9 @@ public class DAO {
     Class.forName(dbClassName);
     // Database credentials
     final String USER = "root";
-    // Dotenv dotenv = Dotenv.configure().load();
-    // final String PASS = dotenv.get("PASS");
-    final String PASS = "root";
+    Dotenv dotenv = Dotenv.configure().load();
+    final String PASS = dotenv.get("PASS");
+    // final String PASS = "root";
     System.out.println("Connecting to database...");
 
     try {
