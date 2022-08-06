@@ -67,7 +67,7 @@ public class DDL {
 
             // TODO latitude and longitude don't have to be keys here?
             String locationsTable = "CREATE TABLE IF NOT EXISTS Locations "
-                + "(listID INT NOT NULL, FOREIGN KEY (listID) REFERENCES Listings(listID), " 
+                + "(listID INT NOT NULL, FOREIGN KEY (listID) REFERENCES Listings(listID) ON DELETE CASCADE, " 
                 + "latitude FLOAT NOT NULL CONSTRAINT CK_latitude  check (latitude >= -90 and latitude <= 90)," + 
                 " longitude FLOAT NOT NULL CONSTRAINT CK_longitude check (longitude >= -180 and longitude <= 180), " +
                 "PRIMARY KEY(listID))";
@@ -92,6 +92,11 @@ public class DDL {
                 "FOREIGN KEY (name) REFERENCES AMENITIES(name) ON DELETE CASCADE, " + 
                 "FOREIGN KEY (listID) REFERENCES Listings(listID) ON DELETE CASCADE, " +
                 "PRIMARY KEY(name, listID) )";
+            
+            // used for noun phrase word cloud
+            String npReviews = "CREATE TABLE IF NOT EXISTS npReviews "
+                + "(nounPhrase VARCHAR(100) NOT NULL)";
+                
 
             stmt.executeUpdate(userTable);
             stmt.executeUpdate(hostTable);
@@ -108,6 +113,7 @@ public class DDL {
             stmt.executeUpdate(amenitiesTable);
             stmt.executeUpdate(ListingsHaveAmenities);
             stmt.executeUpdate(availabilitiesTable);
+            stmt.executeUpdate(npReviews);
             
         }      
         catch(Exception e){

@@ -3,8 +3,6 @@ package mybnb;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -20,6 +18,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 // TODO https://gist.github.com/johnmiedema/e12e7359bcb17b03b8a0 CREDIT 
+// TODO What should this actually print
 
 //extract noun phrases from a single sentence using OpenNLP
 public class NounParser {
@@ -52,7 +51,7 @@ public class NounParser {
 			count = 0;
             while(rs.next()){
                 System.out.print("listID: " + rs.getInt("listID"));
-                System.out.println(", Number of bookings: " + rs.getString("review"));
+                System.out.println(", Review: " + rs.getString("review"));
 				reviews[count] = rs.getString("review");
 				count++;
             }
@@ -62,7 +61,6 @@ public class NounParser {
         }
 
 		// If no reviews, exit
-		System.out.println(count);
 		if (count == 0){
 			System.out.println("No reviews for this listID");
 			return;

@@ -96,7 +96,6 @@ public class UserDAO {
     }
   }
 
-
   public static void login(Connection conn, Scanner myObj) {
     if (Main.loggedInUser != -1) {
       System.out.println("You're already logged in as: " + Main.loggedInUser);
@@ -132,33 +131,33 @@ public class UserDAO {
   }
 
 
-  public static void viewAllUsers(Connection conn) {
-    try {
-      Statement stmt = conn.createStatement();
-      String sql = "SELECT * FROM User;";
-      ResultSet rs = stmt.executeQuery(sql);
-      // Extract results
-      while (rs.next()) {
-        // Retrieve by column name
-        int sid = rs.getInt("SIN");
-        String uname = rs.getString("uname");
-        String uaddress = rs.getString("uaddress");
-        String uoccupation = rs.getString("uoccupation");
-        String udob = rs.getString("uDOB");
+  // public static void viewAllUsers(Connection conn) {
+  //   try {
+  //     Statement stmt = conn.createStatement();
+  //     String sql = "SELECT * FROM User;";
+  //     ResultSet rs = stmt.executeQuery(sql);
+  //     // Extract results
+  //     while (rs.next()) {
+  //       // Retrieve by column name
+  //       int sid = rs.getInt("SIN");
+  //       String uname = rs.getString("uname");
+  //       String uaddress = rs.getString("uaddress");
+  //       String uoccupation = rs.getString("uoccupation");
+  //       String udob = rs.getString("uDOB");
 
-        // Display values
-        System.out.print("ID: " + sid);
-        System.out.print(", Name: " + uname);
-        System.out.print(", Address: " + uaddress);
-        System.out.print(", Occupation: " + uoccupation);
-        System.out.println(", Date of Birth: " + udob);
-      }
-      rs.close();
-    } catch (SQLException e) {
-      e.printStackTrace();
-    }
+  //       // Display values
+  //       System.out.print("ID: " + sid);
+  //       System.out.print(", Name: " + uname);
+  //       System.out.print(", Address: " + uaddress);
+  //       System.out.print(", Occupation: " + uoccupation);
+  //       System.out.println(", Date of Birth: " + udob);
+  //     }
+  //     rs.close();
+  //   } catch (SQLException e) {
+  //     e.printStackTrace();
+  //   }
 
-  }
+  // }
 
 
   public static void deleteUser(Connection conn, Scanner myObj) {
@@ -208,11 +207,16 @@ public class UserDAO {
     // Input a Host 
     // TODO How will this be chosen during an actual workflow lol. Maybe we'll 
     // display all hosts' id and then be like which one would you like to review?
-    System.out.println("Provide the SIN of the Host you'd like to review: ");
-    int hostSIN = Integer.parseInt(myObj.nextLine());
+    System.out.println("Provide the username of the host you'd like to review: ");
+    String uname = myObj.nextLine();
+    int hostSIN = -1;
     // Have you already left a review for this host?
     try {
         Statement stmt = conn.createStatement();
+        //get the renter sin based on username
+        String getSin = String.format("SELECT SIN FROM User WHERE uname = '%s';", uname);
+        ResultSet rs1 = stmt.executeQuery(getSin);
+        if(rs1.next()) hostSIN = rs1.getInt("SIN");
         String sql = "SELECT * FROM rentersReviewHosts WHERE renterSIN = " + Main.loggedInUser + " AND hostSIN = " + hostSIN + ";";
         ResultSet rs = stmt.executeQuery(sql);
         if (rs.next()) {
@@ -247,7 +251,7 @@ public class UserDAO {
         System.out.println("Rating can only be 1-5.");
         return;
     }
-    System.out.println("Provide you comment about the host: ");
+    System.out.println("Provide your comment about the host: ");
     String comment = myObj.nextLine();
     if(comment.length() > 100){
         System.out.println("Comment is too long. Must be 100 characters or less.");
@@ -261,8 +265,8 @@ public class UserDAO {
             "INSERT INTO rentersReviewHosts VALUES (%d, %d, '%s', %d);", hostSIN,
             Main.loggedInUser, comment, rating);
   
-        System.out.println(reviewInsert);
         insert.executeUpdate(reviewInsert);
+        System.out.println("Success!");
       } catch (SQLException e) {
         e.printStackTrace();
       }
@@ -277,12 +281,16 @@ public class UserDAO {
     // Input a renter 
     // TODO How will this be chosen during an actual workflow lol. Maybe we'll 
     // display all renters' id and then be like which one would you like to review?
-    System.out.println("Provide the SIN of the Renter you'd like to review: ");
-    int renterSIN = Integer.parseInt(myObj.nextLine());
-
+    System.out.println("Provide the username of the renter you'd like to review: ");
+    String uname = myObj.nextLine();
+    int renterSIN = -1;
     // Have you already left a review for this renter?
     try {
         Statement stmt = conn.createStatement();
+        //get the renter sin based on username
+        String getSin = String.format("SELECT SIN FROM User WHERE uname = '%s';", uname);
+        ResultSet rs1 = stmt.executeQuery(getSin);
+        if(rs1.next()) renterSIN = rs1.getInt("SIN");
         String sql = "SELECT * FROM hostsReviewRenters WHERE renterSIN = " + renterSIN + " AND hostSIN = " + Main.loggedInUser + ";";
         ResultSet rs = stmt.executeQuery(sql);
         if (rs.next()) {
@@ -294,8 +302,6 @@ public class UserDAO {
         // TODO Auto-generated catch block
         e.printStackTrace();
     }
-
-
     // Have you rented something to the renter? (Join Booked & Hosts-Listing)
     try {
       Statement stmt = conn.createStatement();
@@ -321,7 +327,7 @@ public class UserDAO {
         System.out.println("Rating can only be 1-5.");
         return;
     }
-    System.out.println("Provide you comment about the renter: ");
+    System.out.println("Provide your comment about the renter: ");
     String comment = myObj.nextLine();
     if(comment.length() > 100){
         System.out.println("Comment is too long. Must be 100 characters or less.");
@@ -334,9 +340,8 @@ public class UserDAO {
       String reviewInsert = String.format(
           "INSERT INTO hostsReviewRenters VALUES (%d, %d, '%s', %d);",
           Main.loggedInUser, renterSIN, comment, rating);
-
-      System.out.println(reviewInsert);
       insert.executeUpdate(reviewInsert);
+      System.out.println("Success!");
     } catch (SQLException e) {
       // TODO Auto-generated catch block [replace with generic error message]
       e.printStackTrace();

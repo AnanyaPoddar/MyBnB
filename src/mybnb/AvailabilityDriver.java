@@ -18,7 +18,7 @@ public class AvailabilityDriver {
   }
 
   public static void addAvailabilities(Connection conn, int listingID, Scanner myObj){
-    System.out.println("Enter a range of availabilities for your listing in the YYYY-MM-DD format. Enter 0 to exit\n");
+    System.out.println("Enter a range of availabilities for your listing in the YYYY-MM-DD format. Enter 0 to exit");
     String end = "-1";
     String start = "-1";
     while(!start.equals("0") && !end.equals("0")){
@@ -45,10 +45,8 @@ public class AvailabilityDriver {
     try {
       //Check that host of listing is the one attempting to modify availailibility
       if(!AvailabilityDAO.hostsListing(conn, listingID)) return;
-      
-      AvailabilityDAO.getAvailabilities(conn, listingID, myObj);
 
-      System.out.println("Enter 1 to add/modify the price of a range of availabilities.");
+      System.out.println("Enter 1 to add availabilities or modify the price of a range of availabilities.");
       System.out.println("Enter 2 to delete a range of availabilities");
 
       int choice = Integer.parseInt(myObj.nextLine());
@@ -81,14 +79,14 @@ public class AvailabilityDriver {
       Statement statement = conn.createStatement();
       ResultSet rs = statement.executeQuery(isBooked);
       if(rs.next()){
-        if(rs.getInt(isBooked) == 1){
+        if(rs.getInt("isBooked") == 1){
           System.out.println("At least one of the dates in the range you specified is already booked.\n" +
           "Please cancel the booking first if you want to make changes to availability");
           return;
         }
         if(choice == 1){
           System.out.println("Enter the price of this listing in CAD. This price is applied for each date within the given range: ");
-          float price = Float.parseFloat(myObj.next());
+          float price = Float.parseFloat(myObj.nextLine());
           System.out.println("1 - Modifying Availabilities...");
           AvailabilityDAO.addAvailabilities(conn, listingID, startDate, endDate, price);
         }

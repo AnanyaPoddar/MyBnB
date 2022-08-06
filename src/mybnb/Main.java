@@ -17,7 +17,7 @@ public class Main {
   public static void main(String[] args)
       throws ClassNotFoundException, ParseException {
 
-    // Register JDBC driver
+    // Register JDBC driver1
     Class.forName(dbClassName);
     // Database credentials
     final String USER = "root";
@@ -66,13 +66,17 @@ public class Main {
           if(UserDAO.verifyUserInTable(conn, loggedInUser, "hostSIN", "Host")){
             System.out.println("3 - View and Manage Your Listings"); // this includes modifying availabilities, adding and deleting listings
             System.out.println("4 - View and Manage Your Bookings");
+            System.out.println("5 - Add a Listing");
+
             // //TODO: Move this to workflow when they're creating a listing
             // System.out.println("Enter 11 to get suggested amenities.");
             System.out.println("------------------------------------------------------");
-            
+            exit = myObj.nextLine(); 
             //only show a host's own listings  
             if (exit.equals("3")) MenuDriver.hostListingMenu(conn, myObj);
-            if (exit.equals("4")) MenuDriver.hostBookingMenu(conn, myObj);
+            else if (exit.equals("4")) MenuDriver.hostBookingMenu(conn, myObj);
+            else if (exit.equals("5")) ListingDAO.addListing(conn, myObj);
+
           }
 
           else{
@@ -83,12 +87,11 @@ public class Main {
             System.out.println("------------------------------------------------------");
             exit = myObj.nextLine(); 
             if (exit.equals("3")) MenuDriver.loggedOutOrRenterListingMenu(conn, myObj);
-            if (exit.equals("4")) MenuDriver.renterBookingMenu(conn, myObj);
-            if (exit.equals("5")) BookingsDriver.addBooking(conn, myObj);
+            else if (exit.equals("4")) MenuDriver.renterBookingMenu(conn, myObj);
+            else if (exit.equals("5")) BookingsDriver.addBooking(conn, myObj);
           }
           if (exit.equals("1")) UserDAO.logout();
-          if (exit.equals("2")) UserDAO.deleteUser(conn, myObj);
-
+          else if (exit.equals("2")) UserDAO.deleteUser(conn, myObj);
         }
       }
       System.out.println("Closing connection...");

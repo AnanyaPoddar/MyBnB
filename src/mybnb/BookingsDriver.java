@@ -9,7 +9,7 @@ public class BookingsDriver {
     
     public static void addBooking(Connection conn, Scanner myObj){
         System.out.println("Enter the id of the listing you'd like to book.\n");
-        int listingID = Integer.parseInt(myObj.next());
+        int listingID = Integer.parseInt(myObj.nextLine());
 
         System.out.println("Enter start date of your booking: ");
         String start = myObj.nextLine();
