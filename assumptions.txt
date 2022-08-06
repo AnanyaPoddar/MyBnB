@@ -3,3 +3,5 @@
 - "we are only interested in ranking those renters that have made at least two bookings in the year." In the year means same year as the year of the startDate
 - we must have input (ie. latitude longitude etc)
 - SIN #s don't start with a 0
+- You must input both a rating and a comment (not one or the other)
+- "clearly mention what payment information you expect and store that in your database." We want just card type and card number
