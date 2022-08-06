@@ -44,9 +44,9 @@ public class Main {
           System.out.println("1 - Sign Up ");
           System.out.println("2 - Log In");
           System.out.println("3 - View, Search, and Filter Listings");
-          System.out.println("4 - View reports"); // TODO Where in logged in view?
+          System.out.println("4 - View reports"); // TODO: Where in logged in view?
           System.out.println("------------------------------------------------------");
-          exit = myObj.next();
+          exit = myObj.nextLine();
           if (exit.equals("1")) 
             UserDAO.addUser(conn, myObj);
           if (exit.equals("2")) 
@@ -69,7 +69,7 @@ public class Main {
             // //TODO: Move this to workflow when they're creating a listing
             // System.out.println("Enter 11 to get suggested amenities.");
             System.out.println("------------------------------------------------------");
-            exit = myObj.next();  
+            
             //only show a host's own listings  
             if (exit.equals("3")) MenuDriver.hostListingMenu(conn, myObj);
             if (exit.equals("4")) MenuDriver.hostBookingMenu(conn, myObj);
@@ -81,10 +81,10 @@ public class Main {
             System.out.println("5 - Book a Listing"); // or should this go under 3?
             // System.out.println("Enter 10 to get all listings between two dates"); // TODO: Is this encapsulated in search or shld it be done specifically as a menu option
             System.out.println("------------------------------------------------------");
-            exit = myObj.next(); 
+            exit = myObj.nextLine(); 
             if (exit.equals("3")) MenuDriver.loggedOutOrRenterListingMenu(conn, myObj);
             if (exit.equals("4")) MenuDriver.renterBookingMenu(conn, myObj);
-            if (exit.equals("4")) BookingsDriver.addBooking(conn, myObj);
+            if (exit.equals("5")) BookingsDriver.addBooking(conn, myObj);
           }
           if (exit.equals("1")) UserDAO.logout();
           if (exit.equals("2")) UserDAO.deleteUser(conn, myObj);

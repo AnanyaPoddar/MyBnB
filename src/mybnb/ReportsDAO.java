@@ -23,28 +23,14 @@ public class ReportsDAO {
             e.printStackTrace();
         }
     }
-    
-    // public static void numBookingsByDatesAndCityAndPostal(Connection conn, LocalDate startDate, LocalDate endDate){
-    //     try {
-    //         Statement stmt = conn.createStatement();
-    //         String sql = String.format("SELECT a.city AS city, count(a.listID) as numBookings FROM Booked as b " +
-    //         "JOIN addresses as a ON a.listID = b.listID WHERE startDate >= '%s' AND endDate <= '%s' GROUP BY a.city ORDER BY a.city;", startDate, endDate);
-    //         ResultSet rs = stmt.executeQuery(sql);
-    //         while(rs.next()){
-    //             System.out.print("City: " + rs.getString("city"));
-    //             System.out.println(", Number of bookings: " + rs.getInt("numBookings"));
-    //         }
-    //     } catch (SQLException e) {
-    //         e.printStackTrace();
-    //     }
-    // }
+
 
     //TODO: Get number of bookings by zip codes within a city, does this just group by the postal codes instead or should I provide a specific city
 
     public static void numListingsByCountry(Connection conn){
         try {
             Statement stmt = conn.createStatement();
-            String sql = String.format("SELECT count(listID) AS count, country FROM addresses GROUP BY(country) ORDER BY country;");
+            String sql = String.format("SELECT count(listID) AS count, country FROM addresses GROUP BY country ORDER BY country;");
             ResultSet rs = stmt.executeQuery(sql);
             while(rs.next()){
                 System.out.print("Country: " + rs.getString("country"));
@@ -73,7 +59,7 @@ public class ReportsDAO {
     public static void numListingsByPostalCode(Connection conn){
         try {
             Statement stmt = conn.createStatement();
-            String sql = String.format("SELECT count(listID) AS count, postal, city, country FROM addresses GROUP BY postal, city, country ORDER BY country, city, postal;");
+            String sql = String.format("SELECT count(listID) AS count, postal, city, country FROM addresses GROUP BY country, city, postal ORDER BY country, city, postal;");
             ResultSet rs = stmt.executeQuery(sql);
             while(rs.next()){
                 System.out.print("Postal: " + rs.getString("postal"));

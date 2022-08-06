@@ -26,7 +26,7 @@ public class Search {
             System.out.println("5 - Sort by Price"); // done
             System.out.println("6 - Fully Filter");
 
-            exit = myObj.next(); 
+            exit = myObj.nextLine(); 
 
             if(exit.equals("1"))
                 locationsDistance (conn, myObj);
@@ -43,15 +43,15 @@ public class Search {
 
     public static void locationsDistance (Connection conn, Scanner myObj){
 
-        System.out.print("Enter the latitude of your location (-90 to 90): ");
-        float latitude = Float.parseFloat(myObj.next());
+        System.out.println("Enter the latitude of your location (-90 to 90): ");
+        float latitude = Float.parseFloat(myObj.nextLine());
         if(latitude > 90 || latitude < -90){
             System.out.println("Latitude must be in a -90 to 90 range.");
             return;
         }
 
-        System.out.print("Enter the longitude of your location (-180 to 180): ");
-        float longitude = Float.parseFloat(myObj.next());
+        System.out.println("Enter the longitude of your location (-180 to 180): ");
+        float longitude = Float.parseFloat(myObj.nextLine());
         if(longitude > 180 || longitude < -180){
             System.out.println("Longitude must be in a -180 to 180 range.");
             return;
@@ -59,7 +59,7 @@ public class Search {
 
         int searchDistance = 50; 
         System.out.print("Enter the distance by degree from your location you want to search. Default: 50km ");
-        searchDistance = Integer.parseInt(myObj.next());        
+        searchDistance = Integer.parseInt(myObj.nextLine());        
         // TODO if given nothing, it shouldn't error, just ""
 
         try {
@@ -83,8 +83,8 @@ public class Search {
     }
 
     public static void postalSearch (Connection conn, Scanner myObj){
-        System.out.print("Provide the listing's postal code: ");
-        String postal = myObj.next();
+        System.out.println("Provide the listing's postal code: ");
+        String postal = myObj.nextLine();
         if(postal.length() > 10){
             System.out.println("Invalid postal code.");
             return;
@@ -114,12 +114,12 @@ public class Search {
     public static void addressSearch (Connection conn, Scanner myObj){
         System.out.println("Provide the unit #, street, and postal code to find a listing.");
 
-        System.out.print("Provide the unit number: ");
-        int unitNum = Integer.parseInt(myObj.next());   
-        System.out.print("Provide the listing's street name: ");
-        String street = myObj.next();
-        System.out.print("Provide the listing's postal code: ");
-        String postal = myObj.next();
+        System.out.println("Provide the unit number: ");
+        int unitNum = Integer.parseInt(myObj.nextLine());   
+        System.out.println("Provide the listing's street name: ");
+        String street = myObj.nextLine();
+        System.out.println("Provide the listing's postal code: ");
+        String postal = myObj.nextLine();
 
         try {
             Statement statement = conn.createStatement();
@@ -142,8 +142,8 @@ public class Search {
     public static void sortByPrice (Connection conn, Scanner myObj){
 
         String order = "ASC";
-        System.out.print("Do you want the price to be sorted in ascending or descending? Default is Ascending. Press D for Descending ");
-        String choice = myObj.next();
+        System.out.println("Do you want the price to be sorted in ascending or descending? Default is Ascending. Press D for Descending ");
+        String choice = myObj.nextLine();
         if (choice.toLowerCase().equals("d")) {
            order = "DESC";
         }
@@ -178,11 +178,11 @@ public class Search {
 
         // filter by postal code
         // TODO Maybe somehow make the postalSearch function be into this
-        System.out.print("Would you like to filter by postal code? (Y/N) ");
-        String postalChoice = myObj.next();
+        System.out.println("Would you like to filter by postal code? (Y/N) ");
+        String postalChoice = myObj.nextLine();
         if (postalChoice.toLowerCase().equals("y")) {
-            System.out.print("Provide the listing's postal code: ");
-            String postal = myObj.next();
+            System.out.println("Provide the listing's postal code: ");
+            String postal = myObj.nextLine();
             if(postal.length() > 10){
                 System.out.println("Invalid postal code: ");
                 return;
@@ -212,13 +212,13 @@ public class Search {
         }
 
         // price
-        System.out.print("Would you like to filter by price range? (Y/N) ");
-        String priceChoice = myObj.next();
+        System.out.println("Would you like to filter by price range? (Y/N) ");
+        String priceChoice = myObj.nextLine();
         if (priceChoice.toLowerCase().equals("y")) {
             System.out.print("What's the minimum price in your range? "); // todo gotta input smth or it's error
-            int minPrice = Integer.parseInt(myObj.next());    
+            int minPrice = Integer.parseInt(myObj.nextLine());    
             System.out.print("What's the maximum price in your range? ");
-            int maxPrice = Integer.parseInt(myObj.next());  
+            int maxPrice = Integer.parseInt(myObj.nextLine());  
             // TODO We don't have to order by price this time right?
             try {
                 Statement statement = conn.createStatement();
@@ -246,13 +246,13 @@ public class Search {
         // amenities 
         // TODO Is it okay that the same listing is there multiple times for the multiple amenities it has?
         System.out.println("Would you like to filter by amenities? (Y/N) ");
-        String amenitiesChoice = myObj.next();
+        String amenitiesChoice = myObj.nextLine();
         if (amenitiesChoice.toLowerCase().equals("y")) {
             System.out.println("Choose amenities. Enter 0 to exit.");
             System.out.println("Essentials: 1 = Wifi, 2 = Kitchen");
             System.out.println("Features: 3 = Pool, 4 = Free Parking");
             System.out.println("Safety: 5 = Smoke Alarm, 6 = Carbon Monoxide Alarm");
-            String choice = myObj.next();
+            String choice = myObj.nextLine();
 
             String names = "name = '0'"; // this won't bring up anything, just to keep it here
             int count = 0;
@@ -285,16 +285,16 @@ public class Search {
         }
 
         // availabilities
-        System.out.print("Would you like to filter by availabilities? (Y/N) ");
-        String availabilitiesChoice = myObj.next();
+        System.out.println("Would you like to filter by availabilities? (Y/N) ");
+        String availabilitiesChoice = myObj.nextLine();
         String getListings = "";
         
         if (availabilitiesChoice.toLowerCase().equals("y")) {
-            System.out.print("Start date of range: ");
-            String start = myObj.next();
+            System.out.println("Start date of range: ");
+            String start = myObj.nextLine();
             
-            System.out.print("End date of range: ");
-            String end = myObj.next();
+            System.out.println("End date of range: ");
+            String end = myObj.nextLine();
             //TODO: try-catch here
             LocalDate startDate = LocalDate.parse(start);
             LocalDate endDate = LocalDate.parse(end);

@@ -14,7 +14,7 @@ public class ReportsDriver {
         System.out.println("2 - Reports About Number of Listings");
         System.out.println("3 - Reports About Number of Noun Phrases in a Listing's Reviews");
         System.out.println("------------------------------------------------------");
-        String choice = myObj.next();
+        String choice = myObj.nextLine();
         if (choice.equals("1")) viewBookingReports(conn, myObj);
         if (choice.equals("2")) viewListingReports(conn, myObj);
         if (choice.equals("3")) parser(conn, myObj);
@@ -22,11 +22,11 @@ public class ReportsDriver {
 
     private static void viewBookingReports(Connection conn,Scanner myObj){
         System.out.println("Enter a specific date range to filter bookings reports in the YYYY-MM-DD format.");
-        System.out.print("Start date of range: ");
-        String start = myObj.next();
+        System.out.println("Start date of range: ");
+        String start = myObj.nextLine();
         
-        System.out.print("End date of range: ");
-        String end = myObj.next();
+        System.out.println("End date of range: ");
+        String end = myObj.nextLine();
     
         //TODO: try-catch here
         LocalDate startDate = LocalDate.parse(start);
@@ -74,8 +74,8 @@ public class ReportsDriver {
     }
 
     private static void parser(Connection conn, Scanner myObj){
-        System.out.print("Start listID of the listing you would like: ");
-        int listID = Integer.parseInt(myObj.next());  
+        System.out.println("Start listID of the listing you would like: ");
+        int listID = Integer.parseInt(myObj.nextLine());  
         System.out.println("------------------------------------------------------");
         System.out.println("Noun Phrases of listID: " + listID);
         NounParser.parser(conn, listID);

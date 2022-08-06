@@ -33,36 +33,29 @@ public class UserDAO {
     // TODO Prevent errors from database and instead check user input before
     // trying to insert
 
-    System.out.print("Provide your SIN: ");
-    int sin = Integer.parseInt(myObj.next()); // Read user input
+    // TODO: Verify password and email
+    System.out.println("Provide your username: ");
+    String name = myObj.nextLine();
+    System.out.println("Provide you password (masked for security): ");
+    String password = String.valueOf(System.console().readPassword());
+    System.out.println("Provide your SIN: ");
+    int sin = Integer.parseInt(myObj.nextLine()); // Read user input
     if (sin <= 0){
         System.out.println("The SIN must be positive integer.");
         return;
     }
-    // TODO: Verify password and email
-    System.out.print("Provide you password (masked for security): ");
-    String password = String.valueOf(System.console().readPassword());
-    System.out.print("Provide your username: ");
-    String name = myObj.next();
-    System.out.print("Provide your address: ");
-    String addr = myObj.next();
-    System.out.print("Provide your occupation: ");
-    String occupation = myObj.next();
-    System.out.print("Provide your year of birth: ");
-    int yob = Integer.parseInt(myObj.next());
-    System.out.print("Provide your month of birth (in integer; January = 1)");
-    int mob = Integer.parseInt(myObj.next());
-    System.out.print("Provide your day of birth in YYYY-MM-DD format");
-    int dob = Integer.parseInt(myObj.next());
+    System.out.println("Provide your address: ");
+    String addr = myObj.nextLine();
+    System.out.println("Provide your occupation: ");
+    String occupation = myObj.nextLine();
+    System.out.println("Provide your date of birth in YYYY-MM-DD format");
+    String strBirthdate = myObj.nextLine();
+    LocalDate birthdate = LocalDate.parse(strBirthdate);
 
     // Verify user is >= 18 years old
-    // TODO Parse the localDate how Ananya did in AVailabilities (won't need seperate year/month/day then)
-    // Ensure they give valid dates (like month can't be 15) <- LocalDate will probably catch this
     LocalDate today = LocalDate.now();
     try {
-      LocalDate birthday = LocalDate.of(yob, mob, dob);
-      Period p = Period.between(birthday, today);
-      System.out.println("You are " + p.getYears() + " years.");
+      Period p = Period.between(birthdate, today);
       if (p.getYears() < 18) {
         System.out.println("You must be 18 years old to sign up");
         return;
@@ -73,17 +66,17 @@ public class UserDAO {
       return;
     }
 
-    System.out.print("Are you a renter or a host? R = Renter, any other key = Host ");
-    String rOrH = myObj.next();
+    System.out.println("Are you a renter or a host? R = Renter, any other key = Host ");
+    String rOrH = myObj.nextLine();
 
     String rentOrHostInsert;
     if (rOrH.equals("r") || rOrH.equals("R")) {
       
       // TODO Should this be open choice or C = Credit, D = Debit
-      System.out.print("Provide a payment method (Credit or Debit): ");
-      String cardType = myObj.next();
-      System.out.print("Provide your card number: ");
-      String cardNum= myObj.next();
+      System.out.println("Provide a payment method (Credit or Debit): ");
+      String cardType = myObj.nextLine();
+      System.out.println("Provide your card number: ");
+      String cardNum= myObj.nextLine();
       rentOrHostInsert = String.format(
           "INSERT INTO Renter VALUES (%d, '%s', '%s');", sin, cardType, cardNum);
     } else {
@@ -94,8 +87,7 @@ public class UserDAO {
       Statement insert = conn.createStatement();
       String userInsert = String.format(
           "INSERT INTO USER VALUES (%d, '%s', '%s', '%s', '%s', '%s');", sin,
-          password, name, addr, occupation, String.valueOf(yob) + "-"
-              + String.valueOf(mob) + "-" + String.valueOf(dob));
+          password, name, addr, occupation, birthdate);
       insert.executeUpdate(userInsert);
       insert.executeUpdate(rentOrHostInsert);
     } catch (SQLException e) {
@@ -110,9 +102,9 @@ public class UserDAO {
       System.out.println("You're already logged in as: " + Main.loggedInUser);
       return;
     }
-    System.out.print("Provide your username: ");
-    String uname = myObj.next();
-    System.out.print("Provide you password (masked for security): ");
+    System.out.println("Provide your username: ");
+    String uname = myObj.nextLine();
+    System.out.println("Provide you password (masked for security): ");
     String password = String.valueOf(System.console().readPassword());
 
     try {
@@ -178,8 +170,8 @@ public class UserDAO {
       return;
     }
 
-    System.out.print("Press 1 to indicate you want to delete your account. Any other number otherwise ");
-    int confirm = Integer.parseInt(myObj.next());
+    System.out.println("Press 1 to indicate you want to delete your account. Any other number otherwise ");
+    int confirm = Integer.parseInt(myObj.nextLine());
     if (confirm != 1) {
       System.out.println("Not deleting.");
       return;
@@ -216,8 +208,8 @@ public class UserDAO {
     // Input a Host 
     // TODO How will this be chosen during an actual workflow lol. Maybe we'll 
     // display all hosts' id and then be like which one would you like to review?
-    System.out.print("Provide the SIN of the Host you'd like to review: ");
-    int hostSIN = Integer.parseInt(myObj.next());
+    System.out.println("Provide the SIN of the Host you'd like to review: ");
+    int hostSIN = Integer.parseInt(myObj.nextLine());
     // Have you already left a review for this host?
     try {
         Statement stmt = conn.createStatement();
@@ -249,14 +241,14 @@ public class UserDAO {
       }
 
     // Leave a review and rating 
-    System.out.print("What is your rating for the host out of 5? ");
-    int rating = Integer.parseInt(myObj.next());
+    System.out.println("What is your rating for the host out of 5? ");
+    int rating = Integer.parseInt(myObj.nextLine());
     if(rating > 5 || rating < 1){
         System.out.println("Rating can only be 1-5.");
         return;
     }
-    System.out.print("Provide you comment about the host: ");
-    String comment = myObj.next();
+    System.out.println("Provide you comment about the host: ");
+    String comment = myObj.nextLine();
     if(comment.length() > 100){
         System.out.println("Comment is too long. Must be 100 characters or less.");
         return;
@@ -285,8 +277,8 @@ public class UserDAO {
     // Input a renter 
     // TODO How will this be chosen during an actual workflow lol. Maybe we'll 
     // display all renters' id and then be like which one would you like to review?
-    System.out.print("Provide the SIN of the Renter you'd like to review: ");
-    int renterSIN = Integer.parseInt(myObj.next());
+    System.out.println("Provide the SIN of the Renter you'd like to review: ");
+    int renterSIN = Integer.parseInt(myObj.nextLine());
 
     // Have you already left a review for this renter?
     try {
@@ -323,14 +315,14 @@ public class UserDAO {
     }
 
     // Leave a review and rating 
-    System.out.print("What is your rating for the renter out of 5? ");
-    int rating = Integer.parseInt(myObj.next());
+    System.out.println("What is your rating for the renter out of 5? ");
+    int rating = Integer.parseInt(myObj.nextLine());
     if(rating > 5 || rating < 1){
         System.out.println("Rating can only be 1-5.");
         return;
     }
-    System.out.print("Provide you comment about the renter: ");
-    String comment = myObj.next();
+    System.out.println("Provide you comment about the renter: ");
+    String comment = myObj.nextLine();
     if(comment.length() > 100){
         System.out.println("Comment is too long. Must be 100 characters or less.");
         return;
@@ -358,8 +350,8 @@ public class UserDAO {
     // Input a Listing 
     // TODO How will this be chosen during an actual workflow lol. Maybe we'll 
     // display all hosts' id and then be like which one would you like to review?
-    System.out.print("Provide the ID of the Listing you'd like to review: ");
-    int listID = Integer.parseInt(myObj.next());
+    System.out.println("Provide the ID of the Listing you'd like to review: ");
+    int listID = Integer.parseInt(myObj.nextLine());
 
     // Have you reviewed this Listing already?
     try {
@@ -394,14 +386,14 @@ public class UserDAO {
 
 
     // Provide review and rating
-    System.out.print("What is your rating for the listing out of 5? ");
-    int rating = Integer.parseInt(myObj.next());
+    System.out.println("What is your rating for the listing out of 5? ");
+    int rating = Integer.parseInt(myObj.nextLine());
     if(rating > 5 || rating < 1){
         System.out.println("Rating can only be 1-5.");
         return;
     }
-    System.out.print("Provide you comment about the listing: ");
-    String comment = myObj.next();
+    System.out.println("Provide you comment about the listing: ");
+    String comment = myObj.nextLine();
     if(comment.length() > 100){
         System.out.println("Comment is too long. Must be 100 characters or less.");
         return;

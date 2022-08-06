@@ -30,7 +30,7 @@ public class ListingDAO {
 
   //add listing, associated with specific logged-in host
   public static void addListing(Connection conn, Scanner myObj) {
-    System.out.print("Enter the type of your listing. 1 = House, 2 = Guesthouse, 3 = Apartment, 4 = Hotel ");
+    System.out.println("Enter the type of your listing. 1 = House, 2 = Guesthouse, 3 = Apartment, 4 = Hotel ");
     int typeInput = Integer.parseInt(myObj.next());
     String type = null;
     if (typeInput == 1) 
@@ -60,14 +60,14 @@ public class ListingDAO {
             statement.executeUpdate(hostsToListingsInsert);
 
             // Ask user for latitude and longitude (should be able to input 10, -10, -10.1, -10.1)
-            System.out.print("Enter the latitude of your listing (-90 to 90) ");
+            System.out.println("Enter the latitude of your listing (-90 to 90) ");
             float latitude = Float.parseFloat(myObj.next());
             if(latitude > 90 || latitude < -90){
               System.out.println("Latitude must be in a -90 to 90 range.");
               return; // TODO Should it just return when error?
             }
 
-            System.out.print("Enter the longitude of your listing (-180 to 180) ");
+            System.out.println("Enter the longitude of your listing (-180 to 180) ");
             float longitude = Float.parseFloat(myObj.next());
             if(longitude > 180 || longitude < -180){
               System.out.println("Longitude must be in a -180 to 180 range.");
@@ -81,18 +81,18 @@ public class ListingDAO {
             // Ask user for address + attributes
             int unitNum = 0;
             if(typeInput == 3 || typeInput == 4){
-              System.out.print("Provide the listing's unit number: ");
+              System.out.println("Provide the listing's unit number: ");
               unitNum = Integer.parseInt(myObj.next()); 
             }
 
-            System.out.print("Provide the listing's street name: ");
-            String street = myObj.next();
-            System.out.print("Provide the listing's city: ");
-            String city = myObj.next();
-            System.out.print("Provide the listing's country: ");
-            String country = myObj.next();
-            System.out.print("Provide the listing's postal code in the following format: L#L #L# ");
-            String postal = myObj.next();
+            System.out.println("Provide the listing's street name: ");
+            String street = myObj.nextLine();
+            System.out.println("Provide the listing's city: ");
+            String city = myObj.nextLine();
+            System.out.println("Provide the listing's country: ");
+            String country = myObj.nextLine();
+            System.out.println("Provide the listing's postal code in the following format: L#L #L# ");
+            String postal = myObj.nextLine();
             // Different countries have different postal codes
             if(postal.length() > 10 ) {
               System.out.println("Postal code too long.");
@@ -278,10 +278,10 @@ public class ListingDAO {
     //from availabilities table, get all the 
 
     System.out.println("Start date of range: ");
-    String start = myObj.next();
+    String start = myObj.nextLine();
     
     System.out.println("End date of range: ");
-    String end = myObj.next();
+    String end = myObj.nextLine();
     //TODO: try-catch here
     LocalDate startDate = LocalDate.parse(start);
     LocalDate endDate = LocalDate.parse(end);
