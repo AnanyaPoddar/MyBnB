@@ -2,3 +2,5 @@
 - Adjacent postal code means only the last number in the postal code is different
 - "we are only interested in ranking those renters that have made at least two bookings in the year." In the year means same year as the year of the startDate
 - We generate reports only for listings that are currently on the site; deleted listings, and their associated bookings do not contribute to the reports.
+- we must have input (ie. latitude longitude etc)
+- SIN #s don't start with a 0

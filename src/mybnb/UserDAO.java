@@ -38,11 +38,6 @@ public class UserDAO {
 
     System.out.println("Provide your SIN");
     int sin = Integer.parseInt(myObj.nextLine()); // Read user input
-    // Verify this SIN doesn't already exist
-    if (verifyUserInTable(conn, sin, "SIN", "User")) {
-      System.out.println("Sorry, there is already an account with this SIN");
-      return;
-    }
     if (sin <= 0){
         System.out.println("The SIN must be positive integer.");
         return;
@@ -51,7 +46,7 @@ public class UserDAO {
     // TODO Verify password and email
     System.out.println("Provide a password");
     String password = myObj.nextLine();
-    System.out.println("Provide your name");
+    System.out.println("Provide your username");
     String name = myObj.nextLine();
     System.out.println("Provide your address");
     String addr = myObj.nextLine();
@@ -127,29 +122,30 @@ public class UserDAO {
       System.out.println("You're already logged in as: " + DAO.loggedInUser);
       return;
     }
-    System.out.println("Provide your SIN");
-    int SIN = Integer.parseInt(myObj.nextLine());
+    // myObj.nextLine();
+    System.out.println("Provide your username.");
+    String uname = myObj.nextLine();
     System.out.println("Provide you password (masked for security)");
     String password = String.valueOf(System.console().readPassword());
-    // myObj.nextLine();
 
     try {
       Statement stmt = conn.createStatement();
-      String sql = "SELECT * FROM User WHERE SIN = " + SIN + ";";
+      String sql = "SELECT * FROM User WHERE uname = '" + uname + "';";
       ResultSet rs = stmt.executeQuery(sql);
 
       if (rs.next()) {
         if (password.equals(rs.getString("upassword"))) {
-          DAO.loggedInUser = SIN;
+          DAO.loggedInUser = rs.getInt("SIN");
           //Probably don't show their SIN, just show the name
           System.out.println("Succesfully logged in as: " + rs.getString("uname"));
+          System.out.println("SIN: " + DAO.loggedInUser);
 
         } else {
           System.out.println("Wrong password.");
 
         }
       } else {
-        System.out.println("No user of that SIN exists.");
+        System.out.println("No user of that username exists.");
       }
       rs.close();
     } catch (SQLException e) {

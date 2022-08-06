@@ -45,7 +45,7 @@ public class HostToolkit {
                     return;
                 }
             }
-            String priceByTypeCountryCityStreet = String.format("SELECT avg(price) as avg FROM Availabilities AS av JOIN Addresses AS ad ON av.listID=ad.listID JOIN listings AS l ON l.listID=ad.listID WHERE country='%s' AND city='%s' AND street = '%s' AND type = '%s';", country, city, street);
+            String priceByTypeCountryCityStreet = String.format("SELECT avg(price) as avg FROM Availabilities AS av JOIN Addresses AS ad ON av.listID=ad.listID JOIN listings AS l ON l.listID=ad.listID WHERE country='%s' AND city='%s' AND street = '%s' AND type = '%s';", country, city, street, type);
             ResultSet rs2 = stmt.executeQuery(priceByTypeCountryCityStreet);
             if(rs2.next()){
                 avg = rs2.getString("avg");
@@ -56,7 +56,7 @@ public class HostToolkit {
                     return;
                 }
             }
-            String priceByTypeCountryCity = String.format("SELECT avg(price) as avg FROM Availabilities AS av JOIN Addresses AS ad ON av.listID=ad.listID JOIN listings AS l ON l.listID=ad.listID WHERE country='%s' AND city='%s' AND type = '%s';", country, city);
+            String priceByTypeCountryCity = String.format("SELECT avg(price) as avg FROM Availabilities AS av JOIN Addresses AS ad ON av.listID=ad.listID JOIN listings AS l ON l.listID=ad.listID WHERE country='%s' AND city='%s' AND type = '%s';", country, city, type);
             ResultSet rs3 = stmt.executeQuery(priceByTypeCountryCity);
             if(rs3.next()){
                 avg = rs3.getString("avg");
@@ -67,7 +67,7 @@ public class HostToolkit {
                     return;
                 }
             }
-            String priceByTypeCountry = String.format("SELECT avg(price) as avg FROM Availabilities AS av JOIN Addresses AS ad ON av.listID=ad.listID JOIN listings AS l ON l.listID=ad.listID WHERE country='%s'  AND type = '%s';", country);
+            String priceByTypeCountry = String.format("SELECT avg(price) as avg FROM Availabilities AS av JOIN Addresses AS ad ON av.listID=ad.listID JOIN listings AS l ON l.listID=ad.listID WHERE country='%s'  AND type = '%s';", country, type);
             ResultSet rs4 = stmt.executeQuery(priceByTypeCountry);
             if(rs4.next()){
                 avg = rs4.getString("avg");
@@ -78,7 +78,7 @@ public class HostToolkit {
                     return;
                 }
             }
-            String priceByType = String.format("SELECT avg(price) as avg FROM Availabilities AS av JOIN Addresses AS ad ON av.listID=ad.listID JOIN listings AS l ON l.listID=ad.listID  AND type = '%s';");
+            String priceByType = String.format("SELECT avg(price) as avg FROM Availabilities AS av JOIN Addresses AS ad ON av.listID=ad.listID JOIN listings AS l ON l.listID=ad.listID  AND type = '%s';", type);
             ResultSet rs5 = stmt.executeQuery(priceByType);
             if(rs5.next()){
                 avg = rs5.getString("avg");

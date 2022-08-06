@@ -37,9 +37,9 @@ public class DAO {
 
       // Create a table User if it doesn't already exist
       String userTable =
-          "CREATE TABLE IF NOT EXISTS USER " + "(SIN INT NOT NULL PRIMARY KEY, "
-              + " upassword VARCHAR(12) NOT NULL, "
-              + " uname VARCHAR(100) NOT NULL, " + " uaddress VARCHAR(100), "
+          "CREATE TABLE IF NOT EXISTS USER " + "(SIN INT NOT NULL PRIMARY KEY "
+              + " CONSTRAINT CK_SIN_LENGTH check (length(SIN) = 9), upassword VARCHAR(12) NOT NULL, "
+              + " uname VARCHAR(100) NOT NULL UNIQUE, " + " uaddress VARCHAR(100), "
               + " uoccupation VARCHAR(20), " + " uDOB DATE)";
 
       stmt.executeUpdate(userTable);
@@ -48,7 +48,7 @@ public class DAO {
       // Create a table Host if it doesn't already exist
       String hostTable = "CREATE TABLE IF NOT EXISTS HOST "
           + "(HostSIN INT NOT NULL PRIMARY KEY,"
-          + "INDEX par_ind (HostSIN), FOREIGN KEY (HostSIN) REFERENCES USER(SIN) ON DELETE CASCADE)";
+          + "FOREIGN KEY (HostSIN) REFERENCES USER(SIN) ON DELETE CASCADE)";
       // i don't get the index thing
       // On Delete Cascade: if you delete from Host, nothing happens to User. If
       // you delete from user, the row is gone from Host
@@ -60,8 +60,9 @@ public class DAO {
 
       String renterTable = "CREATE TABLE IF NOT EXISTS RENTER "
           + "(RenterSIN INT NOT NULL PRIMARY KEY,"
-          + " cardType VARCHAR(12) NOT NULL, " + " cardNum varchar(16) NOT NULL, "
-          + "INDEX par_ind (RenterSIN), FOREIGN KEY (RenterSIN) REFERENCES USER(SIN) ON DELETE CASCADE)";
+          + " cardType VARCHAR(12) NOT NULL, " 
+          + " cardNum varchar(16) NOT NULL CONSTRAINT CK_cardNum_LENGTH check (length(cardNum) = 16), "
+          + "FOREIGN KEY (RenterSIN) REFERENCES USER(SIN) ON DELETE CASCADE)";
 
       stmt.executeUpdate(renterTable);
       System.out.println("Created Renter table in given database...");
@@ -103,27 +104,27 @@ public class DAO {
       // Must provide both rating and comment when providing a review
       // NOTE: not doing on delete cascade 
       String rentersReviewHosts = "CREATE TABLE IF NOT EXISTS rentersReviewHosts "
-        + "(hostSIN INT NOT NULL, FOREIGN KEY (hostSIN) REFERENCES Host(hostSIN), "
-        + "renterSIN INT NOT NULL, FOREIGN KEY (renterSIN) REFERENCES Renter(renterSIN)," + 
-        " review VARCHAR(100) NOT NULL, " + " rating INT NOT NULL, " +
+        + "(hostSIN INT NOT NULL, FOREIGN KEY (hostSIN) REFERENCES Host(hostSIN) ON DELETE CASCADE, "
+        + "renterSIN INT NOT NULL, FOREIGN KEY (renterSIN) REFERENCES Renter(renterSIN) ON DELETE CASCADE," + 
+        " review VARCHAR(100) NOT NULL, " + " rating INT NOT NULL CONSTRAINT CK_rating  check (rating >= 1 and rating <= 5), " +
         "PRIMARY KEY(hostSIN, renterSIN))";
       stmt.executeUpdate(rentersReviewHosts);
       System.out.println("Created renterReviewsHost table in given database...");
 
       // Must provide both rating and comment when providing a review
       String hostsReviewRenters = "CREATE TABLE IF NOT EXISTS hostsReviewRenters "
-        + "(hostSIN INT NOT NULL, FOREIGN KEY (hostSIN) REFERENCES Host(hostSIN), "
-        + "renterSIN INT NOT NULL, FOREIGN KEY (renterSIN) REFERENCES Renter(renterSIN)," + 
-        " review VARCHAR(100) NOT NULL, " + " rating INT NOT NULL, " +
+        + "(hostSIN INT NOT NULL, FOREIGN KEY (hostSIN) REFERENCES Host(hostSIN) ON DELETE CASCADE, "
+        + "renterSIN INT NOT NULL, FOREIGN KEY (renterSIN) REFERENCES Renter(renterSIN) ON DELETE CASCADE," + 
+        " review VARCHAR(100) NOT NULL, " + " rating INT NOT NULL CONSTRAINT CK_rating2  check (rating >= 1 and rating <= 5), " +
         "PRIMARY KEY(hostSIN, renterSIN))";
       stmt.executeUpdate(hostsReviewRenters);
       System.out.println("Created hostsReviewRenters table in given database...");
 
       // Must provide both rating and comment when providing a review
       String rentersReviewListings = "CREATE TABLE IF NOT EXISTS rentersReviewListings "
-        + "(listID INT NOT NULL, FOREIGN KEY (listID) REFERENCES Listings(listID), "
-        + "renterSIN INT NOT NULL, FOREIGN KEY (renterSIN) REFERENCES Renter(renterSIN)," + 
-        " review VARCHAR(100) NOT NULL, " + " rating INT NOT NULL, " +
+        + "(listID INT NOT NULL, FOREIGN KEY (listID) REFERENCES Listings(listID) ON DELETE CASCADE, "
+        + "renterSIN INT NOT NULL, FOREIGN KEY (renterSIN) REFERENCES Renter(renterSIN) ON DELETE CASCADE," + 
+        " review VARCHAR(100) NOT NULL, " + " rating INT NOT NULL CONSTRAINT CK_rating3 check (rating >= 1 and rating <= 5), " +
         "PRIMARY KEY(listID, renterSIN))";
       stmt.executeUpdate(rentersReviewListings);
       System.out.println("Created rentersReviewListings table in given database...");
@@ -131,7 +132,8 @@ public class DAO {
       // TODO latitude and longitude don't have to be keys here?
       String locationsTable = "CREATE TABLE IF NOT EXISTS Locations "
           + "(listID INT NOT NULL, FOREIGN KEY (listID) REFERENCES Listings(listID), " 
-          + "latitude FLOAT NOT NULL, longitude FLOAT NOT NULL, " +
+          + "latitude FLOAT NOT NULL CONSTRAINT CK_latitude  check (latitude >= -90 and latitude <= 90)," + 
+          " longitude FLOAT NOT NULL CONSTRAINT CK_longitude check (longitude >= -180 and longitude <= 180), " +
           "PRIMARY KEY(listID))";
       stmt.executeUpdate(locationsTable);
       System.out.println("Created locationsTable table in given database...");
@@ -164,9 +166,7 @@ public class DAO {
       stmt.executeUpdate(ListingsHaveAmenities);
       System.out.println("Created ListingsHaveAmenities table in given database...");
 
-      // drop tables rentersreviewlistings, rentersreviewhosts, listingshaveamenities, hostsreviewrenters;
-      // drop tables hoststolistings, locations, amenities, addresses, availabilities, booked;
-      //  drop tables renter, host, user, listings;
+      // drop tables rentersreviewlistings, rentersreviewhosts, listingshaveamenities, hostsreviewrenters,  hoststolistings, locations, amenities, addresses, availabilities, booked, renter, host, user, listings;
       
 
       Scanner myObj = new Scanner(System.in); // Create a Scanner object
