@@ -51,7 +51,7 @@ public class NounParser {
 			count = 0;
             while(rs.next()){
                 System.out.print("listID: " + rs.getInt("listID"));
-                System.out.println(", Number of bookings: " + rs.getString("review"));
+                System.out.println(", Review: " + rs.getString("review"));
 				reviews[count] = rs.getString("review");
 				count++;
             }

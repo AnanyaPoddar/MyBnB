@@ -92,6 +92,11 @@ public class DDL {
                 "FOREIGN KEY (name) REFERENCES AMENITIES(name) ON DELETE CASCADE, " + 
                 "FOREIGN KEY (listID) REFERENCES Listings(listID) ON DELETE CASCADE, " +
                 "PRIMARY KEY(name, listID) )";
+            
+            // used for noun phrase word cloud
+            String npReviews = "CREATE TABLE IF NOT EXISTS npReviews "
+                + "(nounPhrase VARCHAR(100) NOT NULL)";
+                
 
             stmt.executeUpdate(userTable);
             stmt.executeUpdate(hostTable);
@@ -108,6 +113,7 @@ public class DDL {
             stmt.executeUpdate(amenitiesTable);
             stmt.executeUpdate(ListingsHaveAmenities);
             stmt.executeUpdate(availabilitiesTable);
+            stmt.executeUpdate(npReviews);
             
         }      
         catch(Exception e){
