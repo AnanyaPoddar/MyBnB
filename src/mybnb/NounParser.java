@@ -161,14 +161,14 @@ public class NounParser {
 			String countNP = String.format("select *, count(nounPhrase) as count from npReviews GROUP BY nounPhrase ORDER BY count(nounPhrase) DESC;");
             ResultSet rs = statement.executeQuery(countNP);
             while(rs.next()){
-				if(rs.getInt("count") > 2){
+				if(rs.getInt("count") >= 2){
 					System.out.print("Frequency: " + rs.getInt("count"));
 					System.out.println(", Noun Phrase: " + rs.getString("nounPhrase"));
 					popular = true;
 				}
             }	
 			if(!popular){
-				System.out.println("No noun phrase was mentioned more than twice.");
+				System.out.println("No noun phrase was mentioned more than once.");
 			}		
 		  } catch (SQLException e) {
 			  e.printStackTrace();

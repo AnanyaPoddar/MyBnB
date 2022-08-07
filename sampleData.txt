@@ -320,6 +320,10 @@ INSERT INTO Availabilities(listID, date, price) VALUES (2, '2022-08-20', 90);
 INSERT INTO Availabilities(listID, date, price) VALUES (2, '2022-08-21', 90);
 INSERT INTO Availabilities(listID, date, price) VALUES (2, '2022-08-22', 90);
 INSERT INTO Availabilities(listID, date, price) VALUES (2, '2022-08-23', 90);
+INSERT INTO Availabilities(listID, date, price) VALUES (2, '2022-08-24', 90);
+INSERT INTO Availabilities(listID, date, price) VALUES (2, '2022-08-25', 90);
+INSERT INTO Availabilities(listID, date, price) VALUES (2, '2022-08-26', 90);
+INSERT INTO Availabilities(listID, date, price) VALUES (2, '2022-08-27', 90);
 
 INSERT INTO Availabilities(listID, date, price) VALUES (17, '2022-09-20', 100);
 INSERT INTO Availabilities(listID, date, price) VALUES (17, '2022-09-21', 100);
@@ -423,4 +427,117 @@ INSERT INTO Availabilities(listID, date, price) VALUES (25, '2022-10-26', 260);
 INSERT INTO Availabilities(listID, date, price) VALUES (25, '2022-10-27', 260);
 
 
--- Insert Bookings, update availabilities for them
+-- Insert Future Bookings, update availabilities for them
+
+INSERT INTO Booked(listID, renterSIN, startDate, endDate, cost) VALUES (2, 123456789, '2022-08-28', '2022-08-30', 270);
+INSERT INTO Availabilities(listID, date, price, status) VALUES (2, '2022-08-28', 90, 'booked');
+INSERT INTO Availabilities(listID, date, price, status) VALUES (2, '2022-08-29', 90, 'booked');
+INSERT INTO Availabilities(listID, date, price, status) VALUES (2, '2022-08-30', 90, 'booked');
+
+INSERT INTO Booked(listID, renterSIN, startDate, endDate, cost) VALUES (2, 123456789, '2022-08-31', '2022-09-02', 270);
+INSERT INTO Availabilities(listID, date, price, status) VALUES (2, '2022-08-31', 90, 'booked');
+INSERT INTO Availabilities(listID, date, price, status) VALUES (2, '2022-09-01', 90, 'booked');
+INSERT INTO Availabilities(listID, date, price, status) VALUES (2, '2022-09-02', 90, 'booked');
+
+INSERT INTO Booked(listID, renterSIN, startDate, endDate, cost) VALUES (2, 234567890, '2022-09-30', '2022-10-02', 270);
+INSERT INTO Availabilities(listID, date, price, status) VALUES (2, '2022-09-30', 90, 'booked');
+INSERT INTO Availabilities(listID, date, price, status) VALUES (2, '2022-10-01', 90, 'booked');
+INSERT INTO Availabilities(listID, date, price, status) VALUES (2, '2022-10-02', 90, 'booked');
+
+INSERT INTO Booked(listID, renterSIN, startDate, endDate, cost) VALUES (17, 123456789, '2022-09-24', '2022-09-24', 100);
+INSERT INTO Availabilities(listID, date, price, status) VALUES (17, '2022-09-24', 100, 'booked');
+
+INSERT INTO Booked(listID, renterSIN, startDate, endDate, cost) VALUES (17, 345678901, '2022-09-25', '2022-09-26', 200);
+INSERT INTO Availabilities(listID, date, price, status) VALUES (17, '2022-09-25', 100, 'booked');
+INSERT INTO Availabilities(listID, date, price, status) VALUES (17, '2022-09-26', 100, 'booked');
+
+INSERT INTO Booked(listID, renterSIN, startDate, endDate, cost) VALUES (18, 345678901, '2022-08-25', '2022-08-26', 190);
+INSERT INTO Availabilities(listID, date, price, status) VALUES (18, '2022-09-15', 95, 'booked');
+INSERT INTO Availabilities(listID, date, price, status) VALUES (18, '2022-09-16', 95, 'booked');
+
+
+INSERT INTO Booked(listID, renterSIN, startDate, endDate, cost) VALUES (1, 456789012, '2022-09-28', '2022-09-30', 345);
+INSERT INTO Availabilities(listID, date, price, status) VALUES (1, '2022-09-28', 115, 'booked');
+INSERT INTO Availabilities(listID, date, price, status) VALUES (1, '2022-09-29', 115, 'booked');
+INSERT INTO Availabilities(listID, date, price, status) VALUES (1, '2022-09-30', 115, 'booked');
+
+INSERT INTO Booked(listID, renterSIN, startDate, endDate, cost) VALUES (6, 456789012, '2022-08-14', '2022-08-14', 110.50);
+INSERT INTO Availabilities(listID, date, price, status) VALUES (6, '2022-08-14', 110.50, 'booked');
+
+INSERT INTO Booked(listID, renterSIN, startDate, endDate, cost) VALUES (6, 456789012, '2022-08-18', '2022-08-18', 110.50);
+INSERT INTO Availabilities(listID, date, price, status) VALUES (6, '2022-08-18', 110.50, 'booked');
+
+INSERT INTO Booked(listID, renterSIN, startDate, endDate, cost) VALUES (4, 789012345, '2022-08-18', '2022-08-18', 235);
+INSERT INTO Availabilities(listID, date, price, status) VALUES (4, '2022-08-18', 235, 'booked');
+
+INSERT INTO Booked(listID, renterSIN, startDate, endDate, cost) VALUES (13, 789012345, '2023-03-23', '2023-03-24', 240);
+INSERT INTO Availabilities(listID, date, price, status) VALUES (13, '2023-03-23', 120, 'booked');
+INSERT INTO Availabilities(listID, date, price, status) VALUES (13, '2023-03-24', 120, 'booked');
+
+INSERT INTO Booked(listID, renterSIN, startDate, endDate, cost) VALUES (14, 789012345, '2022-11-03', '2022-11-03', 115);
+INSERT INTO Availabilities(listID, date, price, status) VALUES (14, '2022-11-03', 115, 'booked');
+
+INSERT INTO Booked(listID, renterSIN, startDate, endDate, cost) VALUES (26, 123456789, '2022-11-24', '2022-11-24', 140);
+INSERT INTO Availabilities(listID, date, price, status) VALUES (26, '2022-11-24', 140, 'booked');
+
+
+INSERT INTO Booked(listID, renterSIN, startDate, endDate, cost) VALUES (15, 345678901, '2023-03-21', '2023-03-22', 380);
+INSERT INTO Availabilities(listID, date, price, status) VALUES (15, '2023-03-21', 190, 'booked');
+INSERT INTO Availabilities(listID, date, price, status) VALUES (15, '2023-03-22', 190, 'booked');
+
+INSERT INTO Booked(listID, renterSIN, startDate, endDate, cost) VALUES (16, 567890123, '2022-09-24', '2022-09-24', 235);
+INSERT INTO Availabilities(listID, date, price, status) VALUES (16, '2022-09-24', 235, 'booked');
+
+
+-- Insert Cancelled Bookings, update availabilities for them (PAST + FUTURE)
+
+INSERT INTO Booked(listID, renterSIN, startDate, endDate, cost, status) VALUES (1, 567890123, '2022-09-08', '2022-09-10', 345, 'cancelled');
+INSERT INTO Availabilities(listID, date, price, status) VALUES (1, '2022-09-08', 115, 'cancelled');
+INSERT INTO Availabilities(listID, date, price, status) VALUES (1, '2022-09-09', 115, 'cancelled');
+INSERT INTO Availabilities(listID, date, price, status) VALUES (1, '2022-09-10', 115, 'cancelled');
+
+INSERT INTO Booked(listID, renterSIN, startDate, endDate, cost, status) VALUES (1, 567890123, '2022-09-13', '2022-09-15', 345, 'cancelled');
+INSERT INTO Availabilities(listID, date, price, status) VALUES (1, '2022-09-13', 115, 'cancelled');
+INSERT INTO Availabilities(listID, date, price, status) VALUES (1, '2022-09-14', 115, 'cancelled');
+INSERT INTO Availabilities(listID, date, price, status) VALUES (1, '2022-09-15', 115, 'cancelled');
+
+INSERT INTO Booked(listID, renterSIN, startDate, endDate, cost, status) VALUES (1, 567890123, '2022-10-13', '2022-10-13', 115, 'cancelled');
+INSERT INTO Availabilities(listID, date, price, status) VALUES (1, '2022-10-13', 115, 'cancelled');
+
+
+INSERT INTO Booked(listID, renterSIN, startDate, endDate, cost, status) VALUES (1, 678901234, '2022-08-08', '2022-08-10', 345, 'cancelled');
+INSERT INTO Availabilities(listID, date, price, status) VALUES (1, '2022-08-08', 115, 'cancelled');
+INSERT INTO Availabilities(listID, date, price, status) VALUES (1, '2022-08-09', 115, 'cancelled');
+INSERT INTO Availabilities(listID, date, price, status) VALUES (1, '2022-08-10', 115, 'cancelled');
+
+INSERT INTO Booked(listID, renterSIN, startDate, endDate, cost, status) VALUES (1, 678901234, '2022-10-08', '2022-10-10', 345, 'cancelled');
+INSERT INTO Availabilities(listID, date, price, status) VALUES (1, '2022-10-08', 115, 'cancelled');
+INSERT INTO Availabilities(listID, date, price, status) VALUES (1, '2022-10-09', 115, 'cancelled');
+INSERT INTO Availabilities(listID, date, price, status) VALUES (1, '2022-10-10', 115, 'cancelled');
+
+INSERT INTO Booked(listID, renterSIN, startDate, endDate, cost, status) VALUES (1, 678901234, '2022-03-08', '2022-03-08', 115, 'cancelled');
+INSERT INTO Availabilities(listID, date, price, status) VALUES (1, '2022-03-08', 115, 'cancelled');
+
+-- Insert Past Bookings, update availabilities for them 
+
+INSERT INTO Booked(listID, renterSIN, startDate, endDate, cost, status) VALUES (18, 345678901, '2022-04-15', '2022-04-16', 190, 'past');
+INSERT INTO Availabilities(listID, date, price, status) VALUES (18, '2022-04-15', 95, 'past');
+INSERT INTO Availabilities(listID, date, price, status) VALUES (18, '2022-04-16', 95, 'past');
+
+INSERT INTO Booked(listID, renterSIN, startDate, endDate, cost, status) VALUES (16, 123456789, '2022-05-15', '2022-05-16', 230, 'past');
+INSERT INTO Availabilities(listID, date, price, status) VALUES (16, '2022-05-15', 115, 'past');
+INSERT INTO Availabilities(listID, date, price, status) VALUES (16, '2022-05-16', 115, 'past');
+
+INSERT INTO Booked(listID, renterSIN, startDate, endDate, cost, status) VALUES (16, 345678901, '2022-06-15', '2022-06-16', 230, 'past');
+INSERT INTO Availabilities(listID, date, price, status) VALUES (16, '2022-06-15', 115, 'past');
+INSERT INTO Availabilities(listID, date, price, status) VALUES (16, '2022-06-16', 115, 'past');
+
+
+-- Insert reviews (1 for rentersReviewHosts, 1 for HostsReviewRenters, 3 for RentersReviewListings)
+
+INSERT INTO RentersReviewListings VALUES (16, 345678901, 'I enjoyed my time at this neat place and will come again.', 4);
+INSERT INTO RentersReviewListings VALUES (16, 123456789, 'I wasted my time coming here.', 1);
+INSERT INTO RentersReviewListings VALUES (18, 345678901, 'I had a nice time.', 4);
+
+INSERT INTO HostsReviewRenters VALUES (210123456, 123456789, 'A nice renter, thank you!', 4);
+INSERT INTO RentersReviewHosts VALUES (210123456, 123456789, 'A nice host, thank you!', 4);
