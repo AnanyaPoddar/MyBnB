@@ -188,6 +188,8 @@ INSERT INTO AMENITIES(type, name) VALUES ('Features', 'Pool');
 INSERT INTO AMENITIES(type, name) VALUES ('Features', 'Free Parking');
 INSERT INTO AMENITIES(type, name) VALUES ('Safety', 'Smoke Alarm');
 INSERT INTO AMENITIES(type, name) VALUES ('Safety', 'Carbon Monoxide Alarm');
+INSERT INTO AMENITIES(type, name) VALUES ('Location', 'Beachfront');
+INSERT INTO AMENITIES(type, name) VALUES ('Location', 'Waterfront');
 
 -- Listings Have Amenities, we can modify this once we figure out host toolkit
 
@@ -255,6 +257,19 @@ INSERT INTO ListingsHaveAmenities VALUES (15, 'Kitchen');
 INSERT INTO ListingsHaveAmenities VALUES (16, 'Smoke Alarm');
 INSERT INTO ListingsHaveAmenities VALUES (15, 'Wifi');
 
+INSERT INTO ListingsHaveAmenities VALUES (17, 'Wifi');
+INSERT INTO ListingsHaveAmenities VALUES (17, 'Free Parking');
+
+INSERT INTO ListingsHaveAmenities VALUES (18, 'Wifi');
+INSERT INTO ListingsHaveAmenities VALUES (18, 'Pool');
+INSERT INTO ListingsHaveAmenities VALUES (18, 'Smoke Alarm');
+
+INSERT INTO ListingsHaveAmenities VALUES (19, 'Wifi');
+INSERT INTO ListingsHaveAmenities VALUES (19, 'Kitchen');
+
+INSERT INTO ListingsHaveAmenities VALUES (20, 'Smoke Alarm');
+INSERT INTO ListingsHaveAmenities VALUES (20, 'Carbon Monoxide Alarm');
+
 
 -- Insert Availabilities
 
@@ -314,6 +329,26 @@ INSERT INTO Availabilities(listID, date, price) VALUES (11, '2022-12-11', 250);
 INSERT INTO Availabilities(listID, date, price) VALUES (12, '2022-07-16', 150);
 INSERT INTO Availabilities(listID, date, price) VALUES (12, '2022-09-10', 150);
 INSERT INTO Availabilities(listID, date, price) VALUES (12, '2022-09-11', 150);
+
+INSERT INTO Availabilities(listID, date, price) VALUES (17, '2022-08-16', 150);
+INSERT INTO Availabilities(listID, date, price) VALUES (17, '2022-08-10', 150);
+INSERT INTO Availabilities(listID, date, price) VALUES (17, '2022-08-11', 150);
+
+
+INSERT INTO Availabilities(listID, date, price) VALUES (18, '2022-08-23', 180);
+INSERT INTO Availabilities(listID, date, price) VALUES (18, '2022-08-24', 180);
+INSERT INTO Availabilities(listID, date, price) VALUES (18, '2022-08-25', 180);
+INSERT INTO Availabilities(listID, date, price) VALUES (18, '2022-08-26', 180);
+
+INSERT INTO Availabilities(listID, date, price) VALUES (19, '2022-08-30', 200);
+INSERT INTO Availabilities(listID, date, price) VALUES (19, '2022-08-31', 200);
+INSERT INTO Availabilities(listID, date, price) VALUES (19, '2022-09-01', 200);
+INSERT INTO Availabilities(listID, date, price) VALUES (19, '2022-09-02', 200);
+
+
+INSERT INTO Availabilities(listID, date, price) VALUES (20, '2022-10-23', 280);
+INSERT INTO Availabilities(listID, date, price) VALUES (20, '2022-10-24', 280);
+
 
 -- Insert Bookings, update availabilities for them
 

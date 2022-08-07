@@ -32,7 +32,7 @@ public class HostToolkit {
     }
 
     //This includes amenities
-    public static float suggestPrice(Connection conn, String type, String country, String city, String street, String postal, List<String> amenities){
+    public static float suggestPrice(Connection conn, String type, String country, String city, String street, String postal, List<String> amenities, boolean print){
         String formattedAmenities = "(";
         for(int i = 0; i < amenities.size(); i++){
             if(i==amenities.size()-1) formattedAmenities += String.format("'%s'", amenities.get(i));
@@ -50,21 +50,25 @@ public class HostToolkit {
             if(rs.next()){
                 avg = rs.getString("avg");
                 if(avg != null){
-                    System.out.println(String.format("Suggested Price: $%s",df.format(Float.parseFloat(avg))));
-                    System.out.println(String.format("This is based on avg price per night of %s listings in %s, %s on street %s, with postal %s and the listed amenities", type, city, country, street, postal));
+                    if(print) {
+                        System.out.println(String.format("Suggested Price: $%s",df.format(Float.parseFloat(avg))));
+                        System.out.println(String.format("This is based on avg price per night of %s listings in %s, %s on street %s, with postal %s and the listed amenities", type, city, country, street, postal));
+                    }
                     return Float.parseFloat(avg);
                 }
             }
-            String priceByTypeCountryCityStreetAmenities = String.format("SELECT avg(price) as avg FROM Availabilities AS av " +
+            String priceByTypeCountryCityPostalAmenities = String.format("SELECT avg(price) as avg FROM Availabilities AS av " +
             "JOIN Addresses AS ad ON av.listID=ad.listID JOIN listings AS l ON l.listID=ad.listID "+
             "JOIN (SELECT listID FROM ListingsHaveAmenities WHERE name IN %s GROUP BY listID) AS am ON am.listID=av.listID " +
-            "WHERE country='%s' AND city = '%s' AND street = '%s' AND type = '%s';", formattedAmenities, country, city, street, type);
-            ResultSet rs2 = stmt.executeQuery(priceByTypeCountryCityStreetAmenities);
+            "WHERE country='%s' AND city = '%s' AND postal = '%s' AND type = '%s';", formattedAmenities, country, city, postal, type);
+            ResultSet rs2 = stmt.executeQuery(priceByTypeCountryCityPostalAmenities);
             if(rs2.next()){
                 avg = rs2.getString("avg");
                 if(avg != null){
-                    System.out.println(String.format("Suggested Price: $%s",df.format(Float.parseFloat(avg))));
-                    System.out.println(String.format("This is based on avg price per night of %s listings in %s, %s on street %s and the listed amenities", type, city, country, street));
+                    if(print) {
+                        System.out.println(String.format("Suggested Price: $%s",df.format(Float.parseFloat(avg))));
+                        System.out.println(String.format("This is based on avg price per night of %s listings in %s, %s on postal %s and the listed amenities", type, city, country, postal));
+                    }
                     return Float.parseFloat(avg);
                 }
             }
@@ -76,8 +80,10 @@ public class HostToolkit {
             if(rs3.next()){
                 avg = rs3.getString("avg");
                 if(avg != null){
-                    System.out.println(String.format("Suggested Price: $ %s", df.format(Float.parseFloat(avg))));
-                    System.out.println(String.format("This is based on avg price per night of %s listings in %s, %s with the listed amenities", type, city, country));
+                    if(print) {
+                        System.out.println(String.format("Suggested Price: $ %s", df.format(Float.parseFloat(avg))));
+                        System.out.println(String.format("This is based on avg price per night of %s listings in %s, %s with the listed amenities", type, city, country));
+                    }
                     return Float.parseFloat(avg);
                 }
             }
@@ -89,8 +95,10 @@ public class HostToolkit {
             if(rs4.next()){
                 avg = rs4.getString("avg");
                 if(avg != null){
-                    System.out.println(String.format("Suggested Price: $%s",df.format(Float.parseFloat(avg))));
-                    System.out.println(String.format("This is based on avg price per night of %s listings in %s with the listed amenities", type, country));
+                    if(print) {
+                        System.out.println(String.format("Suggested Price: $%s",df.format(Float.parseFloat(avg))));
+                        System.out.println(String.format("This is based on avg price per night of %s listings in %s with the listed amenities", type, country));
+                    }
                     return Float.parseFloat(avg);
                 }
             }
@@ -103,8 +111,10 @@ public class HostToolkit {
             if(rs5.next()){
                 avg = rs5.getString("avg");
                 if(avg != null){
-                    System.out.println(String.format("Suggested Price: $%s",df.format(Float.parseFloat(avg))));
-                    System.out.println(String.format("This is based on avg price per night of %s listings with the listed amenities", type));
+                    if(print) {
+                        System.out.println(String.format("Suggested Price: $%s",df.format(Float.parseFloat(avg))));
+                        System.out.println(String.format("This is based on avg price per night of %s listings with the listed amenities", type));
+                    }
                     return Float.parseFloat(avg);
                 }
             }
@@ -132,15 +142,15 @@ public class HostToolkit {
                     return Float.parseFloat(avg);
                 }
             }
-            String priceByTypeCountryCityStreet = String.format("SELECT avg(price) as avg FROM Availabilities AS av " +
+            String priceByTypeCountryCityPostal = String.format("SELECT avg(price) as avg FROM Availabilities AS av " +
             "JOIN Addresses AS ad ON av.listID=ad.listID JOIN listings AS l ON l.listID=ad.listID " + 
-            "WHERE country='%s' AND city='%s' AND street = '%s' AND type = '%s';", country, city, street, type);
-            ResultSet rs2 = stmt.executeQuery(priceByTypeCountryCityStreet);
+            "WHERE country='%s' AND city='%s' AND postal = '%s' AND type = '%s';", country, city, postal, type);
+            ResultSet rs2 = stmt.executeQuery(priceByTypeCountryCityPostal);
             if(rs2.next()){
                 avg = rs2.getString("avg");
                 if(avg != null){
                     System.out.println(String.format("Suggested Price: $%s",df.format(Float.parseFloat(avg))));
-                    System.out.println(String.format("This is based on avg price per night of %s listings in %s, %s on street %s", type, city, country, street));
+                    System.out.println(String.format("This is based on avg price per night of %s listings in %s, %s on postal %s", type, city, country, postal));
                     return Float.parseFloat(avg);
                 }
             }
@@ -189,10 +199,12 @@ public class HostToolkit {
     public static void suggestAmenitiesAndPrice(Connection conn, List<String> unchosenAmenities, List<String> chosenAmenities, float originalSuggested, String type, String country, String city, String street, String postal){
         for (String amenity: unchosenAmenities){
             chosenAmenities.add(amenity);
-            Float price = suggestPrice(conn, type, country, city, street, postal, chosenAmenities);
+            Float price = suggestPrice(conn, type, country, city, street, postal, chosenAmenities, false);
             chosenAmenities.remove(amenity);
             //TODO: Either order or only include ones above some threshold of increase
-            System.out.println("Adding amenity " + amenity + " would increase the suggested price of your listing by $" + df.format(price - originalSuggested));
+            float increase = price - originalSuggested;
+            if(increase > 0)
+                System.out.println("Adding amenity " + amenity + " would increase the suggested price of your listing by $" + df.format(increase));
         }
         System.out.println();
     }
