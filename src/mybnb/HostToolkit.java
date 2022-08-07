@@ -45,8 +45,8 @@ public class HostToolkit {
             Statement stmt = conn.createStatement();
             String priceByTypeCountryCityStreetPostalAmenities = String.format("SELECT avg(price) as avg FROM Availabilities AS av " +
             "JOIN Addresses AS ad ON av.listID=ad.listID JOIN listings AS l ON l.listID=ad.listID "+
-            "JOIN (SELECT listID FROM ListingsHaveAmenities WHERE name IN %s GROUP BY listID) AS am ON am.listID=av.listID " +
-            "WHERE country='%s' AND city = '%s' AND street = '%s' AND postal = '%s' AND type = '%s';", formattedAmenities, country, city, street, postal, type);
+            "JOIN (SELECT count(*), listID FROM ListingsHaveAmenities WHERE name IN %s GROUP BY listID HAVING count(*) = %d) AS am ON am.listID=av.listID " +
+            "WHERE country='%s' AND city = '%s' AND street = '%s' AND postal = '%s' AND type = '%s';", formattedAmenities, amenities.size(), country, city, street, postal, type);
             ResultSet rs = stmt.executeQuery(priceByTypeCountryCityStreetPostalAmenities);
             String avg;
             if(rs.next()){
@@ -61,8 +61,8 @@ public class HostToolkit {
             }
             String priceByTypeCountryCityPostalAmenities = String.format("SELECT avg(price) as avg FROM Availabilities AS av " +
             "JOIN Addresses AS ad ON av.listID=ad.listID JOIN listings AS l ON l.listID=ad.listID "+
-            "JOIN (SELECT listID FROM ListingsHaveAmenities WHERE name IN %s GROUP BY listID) AS am ON am.listID=av.listID " +
-            "WHERE country='%s' AND city = '%s' AND postal = '%s' AND type = '%s';", formattedAmenities, country, city, postal, type);
+            "JOIN (SELECT count(*), listID FROM ListingsHaveAmenities WHERE name IN %s GROUP BY listID HAVING count(*) = %d) AS am ON am.listID=av.listID " +
+            "WHERE country='%s' AND city = '%s' AND postal = '%s' AND type = '%s';", formattedAmenities, amenities.size(), country, city, postal, type);
             ResultSet rs2 = stmt.executeQuery(priceByTypeCountryCityPostalAmenities);
             if(rs2.next()){
                 avg = rs2.getString("avg");
@@ -76,8 +76,8 @@ public class HostToolkit {
             }
             String priceByTypeCountryCityAmenities = String.format("SELECT avg(price) as avg FROM Availabilities AS av " +
             "JOIN Addresses AS ad ON av.listID=ad.listID JOIN listings AS l ON l.listID=ad.listID "+
-            "JOIN (SELECT listID FROM ListingsHaveAmenities WHERE name IN %s GROUP BY listID) AS am ON am.listID=av.listID " +
-            "WHERE country='%s' AND city = '%s' AND type = '%s';", formattedAmenities, country, city, type);
+            "JOIN (SELECT count(*), listID FROM ListingsHaveAmenities WHERE name IN %s GROUP BY listID HAVING count(*) = %d) AS am ON am.listID=av.listID " +
+            "WHERE country='%s' AND city = '%s' AND type = '%s';", formattedAmenities, amenities.size(), country, city, type);
             ResultSet rs3 = stmt.executeQuery(priceByTypeCountryCityAmenities);
             if(rs3.next()){
                 avg = rs3.getString("avg");
@@ -91,8 +91,8 @@ public class HostToolkit {
             }
             String priceByTypeCountryAmenities = String.format("SELECT avg(price) as avg FROM Availabilities AS av " +
             "JOIN Addresses AS ad ON av.listID=ad.listID JOIN listings AS l ON l.listID=ad.listID "+
-            "JOIN (SELECT listID FROM ListingsHaveAmenities WHERE name IN %s GROUP BY listID) AS am ON am.listID=av.listID " +
-            "WHERE country='%s' AND type = '%s';", formattedAmenities, country, type);
+            "JOIN (SELECT count(*), listID FROM ListingsHaveAmenities WHERE name IN %s GROUP BY listID HAVING count(*) = %d) AS am ON am.listID=av.listID " +
+            "WHERE country='%s' AND type = '%s';", formattedAmenities, amenities.size(),  country, type);
             ResultSet rs4 = stmt.executeQuery(priceByTypeCountryAmenities);
             if(rs4.next()){
                 avg = rs4.getString("avg");
@@ -106,8 +106,8 @@ public class HostToolkit {
             }
 
             String priceByTypeAmenities = String.format("SELECT avg(price) as avg FROM Availabilities AS av JOIN " +
-            "(SELECT listID FROM ListingsHaveAmenities WHERE name IN %s GROUP BY listID) AS am ON am.listID=av.listID "+
-            "JOIN listings AS l ON l.listID=am.listID WHERE type = '%s';", formattedAmenities, type);
+            "(SELECT count(*), listID FROM ListingsHaveAmenities WHERE name IN %s GROUP BY listID HAVING count(*) = %d) AS am ON am.listID=av.listID "+
+            "JOIN listings AS l ON l.listID=am.listID WHERE type = '%s';", formattedAmenities, amenities.size(), type);
 
             ResultSet rs5 = stmt.executeQuery(priceByTypeAmenities);
             if(rs5.next()){

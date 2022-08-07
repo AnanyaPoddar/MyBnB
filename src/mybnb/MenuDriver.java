@@ -12,9 +12,8 @@ public class MenuDriver {
             System.out.println("0 - Exit Listings Mode"); 
             System.out.println("1 - View All Listings");
             System.out.println("2 - Check Availabilities for a Listing");
-            //TODO: Does the "get listings between 2 dates need to go somewhere separate or here is fine"
             System.out.println("3 - Search and Filter Listings");
-            System.out.println("4 - Book a Listing"); // or should this go under 3?
+            if(Main.loggedInUser!= -1)System.out.println("4 - Book a Listing");
             option = Integer.parseInt(myObj.nextLine());
             if(option == 1)
                 ListingDAO.viewAllListings(conn);
@@ -26,10 +25,12 @@ public class MenuDriver {
             else if(option == 3){
                 Search.searchListings(conn, myObj);
             }
-            else if (option == 4) BookingsDriver.addBooking(conn, myObj);
+            else if (Main.loggedInUser!= -1 && option == 4) BookingsDriver.addBooking(conn, myObj);
         }
 
     }
+
+
 
     public static void hostListingMenu(Connection conn, Scanner myObj){
         int option = -1;
