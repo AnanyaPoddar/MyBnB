@@ -205,7 +205,6 @@ public class HostToolkit {
             chosenAmenities.add(amenity);
             Float price = suggestPrice(conn, type, country, city, street, postal, chosenAmenities, false);
             chosenAmenities.remove(amenity);
-            //TODO: Either order or only include ones above some threshold of increase
             Float increase = price - originalSuggested;
             if(increase > 0){
                 String[] amenities = {amenity, increase.toString()};
@@ -218,13 +217,12 @@ public class HostToolkit {
         }
         possibleAmenities.sort(new Comparator<String[]>() {
             public int compare(String[] first, String[] second) {
-              return  Float.compare(Float.parseFloat(first[1]), Float.parseFloat(second[1]));
+              return  Float.compare(Float.parseFloat(second[1]), Float.parseFloat(first[1]));
             }
         });
-
+        System.out.println();
         for(String[] possible : possibleAmenities){
             System.out.println("Adding amenity " + possible[0] + " would increase the suggested price of your listing by $" + df.format(Float.parseFloat(possible[1])));
         }
-        System.out.println();
     }
 }
