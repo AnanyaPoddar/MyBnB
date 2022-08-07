@@ -8,12 +8,11 @@ import java.time.LocalDate;
 
 public class ReportsDAO {
     //TODO: This returns bookings with any status, including past, booked, cancelled
-    //This orders by city, TODO: Does the acc report doc mean I should be able to query by city as well?
     public static void numBookingsByDatesAndCity(Connection conn, LocalDate startDate, LocalDate endDate){
         try {
             Statement stmt = conn.createStatement();
-            String sql = String.format("SELECT a.city AS city, count(a.listID) as numBookings FROM Booked as b " +
-            "JOIN addresses as a ON a.listID = b.listID WHERE startDate >= '%s' AND endDate <= '%s' GROUP BY a.city ORDER BY a.city;", startDate, endDate);
+            String sql = String.format("SELECT a.country as country, a.city AS city, count(a.listID) as numBookings FROM Booked "+
+            "AS b JOIN addresses as a ON a.listID = b.listID WHERE startDate >= '%s' AND endDate <= '%s' GROUP BY a.country, a.city ORDER BY a.country, a.city;", startDate, endDate);
             ResultSet rs = stmt.executeQuery(sql);
             while(rs.next()){
                 System.out.print("City: " + rs.getString("city"));

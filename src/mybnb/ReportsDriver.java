@@ -8,12 +8,11 @@ public class ReportsDriver {
 
     
     public static void viewAllReports(Connection conn, Scanner myObj){
-        System.out.println("------------------------------------------------------");
+        System.out.println("---------------------- Reports -----------------------");
         System.out.println("Enter 0 to exit.");
         System.out.println("1 - Reports About Number of Bookings");
         System.out.println("2 - Reports About Number of Listings");
         System.out.println("3 - Reports About Number of Noun Phrases in a Listing's Reviews");
-        System.out.println("------------------------------------------------------");
         String choice = myObj.nextLine();
         if (choice.equals("1")) viewBookingReports(conn, myObj);
         if (choice.equals("2")) viewListingReports(conn, myObj);
@@ -21,6 +20,8 @@ public class ReportsDriver {
     }
 
     private static void viewBookingReports(Connection conn,Scanner myObj){
+        System.out.println("1 - Number of Bookings By City");
+        System.out.println("1 - Number of Bookings By City");
         System.out.println("Enter a specific date range to filter bookings reports in the YYYY-MM-DD format.");
         System.out.println("Start date of range: ");
         String start = myObj.nextLine();

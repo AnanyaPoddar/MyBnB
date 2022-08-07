@@ -101,9 +101,12 @@ public class ListingDAO {
             String addressInsert = String.format(
                 "INSERT INTO ADDRESSES VALUES (%d, %d, '%s', '%s', '%s', '%s');", listID, unitNum, street, city, country, postal);
 
-
+            System.out.println();
+            // Suggest amenities based on popularity
+            HostToolkit.suggestAmenities(conn);
+            
             // Choose amenities
-            System.out.println("Choose amenities. Enter 0 to exit.");
+            System.out.println("\nChoose amenities. Enter 0 to exit.");
             System.out.println("Essentials: 1 = Wifi, 2 = Kitchen");
             System.out.println("Features: 3 = Pool, 4 = Free Parking");
             System.out.println("Safety: 5 = Smoke Alarm, 6 = Carbon Monoxide Alarm");
@@ -122,14 +125,39 @@ public class ListingDAO {
               }
               choice = Integer.parseInt(myObj.nextLine());
             }
+
+            String[] names = new String[7];
+            names[1] = "Wifi";
+            names[2] = "Kitchen";
+            names[3] = "Pool";
+            names[4] = "Free Parking";
+            names[5] = "Smoke Alarm";
+            names[6] = "Carbon Monoxide Alarm";
+
+            List<String> strAmenities = new ArrayList<>();
+            List<String> unchosenAmenities = new ArrayList<>();
+            for(int i = 0; i < amenities.length; i++){
+              if(amenities[i]){
+                strAmenities.add(names[i]);
+              }
+              else unchosenAmenities.add(names[i]);
+            }
+
+            //add the amenities to db
             addAmenities(conn, amenities, listID);
-            //suggest a price here because you have all of the information required
-            HostToolkit.suggestPrice(conn, type, country, city, street, postal);
-            //After listing is added, prompt user to add availabilities for that listing
-                        
+            //Suggest price for the listing
+            Float suggestedPrice;
+            if(strAmenities.size() == 0) suggestedPrice = HostToolkit.suggestPrice(conn, type, country, city, street, postal);
+            else suggestedPrice = HostToolkit.suggestPrice(conn, type, country, city, street, postal, strAmenities );
+
             statement.executeUpdate(hostsToListingsInsert);
             statement.executeUpdate(locationInsert);
             statement.executeUpdate(addressInsert);
+
+            //TODO: provide suggestions about amenities and expected revenue increase\
+            HostToolkit.suggestAmenitiesAndPrice(conn, unchosenAmenities, strAmenities, suggestedPrice, type, country, city, street, postal);
+
+            //After listing is added, prompt user to add availabilities for that listing
             AvailabilityDriver.addAvailabilities(conn, listID, myObj);
         }
     } catch (SQLException e) {
