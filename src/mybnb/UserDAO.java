@@ -200,6 +200,47 @@ public class UserDAO {
     System.out.println("You've been logged out");
   }
 
+
+  public static void getReviewsAboutRenter(Connection conn){
+    try {
+      Statement stmt = conn.createStatement();
+      String sql = String.format("SELECT uname as host, review, rating from hostsReviewRenters AS h JOIN user AS u ON u.SIN=hostSIN WHERE renterSIN = %d;", Main.loggedInUser);
+      ResultSet rs = stmt.executeQuery(sql);
+      if(!rs.isBeforeFirst()) {
+        System.out.println("No hosts have left reviews about you yet."); 
+        return;
+      }
+      while(rs.next()) {
+        System.out.println("Host: " + rs.getString("host") + ", Rating: " + rs.getInt("rating") + ", Review: " + rs.getString("review"));
+        return;
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+
+  }
+
+
+    //this returns reviews that have been left ABOUT the renter
+    public static void getReviewsAboutHost(Connection conn){
+      try {
+        Statement stmt = conn.createStatement();
+        String sql = String.format("SELECT uname as renter, review, rating from rentersReviewHosts AS r JOIN user AS u ON u.SIN=renterSIN WHERE hostSIN = %d;", Main.loggedInUser);
+        ResultSet rs = stmt.executeQuery(sql);
+        if(!rs.isBeforeFirst()) {
+          System.out.println("No renters have left reviews about you yet."); 
+          return;
+        }
+        while(rs.next()) {
+          System.out.println("Renter: " + rs.getString("renter") + ", Rating: " + rs.getInt("rating") + ", Review: " + rs.getString("review"));
+          return;
+        }
+      } catch (SQLException e) {
+        e.printStackTrace();
+      }
+    }
+  
+
   // TODO For example you cannot comment on a listing if you haven’t rented it recently.
   public static void renterReviewsHost(Connection conn, Scanner myObj){
 
@@ -237,7 +278,7 @@ public class UserDAO {
             System.out.println("You've booked from them before.");
         }
         else{
-            System.out.println("Cannot leave a review because you've don't have any past bookings with this host within the year or the host doesn't exist.");
+            System.out.println("Cannot leave a review because you don't have any past bookings with this host within the year or the host doesn't exist.");
             return;
         }
       } 
@@ -258,7 +299,6 @@ public class UserDAO {
         System.out.println("Comment is too long. Must be 100 characters or less.");
         return;
     }
-
     // insert into renterReviewsHost
     try {
         Statement insert = conn.createStatement();
@@ -271,8 +311,6 @@ public class UserDAO {
       } catch (SQLException e) {
         e.printStackTrace();
       }
-
-
   }
 
   // TODO For example you cannot comment on a listing if you haven’t rented it recently.
@@ -297,7 +335,6 @@ public class UserDAO {
         }
     } 
     catch (SQLException e) {
-        // TODO Auto-generated catch block
         e.printStackTrace();
     }
     // Have you rented something to the renter? (Join Booked & Hosts-Listing)
@@ -316,7 +353,6 @@ public class UserDAO {
       }
     } 
     catch (SQLException e) {
-        // TODO Auto-generated catch block
         e.printStackTrace();
     }
 
@@ -343,7 +379,6 @@ public class UserDAO {
       insert.executeUpdate(reviewInsert);
       System.out.println("Success!");
     } catch (SQLException e) {
-      // TODO Auto-generated catch block [replace with generic error message]
       e.printStackTrace();
     }
   }
@@ -368,7 +403,6 @@ public class UserDAO {
     catch (SQLException e) {
         e.printStackTrace();
     }
-
     // Have you Booked the listing before?
     try {
       Statement stmt = conn.createStatement();
@@ -388,7 +422,6 @@ public class UserDAO {
     catch (SQLException e) {
         e.printStackTrace();
     }
-
 
     // Provide review and rating
     System.out.println("What is your rating for the listing out of 5? ");

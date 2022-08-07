@@ -5,6 +5,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class HostToolkit {
@@ -52,7 +54,7 @@ public class HostToolkit {
                 if(avg != null){
                     if(print) {
                         System.out.println(String.format("Suggested Price: $%s",df.format(Float.parseFloat(avg))));
-                        System.out.println(String.format("This is based on avg price per night of %s listings in %s, %s on street %s, with postal %s and the listed amenities", type, city, country, street, postal));
+                        System.out.println(String.format("This is based on avg price per night of %s listings in %s, %s on street %s, with postal %s with the listed amenities", type, city, country, street, postal));
                     }
                     return Float.parseFloat(avg);
                 }
@@ -67,7 +69,7 @@ public class HostToolkit {
                 if(avg != null){
                     if(print) {
                         System.out.println(String.format("Suggested Price: $%s",df.format(Float.parseFloat(avg))));
-                        System.out.println(String.format("This is based on avg price per night of %s listings in %s, %s on postal %s and the listed amenities", type, city, country, postal));
+                        System.out.println(String.format("This is based on avg price per night of %s listings in %s, %s on postal %s with the listed amenities", type, city, country, postal));
                     }
                     return Float.parseFloat(avg);
                 }
@@ -197,14 +199,27 @@ public class HostToolkit {
 
 
     public static void suggestAmenitiesAndPrice(Connection conn, List<String> unchosenAmenities, List<String> chosenAmenities, float originalSuggested, String type, String country, String city, String street, String postal){
+        //these offer an increase of at least $0.01, we want to order them
+        List<String[]> possibleAmenities= new ArrayList<String[]>();
         for (String amenity: unchosenAmenities){
             chosenAmenities.add(amenity);
             Float price = suggestPrice(conn, type, country, city, street, postal, chosenAmenities, false);
             chosenAmenities.remove(amenity);
             //TODO: Either order or only include ones above some threshold of increase
-            float increase = price - originalSuggested;
-            if(increase > 0)
-                System.out.println("Adding amenity " + amenity + " would increase the suggested price of your listing by $" + df.format(increase));
+            Float increase = price - originalSuggested;
+            if(increase > 0){
+                String[] amenities = {amenity, increase.toString()};
+                possibleAmenities.add(amenities);
+            }
+        }
+        possibleAmenities.sort(new Comparator<String[]>() {
+            public int compare(String[] first, String[] second) {
+              return  Float.compare(Float.parseFloat(first[1]), Float.parseFloat(second[1]));
+            }
+        });
+
+        for(String[] possible : possibleAmenities){
+            System.out.println("Adding amenity " + possible[0] + " would increase the suggested price of your listing by $" + df.format(Float.parseFloat(possible[1])));
         }
         System.out.println();
     }
