@@ -6,7 +6,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
 import java.util.Scanner;
-import io.github.cdimascio.dotenv.Dotenv;
+// import io.github.cdimascio.dotenv.Dotenv;
 
 public class Main {
 
@@ -21,9 +21,9 @@ public class Main {
     Class.forName(dbClassName);
     // Database credentials
     final String USER = "root";
-    Dotenv dotenv = Dotenv.configure().load();
-    final String PASS = dotenv.get("PASS");
-    // final String PASS = "root";
+    // Dotenv dotenv = Dotenv.configure().load();
+    // final String PASS = dotenv.get("PASS");
+    final String PASS = "root";
 
     try {
       // Establish connection
@@ -79,9 +79,7 @@ public class Main {
             else if (exit.equals("4")) MenuDriver.hostBookingMenu(conn, myObj);
             else if (exit.equals("5")) ListingDAO.addListing(conn, myObj);
             else if (exit.equals("6")) ReportsDriver.viewAllReports(conn, myObj);
-
           }
-
           else{
             System.out.println("3 - View, Search, and Filter Listings");
             System.out.println("4 - View and Manage Your Bookings");
@@ -98,7 +96,7 @@ public class Main {
           else if (exit.equals("2")) UserDAO.deleteUser(conn, myObj);
         }
       }
-      System.out.println("Closing connection...");
+      System.out.println("Closing connection to MyBnB...");
       stmt.close();
       conn.close();
       System.out.println("Success!");

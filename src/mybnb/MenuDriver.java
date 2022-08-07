@@ -67,6 +67,8 @@ public class MenuDriver {
             System.out.println("2 - Cancel An Upcoming Booking");
             System.out.println("3 - View All Your Past Bookings"); //should review show up here?
             System.out.println("4 - Review a Past Renter");
+            System.out.println("5 - View Reviews Renters Left About You");
+
 
             option = Integer.parseInt(myObj.nextLine());
             if(option == 1)
@@ -82,6 +84,9 @@ public class MenuDriver {
             else if(option == 4){
                 UserDAO.hostReviewsRenter(conn, myObj);
             }
+            else if(option == 5){
+                UserDAO.getReviewsAboutHost(conn);
+            }
         }
     }
 
@@ -96,7 +101,7 @@ public class MenuDriver {
             System.out.println("3 - View All Your Past Bookings"); //should review show up here?
             System.out.println("4 - Review a Past Host");
             System.out.println("5 - Review a Past Listing");
-
+            System.out.println("6 - View Reviews Hosts Left About You");
 
             option = Integer.parseInt(myObj.nextLine());
             if(option == 1)
@@ -114,6 +119,9 @@ public class MenuDriver {
             }
             else if(option == 5){
                 UserDAO.rentersReviewListings(conn, myObj);
+            }
+            else if(option == 6){
+                UserDAO.getReviewsAboutRenter(conn);
             }
         }
     }

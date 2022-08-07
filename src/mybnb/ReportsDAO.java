@@ -164,9 +164,14 @@ public class ReportsDAO {
                 System.out.println(", Number of bookings: " + rs.getInt("numBookings"));
             }
 
-            // TODO What if multiple cities of same name?
-            System.out.println("------------------------------------------------------");
-            System.out.println("Rank of renters by city");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void rankRentersNumBookingsByCity(Connection conn, LocalDate startDate, LocalDate endDate){
+        try {
+            Statement stmt = conn.createStatement();
             System.out.println("Note: only users who have at least 2 bookings during the year of startDate will be displayed.");
             String cityRank = String.format("SELECT user.uname AS name, country, city, COUNT(booked.renterSIN) as NUMBOOKINGS from BOOKED JOIN user ON booked.renterSIN = user.SIN JOIN ADDRESSES ON addresses.listID = booked.listID JOIN (select renterSIN from booked where extract(year from startDate) = extract(year from '%s') AND (status = 'booked' or status = 'past') GROUP BY renterSIN HAVING count(renterSIN) >= 2) as temp ON temp.renterSIN = booked.renterSIN WHERE startDate >= '%s' AND endDate <= '%s' AND (status = 'booked' OR status = 'past') GROUP BY name, country, city ORDER BY country, city, NUMBOOKINGS DESC;", startDate, startDate, endDate);
             ResultSet rs2 = stmt.executeQuery(cityRank);
@@ -176,9 +181,8 @@ public class ReportsDAO {
                 System.out.print(", City: " + rs2.getString("city"));
                 System.out.println(", Number of bookings: " + rs2.getInt("numBookings"));
             }
-
         } catch (SQLException e) {
-            // TODO Replace with error?
+            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }

@@ -200,13 +200,49 @@ public class UserDAO {
     System.out.println("You've been logged out");
   }
 
+
+  public static void getReviewsAboutRenter(Connection conn){
+    try {
+      Statement stmt = conn.createStatement();
+      String sql = String.format("SELECT uname as host, review, rating from hostsReviewRenters AS h JOIN user AS u ON u.SIN=hostSIN WHERE renterSIN = %d;", Main.loggedInUser);
+      ResultSet rs = stmt.executeQuery(sql);
+      if(!rs.isBeforeFirst()) {
+        System.out.println("No hosts have left reviews about you yet."); 
+        return;
+      }
+      while(rs.next()) {
+        System.out.println("Host: " + rs.getString("host") + ", Rating: " + rs.getInt("rating") + ", Review: " + rs.getString("review"));
+        return;
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+
+  }
+
+
+    //this returns reviews that have been left ABOUT the renter
+    public static void getReviewsAboutHost(Connection conn){
+      try {
+        Statement stmt = conn.createStatement();
+        String sql = String.format("SELECT uname as renter, review, rating from rentersReviewHosts AS r JOIN user AS u ON u.SIN=renterSIN WHERE hostSIN = %d;", Main.loggedInUser);
+        ResultSet rs = stmt.executeQuery(sql);
+        if(!rs.isBeforeFirst()) {
+          System.out.println("No renters have left reviews about you yet."); 
+          return;
+        }
+        while(rs.next()) {
+          System.out.println("Renter: " + rs.getString("renter") + ", Rating: " + rs.getInt("rating") + ", Review: " + rs.getString("review"));
+          return;
+        }
+      } catch (SQLException e) {
+        e.printStackTrace();
+      }
+    }
+  
+
   // TODO For example you cannot comment on a listing if you haven’t rented it recently.
   public static void renterReviewsHost(Connection conn, Scanner myObj){
-    // TODO We're assuming one Listing per Host right?
-
-    // Input a Host 
-    // TODO How will this be chosen during an actual workflow lol. Maybe we'll 
-    // display all hosts' id and then be like which one would you like to review?
     System.out.println("Provide the username of the host you'd like to review: ");
     String uname = myObj.nextLine();
     int hostSIN = -1;
@@ -257,7 +293,6 @@ public class UserDAO {
         System.out.println("Comment is too long. Must be 100 characters or less.");
         return;
     }
-
     // insert into renterReviewsHost
     try {
         Statement insert = conn.createStatement();
@@ -270,8 +305,6 @@ public class UserDAO {
       } catch (SQLException e) {
         e.printStackTrace();
       }
-
-
   }
 
   // TODO For example you cannot comment on a listing if you haven’t rented it recently.
@@ -347,7 +380,6 @@ public class UserDAO {
 
   // TODO For example you cannot comment on a listing if you haven’t rented it recently.
   public static void rentersReviewListings(Connection conn, Scanner myObj){
-    // TODO We're assuming one Listing per Host right?
     System.out.println("Provide the ID of the Listing you'd like to review: ");
     int listID = Integer.parseInt(myObj.nextLine());
 

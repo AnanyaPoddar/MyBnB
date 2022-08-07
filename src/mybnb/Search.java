@@ -14,7 +14,6 @@ public class Search {
     static DecimalFormat df = new DecimalFormat("0.00");
     
     public static void searchListings(Connection conn, Scanner myObj) {
-        System.out.println("Find listings by various search/filtering methods");
         String exit = "-1";
         while (!exit.equals("0")) {
             System.out.println("----------------------- Search -----------------------");

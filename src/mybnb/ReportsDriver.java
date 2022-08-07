@@ -8,15 +8,18 @@ public class ReportsDriver {
 
     
     public static void viewAllReports(Connection conn, Scanner myObj){
-        System.out.println("---------------------- Reports -----------------------");
-        System.out.println("0 - Exit");
-        System.out.println("1 - Reports About Number of Bookings");
-        System.out.println("2 - Reports About Number of Listings");
-        System.out.println("3 - Reports About Number of Noun Phrases in a Listing's Reviews");
-        String choice = myObj.nextLine();
-        if (choice.equals("1")) viewBookingReports(conn, myObj);
-        if (choice.equals("2")) viewListingReports(conn, myObj);
-        if (choice.equals("3")) parser(conn, myObj);
+        String choice = "-1";
+        while (!choice.equals("0")) {
+            System.out.println("---------------------- Reports -----------------------");
+            System.out.println("0 - Exit Reports Mode");
+            System.out.println("1 - Reports About Number of Bookings");
+            System.out.println("2 - Reports About Number of Listings");
+            System.out.println("3 - Reports About Noun Phrases in Listing's Reviews");
+            choice = myObj.nextLine();
+            if (choice.equals("1")) viewBookingReports(conn, myObj);
+            if (choice.equals("2")) viewListingReports(conn, myObj);
+            if (choice.equals("3")) parser(conn, myObj);
+        }
     }
 
     private static void viewBookingReports(Connection conn,Scanner myObj){
@@ -39,8 +42,12 @@ public class ReportsDriver {
                 String byPostal = myObj.nextLine();
                 if(byPostal.toLowerCase().equals("y")) ReportsDAO.numBookingsByDatesAndCityAndPostal(conn, startDate, endDate);
             }
-            //TODO: Check how this is formatted
-            else if (choice.equals("2")) ReportsDAO.rankRentersNumBookings(conn, startDate, endDate);
+            else if (choice.equals("2")){
+                ReportsDAO.rankRentersNumBookings(conn, startDate, endDate);
+                System.out.println("Would you like to refine renter rankings by the number of bookings per city? (Y/N)");
+                String byCity = myObj.nextLine();
+                if(byCity.toLowerCase().equals("y")) ReportsDAO.rankRentersNumBookingsByCity(conn, startDate, endDate);
+            }
         }
         else if (choice.equals("3"))  ReportsDAO.maxRenterCancellations(conn);
         else if (choice.equals("4"))  ReportsDAO.maxHostCancellations(conn);
