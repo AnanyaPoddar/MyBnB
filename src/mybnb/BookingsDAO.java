@@ -43,6 +43,10 @@ public class BookingsDAO {
             "JOIN hostsToListings AS h ON h.listID=b.listID JOIN user AS u ON hostSIN=u.SIN JOIN addresses AS a ON a.listID=b.listID " +
             "WHERE renterSIN = %d AND status = '%s' ;", Main.loggedInUser, status);
             ResultSet rs = statement.executeQuery(bookings);
+            if(!rs.isBeforeFirst()) {
+                System.out.println("No bookings."); 
+                return;
+            }
             while(rs.next()){
                 System.out.println("ListId: " + rs.getInt("listID") + ", Host: " +rs.getString("host") + " , Cost: $" + df.format(rs.getFloat("cost")));
                 System.out.println("Dates: " + rs.getDate("startDate") + " - " + rs.getDate("endDate"));
@@ -65,6 +69,10 @@ public class BookingsDAO {
             "JOIN (SELECT listID from HostsToListings WHERE hostSIN = %d) as h1 ON b.listID=h1.listID " + 
             "JOIN addresses AS a ON a.listID=b.listID JOIN user as u ON u.SIN=b.renterSIN WHERE status = '%s' ORDER BY b.listID;", Main.loggedInUser, status);
             ResultSet rs = statement.executeQuery(bookings);
+            if(!rs.isBeforeFirst()) {
+                System.out.println("No bookings."); 
+                return;
+            }
             while(rs.next()){
                 System.out.println("ListId: " + rs.getInt("listID") + ", Renter: " +rs.getString("renter") + " , Cost: $" + df.format(rs.getFloat("cost")));
                 System.out.println("Dates: " + rs.getDate("startDate") + " - " + rs.getDate("endDate"));
@@ -110,8 +118,9 @@ public class BookingsDAO {
             //get all listings by current host, set to past as required;
             List<Integer> listingsByHost = ListingDAO.getAllListingsByHost(conn);
             String stringListings = "(";
-            for(Integer listing : listingsByHost){
-                stringListings += listing.toString();
+            for(int i = 0; i < listingsByHost.size(); i++){
+                if(i == listingsByHost.size() - 1) stringListings += listingsByHost.get(i).toString();
+                else stringListings += listingsByHost.get(i).toString() + " ,";
             }
             stringListings += ")";
             String past = String.format("UPDATE Booked SET status = 'past' WHERE listID in %s AND endDate < '%s';", stringListings, LocalDate.now());

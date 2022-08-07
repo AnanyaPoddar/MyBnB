@@ -212,6 +212,10 @@ public class HostToolkit {
                 possibleAmenities.add(amenities);
             }
         }
+        if(possibleAmenities.size() == 0){
+            System.out.println("We have no recommendations for amenities to improve the price of your listing.");
+            return;
+        }
         possibleAmenities.sort(new Comparator<String[]>() {
             public int compare(String[] first, String[] second) {
               return  Float.compare(Float.parseFloat(first[1]), Float.parseFloat(second[1]));
