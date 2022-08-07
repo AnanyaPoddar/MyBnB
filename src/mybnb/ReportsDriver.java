@@ -75,11 +75,9 @@ public class ReportsDriver {
     }
 
     private static void parser(Connection conn, Scanner myObj){
-        System.out.println("Start listID of the listing you would like: ");
-        int listID = Integer.parseInt(myObj.nextLine());  
         System.out.println("------------------------------------------------------");
-        System.out.println("Noun Phrases of listID: " + listID);
-        NounParser.parser(conn, listID);
+        System.out.println("Popular Noun Phrases of each Listing");
+        NounParser.parseAll(conn);
         System.out.println("------------------------------------------------------");
 
 

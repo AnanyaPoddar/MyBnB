@@ -18,25 +18,56 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 // TODO https://gist.github.com/johnmiedema/e12e7359bcb17b03b8a0 CREDIT 
-// TODO What should this actually print
+// TODO What should this actually print? listID enough? 
 
 //extract noun phrases from a single sentence using OpenNLP
 public class NounParser {
 
-	static String sentence = "Who is the author of The Call of the Wild?";
 	static List<String> nounPhrases = new ArrayList();
-	
-	public static void parser (Connection conn, int listID) {
+
+	// Gets all listings that have at least 1 review and parses each of them
+	public static void parseAll (Connection conn){
+		try {
+			Statement stmt = conn.createStatement();
+			// get count of reviews in rentersReviewListings by listID 
+			String getAll = String.format("SELECT listID, count(listID) as countListings FROM rentersreviewlistings GROUP BY listID;");
+			ResultSet rsAll = stmt.executeQuery(getAll);
+
+			// If there are no reviews, exit
+			if(!rsAll.isBeforeFirst()) {
+				System.out.println("No availabilities for this listing."); 
+				return;
+			}
+			// FOR EVERY LISTING WITH AT LEAST 1 REVIEW:
+			while(rsAll.next()){
+				int listID = rsAll.getInt("listID");
+				System.out.print("listID: " + rsAll.getInt("listID"));
+				System.out.println(", Number of Reviews: " + rsAll.getInt("countListings"));
+				parseListingReviews (conn, listID);
+				System.out.println();
+			}
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+	}
+
+
+	// produces NP frequency chart for each listID
+	public static void parseListingReviews (Connection conn, int listID) {
 
 		InputStream modelInParse = null;
+		
 		String[] reviews;
 		int count = 0;
+		boolean popular = false;
+		// if there is at least one word with freq >= 3, it's true so that we get only the popular NPs
 
 		// Retrieve all the reviews of listID
 
 		try {
-            Statement stmt = conn.createStatement();
-
+            
+			Statement stmt = conn.createStatement();
 			String getCount= String.format("SELECT  count(listID) as count FROM rentersReviewListings " 
 			+ "WHERE listID = %d;", listID);
             ResultSet rsCount = stmt.executeQuery(getCount);
@@ -130,10 +161,15 @@ public class NounParser {
 			String countNP = String.format("select *, count(nounPhrase) as count from npReviews GROUP BY nounPhrase ORDER BY count(nounPhrase) DESC;");
             ResultSet rs = statement.executeQuery(countNP);
             while(rs.next()){
-                System.out.print("Frequency: " + rs.getInt("count"));
-				System.out.println(", Noun Phrase: " + rs.getString("nounPhrase"));
-                
-            }			
+				if(rs.getInt("count") > 2){
+					System.out.print("Frequency: " + rs.getInt("count"));
+					System.out.println(", Noun Phrase: " + rs.getString("nounPhrase"));
+					popular = true;
+				}
+            }	
+			if(!popular){
+				System.out.println("No noun phrase was mentioned more than twice.");
+			}		
 		  } catch (SQLException e) {
 			  e.printStackTrace();
 		  }
