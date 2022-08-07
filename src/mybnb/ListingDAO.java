@@ -110,15 +110,16 @@ public class ListingDAO {
             System.out.println("Essentials: 1 = Wifi, 2 = Kitchen");
             System.out.println("Features: 3 = Pool, 4 = Free Parking");
             System.out.println("Safety: 5 = Smoke Alarm, 6 = Carbon Monoxide Alarm");
+            System.out.println("Location: 7 = Beachfront, 8 = Waterfront");
             int choice = Integer.parseInt(myObj.nextLine());
 
-            Boolean[] amenities = new Boolean[7];
-            for (int i = 0; i < 7; i++) {
+            Boolean[] amenities = new Boolean[9];
+            for (int i = 0; i < 9; i++) {
               amenities[i] = false;
             }
             while(choice != 0){
-              if(choice > 6 || choice < 0){
-                System.out.println("Must choose between 1 - 6");
+              if(choice > 8 || choice < 0){
+                System.out.println("Must choose between 1 - 8");
               }
               else{
                 amenities[choice] = true;
@@ -126,13 +127,15 @@ public class ListingDAO {
               choice = Integer.parseInt(myObj.nextLine());
             }
 
-            String[] names = new String[7];
+            String[] names = new String[9];
             names[1] = "Wifi";
             names[2] = "Kitchen";
             names[3] = "Pool";
             names[4] = "Free Parking";
             names[5] = "Smoke Alarm";
             names[6] = "Carbon Monoxide Alarm";
+            names[7] = "Beachfront";
+            names[8] = "Waterfront";
 
             List<String> strAmenities = new ArrayList<>();
             List<String> unchosenAmenities = new ArrayList<>();
@@ -140,15 +143,13 @@ public class ListingDAO {
               if(amenities[i]){
                 strAmenities.add(names[i]);
               }
-              else unchosenAmenities.add(names[i]);
+              else if(i != 0) unchosenAmenities.add(names[i]);
             }
 
-            //add the amenities to db
-            addAmenities(conn, amenities, listID);
             //Suggest price for the listing
             Float suggestedPrice;
             if(strAmenities.size() == 0) suggestedPrice = HostToolkit.suggestPrice(conn, type, country, city, street, postal);
-            else suggestedPrice = HostToolkit.suggestPrice(conn, type, country, city, street, postal, strAmenities );
+            else suggestedPrice = HostToolkit.suggestPrice(conn, type, country, city, street, postal, strAmenities, true);
 
             statement.executeUpdate(hostsToListingsInsert);
             statement.executeUpdate(locationInsert);
@@ -156,6 +157,28 @@ public class ListingDAO {
 
             //TODO: provide suggestions about amenities and expected revenue increase\
             HostToolkit.suggestAmenitiesAndPrice(conn, unchosenAmenities, strAmenities, suggestedPrice, type, country, city, street, postal);
+
+            // Ask them to chose amenities again
+            System.out.println("\nWould you like to add any more amenities? Enter 0 to exit.");
+            System.out.println("Essentials: 1 = Wifi, 2 = Kitchen");
+            System.out.println("Features: 3 = Pool, 4 = Free Parking");
+            System.out.println("Safety: 5 = Smoke Alarm, 6 = Carbon Monoxide Alarm");
+            System.out.println("Location: 7 = Beachfront, 8 = Waterfront");
+            choice = Integer.parseInt(myObj.nextLine());
+
+            while(choice != 0){
+              if(choice > 8 || choice < 0){
+                System.out.println("Must choose between 1 - 8");
+              }
+              else{
+                amenities[choice] = true;
+              }
+              choice = Integer.parseInt(myObj.nextLine());
+            }
+
+            //add the amenities (first chosen + updates) to db
+            addAmenities(conn, amenities, listID);
+
 
             //After listing is added, prompt user to add availabilities for that listing
             AvailabilityDriver.addAvailabilities(conn, listID, myObj);
@@ -254,15 +277,17 @@ public class ListingDAO {
 
   public static void addAmenities(Connection conn, Boolean[] choices, int listID){
     // TODO Later on, there won't be any more null insertions if 1-24 all have amenities assigned to them
-    String[] names = new String[7];
+    String[] names = new String[9];
     names[1] = "Wifi";
     names[2] = "Kitchen";
     names[3] = "Pool";
     names[4] = "Free Parking";
     names[5] = "Smoke Alarm";
     names[6] = "Carbon Monoxide Alarm";
+    names[7] = "Beachfront";
+    names[8] = "Waterfront";
     
-    for(int i = 1; i <= 6; i++){
+    for(int i = 1; i <= 8; i++){
       if(choices[i] == true){
         try {
           // is it in Amenities
@@ -274,6 +299,9 @@ public class ListingDAO {
           // if not, add (name, type to amenities)
           if (!rs.next()) {
             String type;
+            if(i == 7 || i == 8){
+              type = "Location";
+            }
             if(i == 5 || i == 6){
               type = "Safety";
             }
