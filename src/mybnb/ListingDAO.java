@@ -17,7 +17,6 @@ public class ListingDAO {
     Statement stmt = conn.createStatement();
     String sql =  String.format("SELECT listID from HostsToListings WHERE hostSIN=%d;", Main.loggedInUser);
     ResultSet rs = stmt.executeQuery(sql);
-
     // Extract results
     while (rs.next()) {
       // Retrieve by column name
@@ -104,7 +103,7 @@ public class ListingDAO {
             System.out.println();
             // Suggest amenities based on popularity
             HostToolkit.suggestAmenities(conn);
-            
+
             // Choose amenities
             System.out.println("\nChoose amenities. Enter 0 to exit.");
             System.out.println("Essentials: 1 = Wifi, 2 = Kitchen");
@@ -336,6 +335,10 @@ public class ListingDAO {
       Statement statement = conn.createStatement();
       ResultSet rs = statement.executeQuery(getListings);
       // Extract results
+      if(!rs.isBeforeFirst()) {
+        System.out.println("There are no listings available between those dates."); 
+        return;
+      }
       while (rs.next()) {
         // Retrieve by column name
         int listID = rs.getInt("listID");

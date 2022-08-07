@@ -299,7 +299,6 @@ public class UserDAO {
         }
     } 
     catch (SQLException e) {
-        // TODO Auto-generated catch block
         e.printStackTrace();
     }
     // Have you rented something to the renter? (Join Booked & Hosts-Listing)
@@ -316,7 +315,6 @@ public class UserDAO {
       }
     } 
     catch (SQLException e) {
-        // TODO Auto-generated catch block
         e.printStackTrace();
     }
 
@@ -343,7 +341,6 @@ public class UserDAO {
       insert.executeUpdate(reviewInsert);
       System.out.println("Success!");
     } catch (SQLException e) {
-      // TODO Auto-generated catch block [replace with generic error message]
       e.printStackTrace();
     }
   }
@@ -351,10 +348,6 @@ public class UserDAO {
   // TODO For example you cannot comment on a listing if you haven’t rented it recently.
   public static void rentersReviewListings(Connection conn, Scanner myObj){
     // TODO We're assuming one Listing per Host right?
-
-    // Input a Listing 
-    // TODO How will this be chosen during an actual workflow lol. Maybe we'll 
-    // display all hosts' id and then be like which one would you like to review?
     System.out.println("Provide the ID of the Listing you'd like to review: ");
     int listID = Integer.parseInt(myObj.nextLine());
 
@@ -371,7 +364,6 @@ public class UserDAO {
     catch (SQLException e) {
         e.printStackTrace();
     }
-
     // Have you Booked the listing before?
     try {
       Statement stmt = conn.createStatement();
@@ -388,7 +380,6 @@ public class UserDAO {
     catch (SQLException e) {
         e.printStackTrace();
     }
-
 
     // Provide review and rating
     System.out.println("What is your rating for the listing out of 5? ");

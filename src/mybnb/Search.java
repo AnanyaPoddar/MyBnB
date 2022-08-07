@@ -190,13 +190,16 @@ public class Search {
         // TODO Is what I'm displaying okay? Should it be dates available also??
         try {
             Statement statement = conn.createStatement();
-            String listing = "SELECT DISTINCT listID, avg(price) as price FROM availabilities GROUP BY listID ORDER BY PRICE " + order+ ";"; 
+            String listing = "SELECT ad.*, avg(price) as price FROM availabilities AS av JOIN addresses AS ad ON av.listID=ad.listID GROUP BY listID ORDER BY PRICE " + order+ ";"; 
             ResultSet rs = statement.executeQuery(listing);
 
             // TODO What info do I need to return/display? I show multiple listID but no availabilities  
             while(rs.next()){
                 System.out.print("ListID: " + rs.getInt("listID"));
                 System.out.println(", Price $" + df.format(rs.getFloat("price")));
+                int unitNum = rs.getInt("unitNum");
+                System.out.println("Address: " + rs.getString("street")+ ", " + (unitNum != 0 ? "unit " + unitNum + ", " : "") + rs.getString("city") + ", " + rs.getString("country") + ", " + rs.getString("postal"));
+                System.out.println();
             }
 
         } catch (SQLException e) {
@@ -207,15 +210,6 @@ public class Search {
     }
 
     public static void fullyFilter (Connection conn, Scanner myObj){
-
-        // TODO Only when we do by price and availability: all the listings have an availability. other times, doesn't necessariy have availability. that's fine i think?
-
-        // do we need lke views or something?
-        // TODO Maybe make some of these (esp availabilities) be different functions bc there's so much similarity w what's happening here and w it happening elsewhere
-        // TODO have the string amenities be assigned inside if/else but the try/catch can be outside?
-
-        // filter by postal code
-        // TODO Maybe somehow make the postalSearch function be into this
         System.out.println("Would you like to filter by postal code? Y = Yes");
         String postalChoice = myObj.nextLine();
         if (postalChoice.toLowerCase().equals("y")) {
@@ -225,7 +219,6 @@ public class Search {
                 System.out.println("Invalid postal code.");
                 return;
             }
-
             try {
                 Statement statement = conn.createStatement();
                 String postalView = "CREATE OR REPLACE VIEW postalView AS SELECT listID, postal FROM ADDRESSES "
@@ -263,7 +256,6 @@ public class Search {
                 String priceView = String.format("CREATE OR REPLACE VIEW priceView AS SELECT DISTINCT postalView.*, avg(price) as price FROM postalView JOIN availabilities ON postalView.listID = availabilities.listID GROUP BY listID HAVING avg(price) >= %d AND avg(price) <= %d ;", minPrice, maxPrice); 
                 statement.executeUpdate(priceView);    
             } catch (SQLException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
             
@@ -275,7 +267,6 @@ public class Search {
                 statement.executeUpdate(priceView);
 
             } catch (SQLException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }

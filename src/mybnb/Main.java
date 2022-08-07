@@ -67,6 +67,8 @@ public class Main {
             System.out.println("3 - View and Manage Your Listings"); // this includes modifying availabilities, adding and deleting listings
             System.out.println("4 - View and Manage Your Bookings");
             System.out.println("5 - Add a Listing");
+            System.out.println("6 - View reports"); 
+
 
             // //TODO: Move this to workflow when they're creating a listing
             // System.out.println("Enter 11 to get suggested amenities.");
@@ -76,6 +78,7 @@ public class Main {
             if (exit.equals("3")) MenuDriver.hostListingMenu(conn, myObj);
             else if (exit.equals("4")) MenuDriver.hostBookingMenu(conn, myObj);
             else if (exit.equals("5")) ListingDAO.addListing(conn, myObj);
+            else if (exit.equals("6")) ReportsDriver.viewAllReports(conn, myObj);
 
           }
 
@@ -83,12 +86,13 @@ public class Main {
             System.out.println("3 - View, Search, and Filter Listings");
             System.out.println("4 - View and Manage Your Bookings");
             System.out.println("5 - Book a Listing"); // or should this go under 3?
-            // System.out.println("Enter 10 to get all listings between two dates"); // TODO: Is this encapsulated in search or shld it be done specifically as a menu option
+            System.out.println("6 - View reports");
             System.out.println("------------------------------------------------------");
             exit = myObj.nextLine(); 
             if (exit.equals("3")) MenuDriver.loggedOutOrRenterListingMenu(conn, myObj);
             else if (exit.equals("4")) MenuDriver.renterBookingMenu(conn, myObj);
             else if (exit.equals("5")) BookingsDriver.addBooking(conn, myObj);
+            else if (exit.equals("6")) ReportsDriver.viewAllReports(conn, myObj);
           }
           if (exit.equals("1")) UserDAO.logout();
           else if (exit.equals("2")) UserDAO.deleteUser(conn, myObj);

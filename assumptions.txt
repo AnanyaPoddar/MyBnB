@@ -8,4 +8,9 @@
 - "clearly mention what payment information you expect and store that in your database." We want just card type and card number
 - Whenever price is displayed, only listings that have availabilities are shown. In the locations listings search, if price is shown, only the listings that have availabilities are displayed. Ones in the distance specified without any availabilities are not shown.
 - For houses and guesthouses, the unit number is 0 by default
+
 - Filter by availabilities: we only return listings that are available for the whole range given
+- When filtering bookings reports by date range, we assume the entire booking must be within the date range.
+- for max cancellations within a year, we assume the startdate of the booking must be within the CURRENT year
+- reports about number of bookings (by city/postal) only count bookings that have not been cancelled
+- for counting bookings by city, we distinguish cities with the same name that are located in different countries

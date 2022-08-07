@@ -7,30 +7,59 @@ import java.sql.Statement;
 import java.time.LocalDate;
 
 public class ReportsDAO {
-    //TODO: This returns bookings with any status, including past, booked, cancelled
+    //This returns bookings with status booked or past, not cancelled
     public static void numBookingsByDatesAndCity(Connection conn, LocalDate startDate, LocalDate endDate){
         try {
             Statement stmt = conn.createStatement();
             String sql = String.format("SELECT a.country as country, a.city AS city, count(a.listID) as numBookings FROM Booked "+
-            "AS b JOIN addresses as a ON a.listID = b.listID WHERE startDate >= '%s' AND endDate <= '%s' GROUP BY a.country, a.city ORDER BY a.country, a.city;", startDate, endDate);
+            "AS b JOIN addresses as a ON a.listID = b.listID WHERE startDate >= '%s' AND endDate <= '%s' AND status IN ('booked', 'past') GROUP BY a.country, a.city ORDER BY a.country, a.city;", startDate, endDate);
             ResultSet rs = stmt.executeQuery(sql);
+            if(!rs.isBeforeFirst()) {
+                System.out.println("There are no bookings on MyBnB within that time range."); 
+                return;
+            }
             while(rs.next()){
                 System.out.print("City: " + rs.getString("city"));
-                System.out.println(", Number of bookings: " + rs.getInt("numBookings"));
+                System.out.print(", Country: " + rs.getString("country"));
+                System.out.println(", Number of Bookings: " + rs.getInt("numBookings"));
             }
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-
-    //TODO: Get number of bookings by zip codes within a city, does this just group by the postal codes instead or should I provide a specific city
+    public static void numBookingsByDatesAndCityAndPostal(Connection conn, LocalDate startDate, LocalDate endDate){
+        try {
+            Statement stmt = conn.createStatement();
+            String sql = String.format("SELECT a.country as country, a.city AS city, a.postal AS postal, count(a.listID) as numBookings FROM Booked "+
+            "AS b JOIN addresses as a ON a.listID = b.listID WHERE startDate >= '%s' AND endDate <= '%s' AND status IN ('booked', 'past') GROUP BY a.country, a.city, a.postal ORDER BY a.country, a.city, a.postal;", startDate, endDate);
+            ResultSet rs = stmt.executeQuery(sql);
+            if(!rs.isBeforeFirst()) {
+                System.out.println("There are no bookings on MyBnB within that time range."); 
+                return;
+            }
+            while(rs.next()){
+                System.out.print("Postal: " + rs.getString("postal"));
+                System.out.print(", City: " + rs.getString("city"));
+                System.out.print(", Country: " + rs.getString("country"));
+                System.out.println(", Number of Bookings: " + rs.getInt("numBookings"));
+            }
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
     public static void numListingsByCountry(Connection conn){
         try {
             Statement stmt = conn.createStatement();
             String sql = String.format("SELECT count(listID) AS count, country FROM addresses GROUP BY country ORDER BY country;");
             ResultSet rs = stmt.executeQuery(sql);
+            if(!rs.isBeforeFirst()) {
+                System.out.println("There are no listings!"); 
+                return;
+            }
             while(rs.next()){
                 System.out.print("Country: " + rs.getString("country"));
                 System.out.println(", Number of Listings: " + rs.getInt("count"));
@@ -45,6 +74,10 @@ public class ReportsDAO {
             Statement stmt = conn.createStatement();
             String sql = String.format("SELECT count(listID) AS count, country, city FROM addresses GROUP BY country, city ORDER BY country, city;");
             ResultSet rs = stmt.executeQuery(sql);
+            if(!rs.isBeforeFirst()) {
+                System.out.println("There are no listings!"); 
+                return;
+            }
             while(rs.next()){
                 System.out.print("City: " + rs.getString("city"));
                 System.out.print(", Country: " + rs.getString("country"));
@@ -60,6 +93,10 @@ public class ReportsDAO {
             Statement stmt = conn.createStatement();
             String sql = String.format("SELECT count(listID) AS count, postal, city, country FROM addresses GROUP BY country, city, postal ORDER BY country, city, postal;");
             ResultSet rs = stmt.executeQuery(sql);
+            if(!rs.isBeforeFirst()) {
+                System.out.println("There are no listings!"); 
+                return;
+            }
             while(rs.next()){
                 System.out.print("Postal: " + rs.getString("postal"));
                 System.out.print(", City: " + rs.getString("city"));
@@ -76,10 +113,11 @@ public class ReportsDAO {
     public static void maxRenterCancellations(Connection conn){
         //subquery gets the number of cancelled bookings by renter; then for each renter in outer query, it checks if the count is greater than the count of all other
         //join with user just to display name instead of SIN
+        int year = LocalDate.now().getYear();
         try {
             Statement stmt = conn.createStatement();
-            String sql = "SELECT user.uname AS name, count(*) AS count FROM booked JOIN user ON booked.renterSIN=user.SIN WHERE status='cancelled' "+
-            "GROUP BY renterSIN HAVING count(*) >= ALL(SELECT count(*) FROM booked WHERE status = 'cancelled' GROUP BY renterSIN);";
+            String sql =  String.format("SELECT user.uname AS name, count(*) AS count FROM booked JOIN user ON booked.renterSIN=user.SIN WHERE status='cancelled' AND YEAR(startDate) = %d "+
+            "GROUP BY renterSIN HAVING count(*) >= ALL(SELECT count(*) FROM booked WHERE status = 'cancelled' AND YEAR(startDate) = %d GROUP BY renterSIN);", year, year);
             ResultSet rs = stmt.executeQuery(sql);
             while(rs.next()){
                 System.out.print("Renter: " + rs.getString("name"));
@@ -91,13 +129,15 @@ public class ReportsDAO {
     }
 
     //TODO: Reevaluate later if this is supposed to be just cancelled by anyone or specifically by host
+    //TODO: Check if it's just this year as in 2022 or anything else
     public static void maxHostCancellations(Connection conn){
+        int year = LocalDate.now().getYear();
         //Same as for renter but another join required with hostsToListings to get the actual host
         try {
             Statement stmt = conn.createStatement();
-            String sql = "SELECT count(*) AS count, user.uname AS name FROM booked AS b JOIN HostsToListings AS h ON h.listID = b.listID JOIN User ON h.hostSIN = user.SIN " +
-            "WHERE status='cancelled' GROUP BY hostSIN HAVING count >=  ALL(" +
-            "SELECT count(*) FROM booked AS b JOIN HostsToListings AS h ON h.listID = b.listID WHERE status='cancelled' GROUP BY hostSIN);";
+            String sql = String.format("SELECT count(*) AS count, user.uname AS name FROM booked AS b JOIN HostsToListings AS h ON h.listID = b.listID JOIN User ON h.hostSIN = user.SIN " +
+            "WHERE status='cancelled' AND YEAR(startDate) = %d GROUP BY hostSIN HAVING count >=  ALL(" +
+            "SELECT count(*) FROM booked AS b JOIN HostsToListings AS h ON h.listID = b.listID WHERE status='cancelled' AND YEAR(startDate) = %d GROUP BY hostSIN);", year, year);
             ResultSet rs = stmt.executeQuery(sql);
             while(rs.next()){
                 System.out.print("Host: " + rs.getString("name"));
@@ -115,6 +155,10 @@ public class ReportsDAO {
             Statement stmt = conn.createStatement();
             String sql = String.format("SELECT user.uname AS name, COUNT(renterSIN) as NUMBOOKINGS from BOOKED JOIN user ON booked.renterSIN = user.SIN WHERE startDate >= '%s' AND endDate <= '%s' AND (status = 'booked' OR status = 'past') GROUP BY name ORDER BY NUMBOOKINGS DESC;", startDate, endDate);
             ResultSet rs = stmt.executeQuery(sql);
+            if(!rs.isBeforeFirst()) {
+                System.out.println("There are no bookings within that time range!"); 
+                return;
+            }
             while(rs.next()){
                 System.out.print("Renter: " + rs.getString("name"));
                 System.out.println(", Number of bookings: " + rs.getInt("numBookings"));
@@ -137,17 +181,8 @@ public class ReportsDAO {
             // TODO Replace with error?
             e.printStackTrace();
         }
-
-        // todo does the numBookings > 2 count cancelled as well? maybe not since we're not counting them in the whole query and the cancelled booking wouldn't appear in ranking
     }
-
     
-
-    //  
-
-
-
-    //TODO: Does rank mean actually assign a number ? or ordering is good enough?
     public static void rankHostsByListingsPerCountry(Connection conn){
         //joined with user to retrieve the username, otherwise would display the hostSIN
         try {
@@ -196,11 +231,14 @@ public class ReportsDAO {
         String query = "SELECT a.country, hostName FROM hostListingsPerCountry as h JOIN " +
         "(SELECT DISTINCT country, count(*) AS totalCount FROM addresses GROUP BY country) AS a " +
         "ON a.country = h.country WHERE count/totalCount > 0.1 ORDER BY country, hostName;";
-    
         try {
             Statement stmt = conn.createStatement();
             stmt.execute(createView);
             ResultSet rs = stmt.executeQuery(query);
+            if(!rs.isBeforeFirst()) {
+                System.out.println("There are no commercial hosts!"); 
+                return;
+            }
             while(rs.next()){
                 System.out.print("Country: " + rs.getString("country"));
                 System.out.println(", Host: " + rs.getString("hostName"));
@@ -224,6 +262,10 @@ public class ReportsDAO {
             Statement stmt = conn.createStatement();
             stmt.execute(createView);
             ResultSet rs = stmt.executeQuery(query);
+            if(!rs.isBeforeFirst()) {
+                System.out.println("There are no commercial hosts!"); 
+                return;
+            }
             while(rs.next()){
                 System.out.print("City: " + rs.getString("city"));
                 System.out.println(", Host: " + rs.getString("hostName"));
