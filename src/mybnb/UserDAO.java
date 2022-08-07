@@ -243,6 +243,8 @@ public class UserDAO {
 
   // TODO For example you cannot comment on a listing if you haven’t rented it recently.
   public static void renterReviewsHost(Connection conn, Scanner myObj){
+
+    // Input a Host 
     System.out.println("Provide the username of the host you'd like to review: ");
     String uname = myObj.nextLine();
     int hostSIN = -1;
@@ -265,14 +267,18 @@ public class UserDAO {
     }
     // Have you booked something from the host? (Join Booked & Hosts-Listing)
     try {
+      // SELECT * FROM Booked JOIN HostsToListings ON Booked.listID = HostsToListings.listID WHERE renterSIN = " 345678901 AND hostSIN = 765432101 AND Booked.status = 'Past';
         Statement stmt = conn.createStatement();
-        String sql = "SELECT * FROM Booked JOIN HostsToListings ON Booked.listID = HostsToListings.listID WHERE renterSIN = " + Main.loggedInUser + " AND hostSIN = " + hostSIN + ";";
+        String sql = "SELECT * FROM Booked JOIN HostsToListings ON Booked.listID = HostsToListings.listID " 
+        + "WHERE renterSIN = " + Main.loggedInUser + " AND hostSIN = " + hostSIN 
+        + " AND Booked.status = 'Past' AND extract(year from startDate) = extract(year from'" 
+        + LocalDate.now() + "') ;";
         ResultSet rs = stmt.executeQuery(sql);
         if (rs.next()) {
             System.out.println("You've booked from them before.");
         }
         else{
-            System.out.println("Cannot leave a review because you've never booked from them before or the hostSIN doesn't exist.");
+            System.out.println("Cannot leave a review because you don't have any past bookings with this host within the year or the host doesn't exist.");
             return;
         }
       } 
@@ -309,11 +315,8 @@ public class UserDAO {
 
   // TODO For example you cannot comment on a listing if you haven’t rented it recently.
   public static void hostReviewsRenter(Connection conn, Scanner myObj){
-    // TODO We're assuming one Listing per Host right?
-
+    
     // Input a renter 
-    // TODO How will this be chosen during an actual workflow lol. Maybe we'll 
-    // display all renters' id and then be like which one would you like to review?
     System.out.println("Provide the username of the renter you'd like to review: ");
     String uname = myObj.nextLine();
     int renterSIN = -1;
@@ -337,13 +340,15 @@ public class UserDAO {
     // Have you rented something to the renter? (Join Booked & Hosts-Listing)
     try {
       Statement stmt = conn.createStatement();
-      String sql = "SELECT * FROM Booked JOIN HostsToListings ON Booked.listID = HostsToListings.listID WHERE renterSIN = " + renterSIN + " AND hostSIN = " + Main.loggedInUser + ";";
+      String sql = "SELECT * FROM Booked JOIN HostsToListings ON Booked.listID = HostsToListings.listID WHERE renterSIN = " + renterSIN + " AND hostSIN = " + Main.loggedInUser 
+      + " AND Booked.status = 'Past' AND extract(year from startDate) = extract(year from'" 
+      + LocalDate.now() + "') ;";
       ResultSet rs = stmt.executeQuery(sql);
       if (rs.next()) {
           System.out.println("They've booked from you before.");
       }
       else{
-          System.out.println("Cannot leave a review because you've never rented them a listing before or the renterID doesn't exist.");
+          System.out.println("Cannot leave a review because you have not rented them a listing in the past within the year or the renterID doesn't exist.");
           return;
       }
     } 
@@ -380,6 +385,8 @@ public class UserDAO {
 
   // TODO For example you cannot comment on a listing if you haven’t rented it recently.
   public static void rentersReviewListings(Connection conn, Scanner myObj){
+    
+    // Input a Listing 
     System.out.println("Provide the ID of the Listing you'd like to review: ");
     int listID = Integer.parseInt(myObj.nextLine());
 
@@ -399,13 +406,16 @@ public class UserDAO {
     // Have you Booked the listing before?
     try {
       Statement stmt = conn.createStatement();
-      String sql = "SELECT * FROM Booked WHERE renterSIN = " + Main.loggedInUser + " AND listID = " + listID + ";";
+      String sql = "SELECT * FROM Booked WHERE renterSIN = " 
+      + Main.loggedInUser + " AND listID = " + listID 
+      + " AND Booked.status = 'Past' AND extract(year from startDate) = extract(year from'" 
+      + LocalDate.now() + "') ;";
       ResultSet rs = stmt.executeQuery(sql);
       if (rs.next()) {
           System.out.println("You've booked this listing before.");
       }
       else{
-          System.out.println("Cannot leave a review because you've never booked this listing before or it doesn't exist.");
+          System.out.println("Cannot leave a review because you don't have any past bookings at this listing within the year or it doesn't exist.");
           return;
       }
     } 

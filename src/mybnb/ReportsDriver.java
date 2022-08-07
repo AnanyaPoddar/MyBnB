@@ -89,11 +89,11 @@ public class ReportsDriver {
     }
 
     private static void parser(Connection conn, Scanner myObj){
-        //TODO: Do it for all instead of specific listId?
-        System.out.println("ListID of the listing you'd like a word cloud of: ");
-        int listID = Integer.parseInt(myObj.nextLine());
-        System.out.println("Loading...");  
-        System.out.println("Noun Phrases of listID: " + listID);
-        NounParser.parser(conn, listID);
+        System.out.println("------------------------------------------------------");
+        System.out.println("Popular Noun Phrases of each Listing");
+        NounParser.parseAll(conn);
+        System.out.println("------------------------------------------------------");
+
+
     }
 }
