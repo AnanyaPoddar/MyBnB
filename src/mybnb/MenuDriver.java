@@ -14,6 +14,7 @@ public class MenuDriver {
             System.out.println("2 - Check Availabilities for a Listing");
             //TODO: Does the "get listings between 2 dates need to go somewhere separate or here is fine"
             System.out.println("3 - Search and Filter Listings");
+            System.out.println("4 - Book a Listing"); // or should this go under 3?
             option = Integer.parseInt(myObj.nextLine());
             if(option == 1)
                 ListingDAO.viewAllListings(conn);
@@ -25,6 +26,7 @@ public class MenuDriver {
             else if(option == 3){
                 Search.searchListings(conn, myObj);
             }
+            else if (option == 4) BookingsDriver.addBooking(conn, myObj);
         }
 
     }

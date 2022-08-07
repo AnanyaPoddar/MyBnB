@@ -29,7 +29,7 @@ public class DDL {
             String hostsToListingTable = "CREATE TABLE IF NOT EXISTS HostsToListings "
                 + "(listID INT NOT NULL, FOREIGN KEY (listID) REFERENCES Listings(listID) ON DELETE CASCADE, "
                 + "hostSIN INT NOT NULL, FOREIGN KEY (hostSIN) REFERENCES Host(hostSIN) ON DELETE CASCADE, " +
-                " PRIMARY KEY(listID, hostSIN))";
+                " PRIMARY KEY(listID))";
 
             //status options for availabilities: booked, available, past, cancelled
             String availabilitiesTable = "CREATE TABLE IF NOT EXISTS Availabilities "
@@ -41,7 +41,7 @@ public class DDL {
             String bookedTable = "CREATE TABLE IF NOT EXISTS Booked "
                 + "(listID INT NOT NULL, FOREIGN KEY (listID) REFERENCES Listings(listID) ON DELETE CASCADE, "
                 + "renterSIN INT NOT NULL, FOREIGN KEY (renterSIN) REFERENCES Renter(renterSIN) ON DELETE CASCADE, cost FLOAT NOT NULL check (cost >= 0), " 
-                + "startDate DATE NOT NULL, endDate DATE NOT NULL, status varchar(10) NOT NULL DEFAULT 'booked', PRIMARY KEY(listID, startDate, endDate))";
+                + "startDate DATE NOT NULL, endDate DATE NOT NULL, status varchar(10) NOT NULL DEFAULT 'booked', PRIMARY KEY(listID, startDate, endDate, status))";
 
             // Must provide both rating and comment when providing a review
             // NOTE: not doing on delete cascade 

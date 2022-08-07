@@ -68,10 +68,6 @@ public class Main {
             System.out.println("4 - View and Manage Your Bookings");
             System.out.println("5 - Add a Listing");
             System.out.println("6 - View reports"); 
-
-
-            // //TODO: Move this to workflow when they're creating a listing
-            // System.out.println("Enter 11 to get suggested amenities.");
             System.out.println("------------------------------------------------------");
             exit = myObj.nextLine(); 
             //only show a host's own listings  

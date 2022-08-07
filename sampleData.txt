@@ -21,8 +21,6 @@
 
 -- wifi + pool + kitchen + parking
 
-
-
 -- Insert renters
 
 INSERT INTO User VALUES (123456789, 'Renter1', 'Renter1', '123 Military Trail', 'Student', '2001-09-15');

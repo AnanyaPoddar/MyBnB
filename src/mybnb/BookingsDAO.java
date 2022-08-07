@@ -89,17 +89,28 @@ public class BookingsDAO {
     public static void cancelBooking(Connection conn, Scanner myObj, int listingID, LocalDate startDate, LocalDate endDate){
         //first check that dates are valid and not past
         if(!AvailabilityDAO.checkValidDates(startDate, endDate)) return;
-        String deleteBooking = String.format("UPDATE Booked SET status = 'cancelled' WHERE listID= %d AND startDate = '%s' AND endDate = '%s';", listingID, startDate, endDate);
+        //edge case, if the booking has been previously cancelled, we need it for reports data and hence it exists in the database with that date range and status
+        //but if we have rebooked with that same timeslot, that booking will exist in db as well with status 'booked'
+        //attempting to update to 'cancelled' will give a SQL error for duplicate key since already cancelled with that date range; we need to remove that 'booked column'
         try {
             Statement statement = conn.createStatement();
-            int rows = statement.executeUpdate(deleteBooking);
-            if(rows > 0)
-              System.out.println("Successfully cancelled booking with listID " + listingID);
-            else
-              System.out.println("No booking found with that listID, start date and end date combination.");
+
+            String cancelledAndBooked = String.format("SELECT count(*) = 2 as bookedAndCancelled FROM Booked WHERE listID=%d AND startDate='%s' AND endDate='%s' AND status in ('cancelled','booked') GROUP BY listID;", listingID, startDate, endDate);
+            ResultSet rs = statement.executeQuery(cancelledAndBooked);
+            String deleteBooking;
+            if(rs.next()){
+                if(rs.getInt("bookedAndCancelled") == 1) deleteBooking = String.format("DELETE FROM Booked WHERE listID=%d AND status='booked' AND startDate='%s' AND endDate='%s';", listingID, startDate, endDate);
+                else deleteBooking = String.format("UPDATE Booked SET status = 'cancelled' WHERE listID= %d AND startDate = '%s' AND endDate = '%s';", listingID, startDate, endDate);
+                int rows = statement.executeUpdate(deleteBooking);
+                if(rows > 0)
+                  System.out.println("Successfully cancelled booking with listID " + listingID);
+                else
+                  System.out.println("No booking found with that listID, start date and end date combination.");
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
     }
 
     //when a renter wants to see their past bookings, update relevant bookings to past before displaying
