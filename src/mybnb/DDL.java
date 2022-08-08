@@ -6,6 +6,7 @@ import java.sql.Statement;
 public class DDL {
 
     public static void createTables(Connection conn, Statement stmt){
+
         try {
             String userTable = "CREATE TABLE IF NOT EXISTS USER " + "(SIN INT NOT NULL PRIMARY KEY "
                 + " CONSTRAINT CK_SIN_LENGTH check (length(SIN) = 9), upassword VARCHAR(12) NOT NULL, "
@@ -43,15 +44,12 @@ public class DDL {
                 + "renterSIN INT NOT NULL, FOREIGN KEY (renterSIN) REFERENCES Renter(renterSIN) ON DELETE CASCADE, cost FLOAT NOT NULL check (cost >= 0), " 
                 + "startDate DATE NOT NULL, endDate DATE NOT NULL, status varchar(10) NOT NULL DEFAULT 'booked', PRIMARY KEY(listID, startDate, endDate, status))";
 
-            // Must provide both rating and comment when providing a review
-            // NOTE: not doing on delete cascade 
             String rentersReviewHosts = "CREATE TABLE IF NOT EXISTS rentersReviewHosts "
                 + "(hostSIN INT NOT NULL, FOREIGN KEY (hostSIN) REFERENCES Host(hostSIN) ON DELETE CASCADE, "
                 + "renterSIN INT NOT NULL, FOREIGN KEY (renterSIN) REFERENCES Renter(renterSIN) ON DELETE CASCADE," + 
                 " review VARCHAR(100) NOT NULL, " + " rating INT NOT NULL CONSTRAINT CK_rating  check (rating >= 1 and rating <= 5), " +
                 "PRIMARY KEY(hostSIN, renterSIN))";
 
-            // Must provide both rating and comment when providing a review
             String hostsReviewRenters = "CREATE TABLE IF NOT EXISTS hostsReviewRenters "
                 + "(hostSIN INT NOT NULL, FOREIGN KEY (hostSIN) REFERENCES Host(hostSIN) ON DELETE CASCADE, "
                 + "renterSIN INT NOT NULL, FOREIGN KEY (renterSIN) REFERENCES Renter(renterSIN) ON DELETE CASCADE," + 
@@ -65,15 +63,12 @@ public class DDL {
                 " review VARCHAR(100) NOT NULL, " + " rating INT NOT NULL CONSTRAINT CK_rating3 check (rating >= 1 and rating <= 5), " +
                 "PRIMARY KEY(listID, renterSIN))";
 
-            // TODO latitude and longitude don't have to be keys here?
             String locationsTable = "CREATE TABLE IF NOT EXISTS Locations "
                 + "(listID INT NOT NULL, FOREIGN KEY (listID) REFERENCES Listings(listID) ON DELETE CASCADE, " 
                 + "latitude FLOAT NOT NULL CONSTRAINT CK_latitude  check (latitude >= -90 and latitude <= 90)," + 
                 " longitude FLOAT NOT NULL CONSTRAINT CK_longitude check (longitude >= -180 and longitude <= 180), " +
                 "PRIMARY KEY(listID))";
 
-            // TODO does listID have to be a key or just unique?
-            // TODO unit#, street, postal are enough to constitute a key right?
             String addressesTable =
                 "CREATE TABLE IF NOT EXISTS ADDRESSES " 
                 + "(listID INT NOT NULL UNIQUE, FOREIGN KEY (listID) REFERENCES Listings(listID) ON DELETE CASCADE, " 
@@ -97,7 +92,6 @@ public class DDL {
             String npReviews = "CREATE TABLE IF NOT EXISTS npReviews "
                 + "(nounPhrase VARCHAR(100) NOT NULL)";
                 
-
             stmt.executeUpdate(userTable);
             stmt.executeUpdate(hostTable);
             stmt.executeUpdate(renterTable);

@@ -106,7 +106,6 @@ public class AvailabilityDAO{
       String availInsert = "INSERT INTO Availabilities(listID, date, price) VALUES ";
       for(int i = 0; i < dates.size(); i++){
         if(i == dates.size()-1)
-          //TODO: Check, this should update the price if the key already exists
           availInsert += String.format("(%d, '%s', %f) ON DUPLICATE KEY UPDATE price = %f;", listingID, dates.get(i), price, price);
         else availInsert +=  String.format("(%d, '%s', %f), ", listingID, dates.get(i), price);
       }
@@ -114,7 +113,6 @@ public class AvailabilityDAO{
       statement.executeUpdate(availInsert);
       System.out.println("Success!");
     } catch (SQLException e) {
-      //TODO: Because of check, it could fail if price is < 0, so maybe print that error here
         e.printStackTrace();
     }
   }

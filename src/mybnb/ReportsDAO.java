@@ -225,7 +225,6 @@ public class ReportsDAO {
         }
     }
 
-    //TODO: Is there anything to do with this info, do we actually need to flag
     public static void possibleCommercialHostsByCountry(Connection conn){
         //add another column for total count per country, then just check if count/totalCount >= 1/10        
         String createView = "CREATE OR REPLACE VIEW hostListingsPerCountry AS " +

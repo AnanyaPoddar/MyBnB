@@ -29,7 +29,6 @@ public class AvailabilityDriver {
       System.out.println("End date of range: ");
       end = myObj.nextLine();
       if(end.equals("0")) break;
-      //TODO: try-catch here
       LocalDate startDate = LocalDate.parse(start);
       LocalDate endDate = LocalDate.parse(end);
 
@@ -60,7 +59,6 @@ public class AvailabilityDriver {
       System.out.println("End date of range: ");
       String end = myObj.nextLine();
   
-      //TODO: try-catch here
       LocalDate startDate = LocalDate.parse(start);
       LocalDate endDate = LocalDate.parse(end);
 

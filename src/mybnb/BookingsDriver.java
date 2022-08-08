@@ -29,14 +29,12 @@ public class BookingsDriver {
             String start = myObj.nextLine();
             System.out.println("Enter end date of the booking: ");
             String end = myObj.nextLine();
-            //TODO: Add all the parsing date stuff to ALL localdates, to give back appropriate feedback of not valid
             LocalDate startDate = LocalDate.parse(start);
             LocalDate endDate = LocalDate.parse(end);
             BookingsDAO.cancelBooking(conn, myObj, listingID, startDate, endDate);
             //Modify availabilities table, they are not available, just cancelled
             AvailabilityDAO.setAvailability(conn, listingID, startDate, endDate, "cancelled");
         } catch (SQLException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }   
