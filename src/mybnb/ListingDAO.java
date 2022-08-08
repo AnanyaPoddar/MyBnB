@@ -354,9 +354,9 @@ public class ListingDAO {
     
     //get the count of the dates for each listId that appear in the dateRange above;
     //then only return the ones that appear the number of times equivalent to the length of dates (ie includes all the dates), and join with listings
-    String getListings = String.format("SELECT listings.listID, listings.type " +
+    String getListings = String.format("SELECT listings.listID, listings.type, ad.* " +
     "FROM (SELECT count(date) AS dateCount, listID FROM availabilities WHERE status='available' AND date in %s GROUP BY listID) AS a " +
-    "JOIN listings ON listings.listID=a.listID WHERE a.dateCount = %d", stringDates, dates.size());
+    "JOIN listings ON listings.listID=a.listID JOIN addresses as ad ON ad.listID = listings.listID WHERE a.dateCount = %d", stringDates, dates.size());
     try {
       Statement statement = conn.createStatement();
       ResultSet rs = statement.executeQuery(getListings);
@@ -365,14 +365,20 @@ public class ListingDAO {
         System.out.println("There are no listings available between those dates."); 
         return;
       }
+      System.out.println();
       while (rs.next()) {
-        // Retrieve by column name
         int listID = rs.getInt("listID");
         String type = rs.getString("type");
+        String street = rs.getString("street");
+        String city = rs.getString("city");
+        String country = rs.getString("country");
+        String postal = rs.getString("postal");
+        int unitNum = rs.getInt("unitNum");
 
         // Display values
         System.out.print("ID: " + listID);
         System.out.println(", type: " + type);
+        System.out.println("Address: " + street + ", " + (unitNum != 0 ? "unit " + unitNum + ", " : "") + city + ", " + country + ", " + postal + "\n");
       }
 
     } catch (SQLException e) {

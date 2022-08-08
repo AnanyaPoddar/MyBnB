@@ -204,7 +204,7 @@ public class ReportsDAO {
     public static void rankHostsByListingsPerCity(Connection conn){
         try {
             Statement stmt = conn.createStatement();
-            String sql = "SELECT count(*) AS count, city, uname as hostName FROM HostsToListings AS h " + 
+            String sql = "SELECT count(*) AS count, country, city, uname as hostName FROM HostsToListings AS h " + 
             "JOIN addresses AS a ON a.listID=h.listID JOIN user ON h.hostSIN = user.SIN " +
             "GROUP BY country, city, hostSIN ORDER BY city, count(*) DESC;";
             ResultSet rs = stmt.executeQuery(sql);

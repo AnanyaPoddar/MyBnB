@@ -48,7 +48,7 @@ public class BookingsDAO {
                 return;
             }
             while(rs.next()){
-                System.out.println("ListId: " + rs.getInt("listID") + ", Host: " +rs.getString("host") + " , Cost: $" + df.format(rs.getFloat("cost")));
+                System.out.println("ListId: " + rs.getInt("listID") + ", Host: " +rs.getString("host") + ", Cost: $" + df.format(rs.getFloat("cost")));
                 System.out.println("Dates: " + rs.getDate("startDate") + " - " + rs.getDate("endDate"));
                 int unitNum = rs.getInt("unitNum");
                 System.out.println("Address: " + rs.getString("street")+ ", " + (unitNum != 0 ? "unit " + unitNum + ", " : "") + rs.getString("city") + ", " + rs.getString("country") + ", " + rs.getString("postal")+ "\n");
