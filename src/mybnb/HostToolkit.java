@@ -12,8 +12,6 @@ import java.util.List;
 public class HostToolkit {
 
     static DecimalFormat df = new DecimalFormat("0.00");
-
-
     //Should suggest an amenity, then say the increased price based on that amenity
     public static void suggestAmenities(Connection conn){
         try {
