@@ -107,6 +107,9 @@ public class BookingsDAO {
                 else
                   System.out.println("No booking found with that listID, start date and end date combination.");
             }
+            else{
+                System.out.println("No booking found with that listID, start date and end date combination.");
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
