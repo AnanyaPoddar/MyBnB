@@ -88,11 +88,11 @@ public class AvailabilityDriver {
           System.out.println("1 - Modifying Availabilities...");
           AvailabilityDAO.addAvailabilities(conn, listingID, startDate, endDate, price);
         }
-      }
-      else if (choice == 2){
-        System.out.println("2 - Deleting Availabilities...");
-        //delete availabilities actually removes them from the table 
-        AvailabilityDAO.deleteAvailabilities(listingID, startDate, endDate);
+        else if (choice == 2){
+          System.out.println("2 - Deleting Availabilities...");
+          //delete availabilities actually removes them from the table 
+          AvailabilityDAO.deleteAvailabilities(conn, listingID, startDate, endDate);
+        }
       }
 
     } catch (SQLException e) {

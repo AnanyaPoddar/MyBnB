@@ -74,7 +74,7 @@ public class BookingsDAO {
                 return;
             }
             while(rs.next()){
-                System.out.println("ListId: " + rs.getInt("listID") + ", Renter: " +rs.getString("renter") + " , Cost: $" + df.format(rs.getFloat("cost")));
+                System.out.println("ListId: " + rs.getInt("listID") + ", Renter: " +rs.getString("renter") + ", Cost: $" + df.format(rs.getFloat("cost")));
                 System.out.println("Dates: " + rs.getDate("startDate") + " - " + rs.getDate("endDate"));
                 int unitNum = rs.getInt("unitNum");
                 System.out.println("Address: " + rs.getString("street")+ ", " + (unitNum != 0 ? "unit " + unitNum + ", " : "") + rs.getString("city") + ", " + rs.getString("country") + ", " + rs.getString("postal")+ "\n");
@@ -106,6 +106,9 @@ public class BookingsDAO {
                   System.out.println("Successfully cancelled booking with listID " + listingID);
                 else
                   System.out.println("No booking found with that listID, start date and end date combination.");
+            }
+            else{
+                System.out.println("No booking found with that listID, start date and end date combination.");
             }
         } catch (SQLException e) {
             e.printStackTrace();
