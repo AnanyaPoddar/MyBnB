@@ -133,7 +133,7 @@ public class UserDAO {
       System.out.println("Not deleting.");
       return;
     }
-    System.out.println("Deleting Account of " + Main.loggedInUser);
+    System.out.println("Deleting Account...");
 
     try {
 

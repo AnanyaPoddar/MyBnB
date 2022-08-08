@@ -150,7 +150,7 @@ public class AvailabilityDAO{
   }
 
   //helper
-  public static void deleteAvailabilities(int listingID, LocalDate startDate, LocalDate endDate){
+  public static void deleteAvailabilities(Connection conn, int listingID, LocalDate startDate, LocalDate endDate){
     List<LocalDate> dates = startDate.datesUntil(endDate.plusDays(1)).collect(Collectors.toList());
     String stringDates = "(";
     for(int i = 0; i < dates.size(); i++){
@@ -158,8 +158,15 @@ public class AvailabilityDAO{
       else stringDates += String.format("'%s',", dates.get(i));
     }
     stringDates  += ")";
+    
+    try {
+      Statement statement = conn.createStatement();
+      String delete = String.format("DELETE FROM Availabilities WHERE listID = %d AND date IN %s", listingID, stringDates);
+      statement.executeUpdate(delete);
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
 
-    String.format("DELETE FROM Availabilities WHERE listID = %d AND date IN %s", listingID, stringDates);
   }
 
 }
