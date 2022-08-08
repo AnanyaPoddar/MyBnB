@@ -14,7 +14,6 @@ public class HostToolkit {
     static DecimalFormat df = new DecimalFormat("0.00");
 
 
-    //TODO: Right now this is just an ordered list of the amenities based on percentage of listings that have them
     //Should suggest an amenity, then say the increased price based on that amenity
     public static void suggestAmenities(Connection conn){
         try {

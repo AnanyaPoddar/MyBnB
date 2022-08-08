@@ -212,7 +212,7 @@ INSERT INTO ListingsHaveAmenities VALUES (2, 'Kitchen');
 INSERT INTO ListingsHaveAmenities VALUES (2, 'Carbon Monoxide Alarm');
 
 INSERT INTO ListingsHaveAmenities VALUES (17, 'Wifi');
-INSERT INTO ListingsHaveAmenities VALUES (17, 'Pool');
+INSERT INTO ListingsHaveAmenities VALUES (17, 'Kitchen');
 INSERT INTO ListingsHaveAmenities VALUES (17, 'Free Parking');
 
 INSERT INTO ListingsHaveAmenities VALUES (18, 'Wifi');

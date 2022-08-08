@@ -21,7 +21,6 @@ public class UserDAO {
         return false;
         } 
         catch (SQLException e) {
-        // TODO Auto-generated catch block
         e.printStackTrace();
         }
         
@@ -29,11 +28,6 @@ public class UserDAO {
     }
 
   public static void addUser(Connection conn, Scanner myObj) {
-
-    // TODO Prevent errors from database and instead check user input before
-    // trying to insert
-
-    // TODO: Verify password and email
     System.out.println("Provide your username: ");
     String name = myObj.nextLine();
     System.out.println("Provide you password (masked for security): ");
@@ -61,7 +55,6 @@ public class UserDAO {
         return;
       }
     } catch (java.time.DateTimeException e) {
-      // TODO Replace with error
       e.printStackTrace();
       return;
     }
@@ -72,7 +65,6 @@ public class UserDAO {
     String rentOrHostInsert;
     if (rOrH.equals("r") || rOrH.equals("R")) {
       
-      // TODO Should this be open choice or C = Credit, D = Debit
       System.out.println("Provide a payment method (Credit or Debit): ");
       String cardType = myObj.nextLine();
       System.out.println("Provide your card number: ");
@@ -83,15 +75,14 @@ public class UserDAO {
       rentOrHostInsert = String.format("INSERT INTO Host VALUES (%d);", sin);
     }
     try {
-      // TODO Either both statements are inserted or neither is?
       Statement insert = conn.createStatement();
       String userInsert = String.format(
           "INSERT INTO USER VALUES (%d, '%s', '%s', '%s', '%s', '%s');", sin,
           password, name, addr, occupation, birthdate);
       insert.executeUpdate(userInsert);
       insert.executeUpdate(rentOrHostInsert);
+      System.out.println("Successfully signed up!");
     } catch (SQLException e) {
-      // TODO Auto-generated catch block [replace with generic error message]
       e.printStackTrace();
     }
   }
@@ -130,40 +121,7 @@ public class UserDAO {
 
   }
 
-
-  // public static void viewAllUsers(Connection conn) {
-  //   try {
-  //     Statement stmt = conn.createStatement();
-  //     String sql = "SELECT * FROM User;";
-  //     ResultSet rs = stmt.executeQuery(sql);
-  //     // Extract results
-  //     while (rs.next()) {
-  //       // Retrieve by column name
-  //       int sid = rs.getInt("SIN");
-  //       String uname = rs.getString("uname");
-  //       String uaddress = rs.getString("uaddress");
-  //       String uoccupation = rs.getString("uoccupation");
-  //       String udob = rs.getString("uDOB");
-
-  //       // Display values
-  //       System.out.print("ID: " + sid);
-  //       System.out.print(", Name: " + uname);
-  //       System.out.print(", Address: " + uaddress);
-  //       System.out.print(", Occupation: " + uoccupation);
-  //       System.out.println(", Date of Birth: " + udob);
-  //     }
-  //     rs.close();
-  //   } catch (SQLException e) {
-  //     e.printStackTrace();
-  //   }
-
-  // }
-
-
   public static void deleteUser(Connection conn, Scanner myObj) {
-    // TODO ! What other tables/relationships should be affected if a Host
-    // deletes? If a Renter deletes?s
-
     if (Main.loggedInUser == -1) {
       System.out.println("You must be logged in to delete your account");
       return;
@@ -175,7 +133,7 @@ public class UserDAO {
       System.out.println("Not deleting.");
       return;
     }
-    System.out.println("Deleting Account of" + Main.loggedInUser);
+    System.out.println("Deleting Account of " + Main.loggedInUser);
 
     try {
 
@@ -184,9 +142,8 @@ public class UserDAO {
       stmt.executeUpdate(sql);
 
       Main.loggedInUser = -1;
-      System.out.println("Account deleted and logged out." + Main.loggedInUser);
+      System.out.println("Account deleted and logged out.");
     } catch (SQLException e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     }
   }
@@ -241,7 +198,6 @@ public class UserDAO {
     }
   
 
-  // TODO For example you cannot comment on a listing if you haven’t rented it recently.
   public static void renterReviewsHost(Connection conn, Scanner myObj){
 
     // Input a Host 
@@ -313,7 +269,6 @@ public class UserDAO {
       }
   }
 
-  // TODO For example you cannot comment on a listing if you haven’t rented it recently.
   public static void hostReviewsRenter(Connection conn, Scanner myObj){
     
     // Input a renter 
@@ -383,7 +338,6 @@ public class UserDAO {
     }
   }
 
-  // TODO For example you cannot comment on a listing if you haven’t rented it recently.
   public static void rentersReviewListings(Connection conn, Scanner myObj){
     
     // Input a Listing 

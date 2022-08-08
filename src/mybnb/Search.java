@@ -104,7 +104,6 @@ public class Search {
             }
 
         } catch (SQLException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
@@ -135,7 +134,6 @@ public class Search {
             }
 
         } catch (SQLException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
@@ -171,7 +169,6 @@ public class Search {
             }
 
         } catch (SQLException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
@@ -186,13 +183,11 @@ public class Search {
            order = "DESC";
         }
 
-        // TODO Is what I'm displaying okay? Should it be dates available also??
         try {
             Statement statement = conn.createStatement();
             String listing = "SELECT ad.*, avg(price) as price FROM availabilities AS av JOIN addresses AS ad ON av.listID=ad.listID GROUP BY listID ORDER BY PRICE " + order+ ";"; 
             ResultSet rs = statement.executeQuery(listing);
 
-            // TODO What info do I need to return/display? I show multiple listID but no availabilities  
             while(rs.next()){
                 System.out.print("ListID: " + rs.getInt("listID"));
                 System.out.println(", Price $" + df.format(rs.getFloat("price")));
@@ -202,7 +197,6 @@ public class Search {
             }
 
         } catch (SQLException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
@@ -225,7 +219,6 @@ public class Search {
                 statement.executeUpdate(postalView);
 
             } catch (SQLException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }
@@ -236,7 +229,6 @@ public class Search {
                 statement.executeUpdate(postalView);
 
             } catch (SQLException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }
@@ -245,11 +237,10 @@ public class Search {
         System.out.println("Would you like to filter by price range? Y = Yes");
         String priceChoice = myObj.nextLine();
         if (priceChoice.toLowerCase().equals("y")) {
-            System.out.println("What's the minimum price in your range?"); // todo gotta input smth or it's error
+            System.out.println("What's the minimum price in your range?"); 
             int minPrice = Integer.parseInt(myObj.nextLine());    
             System.out.println("What's the maximum price in your range?");
             int maxPrice = Integer.parseInt(myObj.nextLine());  
-            // TODO We don't have to order by price this time right?
             try {
                 Statement statement = conn.createStatement();
                 String priceView = String.format("CREATE OR REPLACE VIEW priceView AS SELECT DISTINCT postalView.*, avg(price) as price FROM postalView JOIN availabilities ON postalView.listID = availabilities.listID GROUP BY listID HAVING avg(price) >= %d AND avg(price) <= %d ;", minPrice, maxPrice); 
@@ -271,7 +262,6 @@ public class Search {
         }
 
         // amenities 
-        // TODO Is it okay that the same listing is there multiple times for the multiple amenities it has?
         System.out.println("Would you like to filter by amenities? Y = Yes");
         String amenitiesChoice = myObj.nextLine();
         if (amenitiesChoice.toLowerCase().equals("y")) {
@@ -293,7 +283,6 @@ public class Search {
                 String amenitiesView = "CREATE OR REPLACE VIEW amenitiesView AS SELECT DISTINCT priceView.* FROM priceView JOIN listingshaveamenities ON priceView.listID = listingshaveamenities.listID WHERE " + names + " GROUP BY priceView.listID HAVING count(priceView.listID) = " + count + ";"; 
                 statement.executeUpdate(amenitiesView);    
             } catch (SQLException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }
@@ -304,7 +293,6 @@ public class Search {
                 statement.executeUpdate(amenitiesView);
     
             } catch (SQLException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }
@@ -320,7 +308,6 @@ public class Search {
             
             System.out.println("End date of range: ");
             String end = myObj.nextLine();
-            //TODO: try-catch here
             LocalDate startDate = LocalDate.parse(start);
             LocalDate endDate = LocalDate.parse(end);
 
@@ -368,7 +355,7 @@ public class Search {
                 if (priceChoice.toLowerCase().equals("y")) 
                     System.out.print(", Price $" + df.format(rs.getFloat("price")));
                 if (availabilitiesChoice.toLowerCase().equals("y"))    
-                    System.out.print(", Type: " + rs.getString("type")); // todo not needed, just type
+                    System.out.print(", Type: " + rs.getString("type")); 
                 System.out.println("");
                 int unitNum = rs.getInt("unitNum");
                 System.out.println("Address: " + rs.getString("street")+ ", " + (unitNum != 0 ? "unit " + unitNum + ", " : "") + rs.getString("city") + ", " + rs.getString("country") + ", " + rs.getString("postal")+ "\n");

@@ -109,7 +109,6 @@ public class ReportsDAO {
     }
 
 
-    //TODO: Reevaluate later if this is supposed to be just cancelled by anyone or specifically by renter
     public static void maxRenterCancellations(Connection conn){
         //subquery gets the number of cancelled bookings by renter; then for each renter in outer query, it checks if the count is greater than the count of all other
         //join with user just to display name instead of SIN
@@ -128,8 +127,6 @@ public class ReportsDAO {
         }
     }
 
-    //TODO: Reevaluate later if this is supposed to be just cancelled by anyone or specifically by host
-    //TODO: Check if it's just this year as in 2022 or anything else
     public static void maxHostCancellations(Connection conn){
         int year = LocalDate.now().getYear();
         //Same as for renter but another join required with hostsToListings to get the actual host
@@ -150,8 +147,6 @@ public class ReportsDAO {
 
     public static void rankRentersNumBookings(Connection conn, LocalDate startDate, LocalDate endDate){
         try {
-            // TODO Which statuses should be included or not
-            // TODO Does this include past bookings even if it's not in the date range? should have brackets?
             Statement stmt = conn.createStatement();
             String sql = String.format("SELECT user.uname AS name, COUNT(renterSIN) as NUMBOOKINGS from BOOKED JOIN user ON booked.renterSIN = user.SIN WHERE startDate >= '%s' AND endDate <= '%s' AND (status = 'booked' OR status = 'past') GROUP BY name ORDER BY NUMBOOKINGS DESC;", startDate, endDate);
             ResultSet rs = stmt.executeQuery(sql);
@@ -182,7 +177,6 @@ public class ReportsDAO {
                 System.out.println(", Number of bookings: " + rs2.getInt("numBookings"));
             }
         } catch (SQLException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
@@ -208,7 +202,6 @@ public class ReportsDAO {
     }
 
     public static void rankHostsByListingsPerCity(Connection conn){
-        //TODO: Should this return the country as well?
         try {
             Statement stmt = conn.createStatement();
             String sql = "SELECT count(*) AS count, city, uname as hostName FROM HostsToListings AS h " + 
@@ -216,7 +209,8 @@ public class ReportsDAO {
             "GROUP BY country, city, hostSIN ORDER BY city, count(*) DESC;";
             ResultSet rs = stmt.executeQuery(sql);
             while(rs.next()){
-                System.out.print("City: " + rs.getString("city"));
+                System.out.print("Country: " + rs.getString("country"));
+                System.out.print(", City: " + rs.getString("city"));
                 System.out.print(", Count: " + rs.getInt("count"));
                 System.out.println(", Host: " + rs.getString("hostName"));
             }

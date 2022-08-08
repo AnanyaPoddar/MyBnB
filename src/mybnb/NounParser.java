@@ -17,8 +17,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-// TODO https://gist.github.com/johnmiedema/e12e7359bcb17b03b8a0 CREDIT 
-// TODO What should this actually print? listID enough? 
+//https://gist.github.com/johnmiedema/e12e7359bcb17b03b8a0 CREDIT 
 
 //extract noun phrases from a single sentence using OpenNLP
 public class NounParser {
@@ -47,7 +46,6 @@ public class NounParser {
 				System.out.println();
 			}
 		} catch (SQLException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 	}

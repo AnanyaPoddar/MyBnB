@@ -56,21 +56,20 @@ public class ListingDAO {
             int listID = rs.getInt("listID");
             String hostsToListingsInsert = String.format(
             "INSERT INTO HostsToListings VALUES (%d, %d);", listID, Main.loggedInUser);
-            // statement.executeUpdate(hostsToListingsInsert);
 
             // Ask user for latitude and longitude (should be able to input 10, -10, -10.1, -10.1)
             System.out.println("Enter the latitude of your listing (-90 to 90) ");
             float latitude = Float.parseFloat(myObj.nextLine());
             if(latitude > 90 || latitude < -90){
               System.out.println("Latitude must be in a -90 to 90 range.");
-              return; // TODO Should it just return when error?
+              return; 
             }
 
             System.out.println("Enter the longitude of your listing (-180 to 180) ");
             float longitude = Float.parseFloat(myObj.nextLine());
             if(longitude > 180 || longitude < -180){
               System.out.println("Longitude must be in a -180 to 180 range.");
-              return; // TODO Should it just return when error?
+              return; 
             }
 
             String locationInsert = String.format(
@@ -154,7 +153,6 @@ public class ListingDAO {
             statement.executeUpdate(locationInsert);
             statement.executeUpdate(addressInsert);
 
-            //TODO: provide suggestions about amenities and expected revenue increase\
             HostToolkit.suggestAmenitiesAndPrice(conn, unchosenAmenities, strAmenities, suggestedPrice, type, country, city, street, postal);
 
             // Ask them to chose amenities again
@@ -177,7 +175,7 @@ public class ListingDAO {
 
             //add the amenities (first chosen + updates) to db
             addAmenities(conn, amenities, listID);
-            System.out.println("\nSuccessfully added your listing!");
+            System.out.println("Successfully added your listing!\n");
 
             //After listing is added, prompt user to add availabilities for that listing
             AvailabilityDriver.addAvailabilities(conn, listID, myObj);
@@ -224,6 +222,10 @@ public class ListingDAO {
       "JOIN addresses AS a ON l.listID = a.listID JOIN HostsToListings AS h ON h.listID = a.listID WHERE hostSIN = %d", Main.loggedInUser);
       ResultSet rs = stmt.executeQuery(sql);
 
+      if(!rs.isBeforeFirst()) {
+        System.out.println("You have no listings."); 
+        return;
+      }
       // Extract results
       while (rs.next()) {
         // Retrieve by column name
@@ -259,7 +261,6 @@ public class ListingDAO {
           return;
         }
       }
-      //TODO: The else clause below could technically be moved up here since there should never be something in hostsToListings that isn't in listing
       
       //Provide feedback if successfully deleted or not, although it should always be the case since the previous shows
       //it's in hostsToListings table
@@ -275,7 +276,6 @@ public class ListingDAO {
   }
 
   public static void addAmenities(Connection conn, Boolean[] choices, int listID){
-    // TODO Later on, there won't be any more null insertions if 1-24 all have amenities assigned to them
     String[] names = new String[9];
     names[1] = "Wifi";
     names[2] = "Kitchen";
@@ -321,7 +321,6 @@ public class ListingDAO {
           stmt.executeUpdate(listingAmenityInsert);
         } 
         catch (SQLException e) {
-        // TODO Auto-generated catch block
         e.printStackTrace();
         }
       }
@@ -339,7 +338,6 @@ public class ListingDAO {
     
     System.out.println("End date of range: ");
     String end = myObj.nextLine();
-    //TODO: try-catch here
     LocalDate startDate = LocalDate.parse(start);
     LocalDate endDate = LocalDate.parse(end);
 

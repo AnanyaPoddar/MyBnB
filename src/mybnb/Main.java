@@ -44,7 +44,7 @@ public class Main {
           System.out.println("1 - Sign Up ");
           System.out.println("2 - Log In");
           System.out.println("3 - View, Search, and Filter Listings");
-          System.out.println("4 - View reports"); // TODO: Where in logged in view?
+          System.out.println("4 - View reports"); 
           System.out.println("------------------------------------------------------");
           exit = myObj.nextLine();
           if (exit.equals("1")) 
