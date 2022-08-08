@@ -549,7 +549,7 @@ INSERT INTO Availabilities(listID, date, price, status) VALUES (16, '2022-06-16'
 
 -- Insert reviews (1 for rentersReviewHosts, 1 for HostsReviewRenters, 3 for RentersReviewListings)
 
-INSERT INTO RentersReviewListings VALUES (16, 345678901, 'I enjoyed my time at this neat place and will come again.', 4);
+INSERT INTO RentersReviewListings VALUES (16, 345678901, 'I enjoyed my time at this neat place and will come again. I thank you for the fun service.', 4);
 INSERT INTO RentersReviewListings VALUES (16, 123456789, 'I wasted my time coming here.', 1);
 INSERT INTO RentersReviewListings VALUES (18, 345678901, 'I had a nice time.', 4);
 
