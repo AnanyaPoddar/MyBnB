@@ -177,7 +177,7 @@ public class ListingDAO {
 
             //add the amenities (first chosen + updates) to db
             addAmenities(conn, amenities, listID);
-
+            System.out.println("\nSuccessfully added your listing!");
 
             //After listing is added, prompt user to add availabilities for that listing
             AvailabilityDriver.addAvailabilities(conn, listID, myObj);

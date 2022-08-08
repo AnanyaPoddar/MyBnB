@@ -30,8 +30,6 @@ public class MenuDriver {
 
     }
 
-
-
     public static void hostListingMenu(Connection conn, Scanner myObj){
         int option = -1;
         while (option != 0) {
